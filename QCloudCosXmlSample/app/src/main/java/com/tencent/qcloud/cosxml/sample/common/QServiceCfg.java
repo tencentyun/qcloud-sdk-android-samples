@@ -18,10 +18,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * author bradyxiao
  */
 public class QServiceCfg {
-    private final String appid = "1253653367";
-    private final String secretId = "AKIDPiqmW3qcgXVSKN8jngPzRhvxzYyDL5qP";
-    private final String secretKey = "EH8oHoLgpmJmBQUM1Uoywjmv7EFzd5OJ";
-    public final String accountId = "1278687956";
+    private final String appid = "xxx";
+    private final String secretId = "xxx";
+    private final String secretKey = "xxx";
+    public final String accountId = "xxx";
     public final String region = "cn-south";
 
     // demo演示用的bucket，用于object的操作
