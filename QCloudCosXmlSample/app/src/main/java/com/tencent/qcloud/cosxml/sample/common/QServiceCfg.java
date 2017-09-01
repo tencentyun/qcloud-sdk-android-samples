@@ -79,8 +79,8 @@ public class QServiceCfg {
          *
          */
         BasicCredentialProvider credentialProvider =
-                new SampleSessionCredentialProvider(secretId, secretKey, appid);
-//                new BasicLocalCredentialProvider(secretId,secretKey,600);
+//                new SampleSessionCredentialProvider(secretId, secretKey, appid);
+                new BasicLocalCredentialProvider(secretId,secretKey,600);
 
         cosXmlService = new CosXmlService(context,cosXmlServiceConfig, credentialProvider);
 
