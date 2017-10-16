@@ -4,4 +4,6 @@
 ### 运行demo
 demo是Gradle工程，导入Android Studio可以直接运行。如果要导入eclipse，可以参考 [eclipse运行gradle工程](eclipseXgradle/eclipseXgradle.md)
 
+SDK API 文档， 请查阅 [SDK API Document](https://github.com/tencentyun/qcloud-sdk-android/blob/master/COS_XML_Android_SDK.md).
+
 
