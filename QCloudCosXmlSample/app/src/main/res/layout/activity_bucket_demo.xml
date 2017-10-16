@@ -35,86 +35,103 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/putBucket"
                 android:text="Put Bucket"/>
+
+            <Button
+                android:id="@+id/headBucket"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Head Bucket" />
+
+            <Button
+                android:id="@+id/getBucketLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Get Bucket Location" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/getBucket"
                 android:text="Get Bucket"/>
+
+            <Button
+                android:id="@+id/putBucketACL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Put Bucket ACL" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/getBucketACL"
                 android:text="Get Bucket ACL"/>
+
+            <Button
+                android:id="@+id/putBucketCORS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Put Bucket CORS" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/getBucketCORS"
                 android:text="Get Bucket CORS"/>
+
+            <Button
+                android:id="@+id/deleteBucketCORS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete Bucket CORS" />
+
+            <Button
+                android:id="@+id/putBucketLifecycle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Put Bucket Lifecycle" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/getBucketLocation"
-                android:text="Get Bucket Location"/>
-            <!--<Button-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/getBucketLifecycle"-->
-                <!--android:text="Get Bucket Lifecycle"/>-->
+                android:id="@+id/getBucketLifecycle"
+                android:text="Get Bucket Lifecycle"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/deleteBucketLifecycle"
+                android:text="Delete Bucket Lifecycle"/>
+
+            <Button
+                android:id="@+id/putBucketTagging"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Put Bucket Tagging" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/getBucketTagging"
                 android:text="Get Bucket Tagging"/>
+
             <Button
+                android:id="@+id/deleteBucketTagging"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/putBucketACL"
-                android:text="Put Bucket ACL"/>
+                android:text="Delete Bucket Tagging" />
+
             <Button
+                android:id="@+id/ListMultiUploads"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/putBucketCORS"
-                android:text="Put Bucket CORS"/>
-            <!--<Button-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/putBucketLifecycle"-->
-                <!--android:text="Put Bucket Lifecycle"/>-->
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/putBucketTagging"
-                android:text="Put Bucket Tagging"/>
+                android:text="List Multi Uploads" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/deleteBucket"
                 android:text="Delete Bucket"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/deleteBucketCORS"
-                android:text="Delete Bucket CORS"/>
-            <!--<Button-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/deleteBucketLifecycle"-->
-                <!--android:text="Delete Bucket Lifecycle"/>-->
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/deleteBucketTagging"
-                android:text="Delete Bucket Tagging"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/headBucket"
-                android:text="Head Bucket"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/ListMultiUploads"
-                android:text="List Multi Uploads"/>
+
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

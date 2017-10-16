@@ -13,17 +13,18 @@
         android:layout_width="match_parent"
         android:text="Service API Test"/>
 
+    <Button
+        android:id="@+id/bucketTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:text="Bucket API Test" />
+
     <Button android:id="@+id/objectTest"
         android:layout_margin="30dp"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:text="Object API Test"/>
-
-    <Button android:id="@+id/bucketTest"
-        android:layout_margin="30dp"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="Bucket API Test"/>
 
     <Button android:id="@+id/kill"
         android:layout_margin="30dp"

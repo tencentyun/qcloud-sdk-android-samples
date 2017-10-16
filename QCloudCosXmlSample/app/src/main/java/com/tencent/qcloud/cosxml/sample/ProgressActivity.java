@@ -100,7 +100,7 @@ public class ProgressActivity extends AppCompatActivity {
 
     void onListPart() {
         ListPartsSample listPartsSample = new ListPartsSample(qServiceCfg);
-        listPartsSample.startAsync(this);
+//        listPartsSample.startAsync(this);
     }
 
     @Override
@@ -133,16 +133,16 @@ public class ProgressActivity extends AppCompatActivity {
 
     void onComplete() {
         CompleteMultiUploadSample completeMultiUploadSample = new CompleteMultiUploadSample(qServiceCfg);
-        completeMultiUploadSample.startAsync(this);
+//        completeMultiUploadSample.startAsync(this);
     }
 
     void onAbort() {
         if (uploadPartSample != null) {
-            uploadPartSample.abort();
+//            uploadPartSample.abort();
             AbortMultiUploadSample abortMultiUploadSample = new AbortMultiUploadSample(qServiceCfg);
             abortMultiUploadSample.startAsync(this);
         } else if (multipartUploadHelperSample != null) {
-            multipartUploadHelperSample.abort();
+//            multipartUploadHelperSample.abort();
         }
     }
 
@@ -165,31 +165,31 @@ public class ProgressActivity extends AppCompatActivity {
 //    }
 
     void onGetAsync(final String cosPath, final int taskType) {
-        if (taskType == 0) {
-            GetObjectSample getObjectSample = new GetObjectSample(qServiceCfg, cosPath, handler);
-            getObjectSample.startAsync(this);
-        } else if (taskType == 1) {
-            uploadPartSample = new UploadPartSample(qServiceCfg, handler);
-            uploadPartSample.startAsync(this);
-        } else if (taskType == 2) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    multipartUploadHelperSample = new MultipartUploadHelperSample(qServiceCfg, handler);
-                    ResultHelper result = multipartUploadHelperSample.start();
-                    if(result != null){
-                        Intent intent = new Intent(ProgressActivity.this, ResultActivity.class);
-                        intent.putExtra("RESULT", result.showMessage());
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(ProgressActivity.this, "result is null", Toast.LENGTH_LONG).show();
-                    }
-                    finish();
-                }
-            }).start();
-        } else if (taskType == 3) {
-            AppendObjectSample appendObjectSample = new AppendObjectSample(qServiceCfg, handler);
-            appendObjectSample.startAsync(this);
-        }
+//        if (taskType == 0) {
+//            GetObjectSample getObjectSample = new GetObjectSample(qServiceCfg, cosPath, handler);
+//            getObjectSample.startAsync(this);
+//        } else if (taskType == 1) {
+//            uploadPartSample = new UploadPartSample(qServiceCfg, handler);
+//            uploadPartSample.startAsync(this);
+//        } else if (taskType == 2) {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    multipartUploadHelperSample = new MultipartUploadHelperSample(qServiceCfg, handler);
+//                    ResultHelper result = multipartUploadHelperSample.start();
+//                    if(result != null){
+//                        Intent intent = new Intent(ProgressActivity.this, ResultActivity.class);
+//                        intent.putExtra("RESULT", result.showMessage());
+//                        startActivity(intent);
+//                    } else {
+//                        Toast.makeText(ProgressActivity.this, "result is null", Toast.LENGTH_LONG).show();
+//                    }
+//                    finish();
+//                }
+//            }).start();
+//        } else if (taskType == 3) {
+//            AppendObjectSample appendObjectSample = new AppendObjectSample(qServiceCfg, handler);
+//            appendObjectSample.startAsync(this);
+//        }
     }
 }

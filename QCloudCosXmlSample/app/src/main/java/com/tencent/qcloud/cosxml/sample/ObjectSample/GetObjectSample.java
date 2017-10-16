@@ -5,17 +5,19 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.object.GetObjectRequest;
 import com.tencent.cos.xml.model.object.GetObjectResult;
+import com.tencent.qcloud.core.network.QCloudProgressListener;
 import com.tencent.qcloud.cosxml.sample.ProgressActivity;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.QCloudProgressListener;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 /**
  * Created by bradyxiao on 2017/6/7.
@@ -27,41 +29,40 @@ import com.tencent.qcloud.network.exception.QCloudException;
 public class GetObjectSample {
     GetObjectRequest getObjectRequest;
     QServiceCfg qServiceCfg;
-    String cosPath;
-    Handler handler;
-    public GetObjectSample(QServiceCfg qServiceCfg, String cosPath, Handler handler){
+
+    public GetObjectSample(QServiceCfg qServiceCfg){
         this.qServiceCfg = qServiceCfg;
-        this.cosPath = cosPath;
-        this.handler = handler;
     }
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        getObjectRequest = new GetObjectRequest(qServiceCfg.downloadDir);
-        getObjectRequest.setBucket(qServiceCfg.bucket);
-        getObjectRequest.setCosPath(cosPath);
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getGetCosPath();
+        String downloadDir = qServiceCfg.getDownloadDir();
+
+        getObjectRequest = new GetObjectRequest(bucket, cosPath, downloadDir);
+
         getObjectRequest.setSign(600,null,null);
         getObjectRequest.setRange(1);
         getObjectRequest.setProgressListener(new QCloudProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 Log.w("XIAO","progress = "+progress+" max = "+max);
-                handler.obtainMessage(0, (int) (100.0 * progress / max)).sendToTarget();
             }
         });
         try {
             GetObjectResult getObjectResult = qServiceCfg.cosXmlService.getObject(getObjectRequest);
             resultHelper.cosXmlResult = getObjectResult;
-            Log.w("XIAO","headers :\n " + getObjectResult.printHeaders());
-            if(getObjectResult.getHttpCode() >= 300){
-                Log.w("XIAO","error :\n " +getObjectResult.printError());
-            }
-            handler.sendEmptyMessage(1);
+            Log.w("XIAO","success");
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
             return resultHelper;
-    }
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
+            return resultHelper;
+        }
     }
 
     /**
@@ -70,16 +71,18 @@ public class GetObjectSample {
      *
      */
     public void startAsync(final Activity activity){
-        getObjectRequest = new GetObjectRequest(qServiceCfg.downloadDir);
-        getObjectRequest.setBucket(qServiceCfg.bucket);
-        getObjectRequest.setCosPath(cosPath);
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getGetCosPath();
+        String downloadDir = qServiceCfg.getDownloadDir();
+
+        getObjectRequest = new GetObjectRequest(bucket, cosPath, downloadDir);
+
         getObjectRequest.setSign(600,null,null);
         getObjectRequest.setRange(1);
         getObjectRequest.setProgressListener(new QCloudProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 Log.w("XIAO","progress = "+progress+" max = "+max);
-                handler.obtainMessage(0, (int) ((100.00 * progress / max))).sendToTarget();
             }
         });
         qServiceCfg.cosXmlService.getObjectAsync(getObjectRequest, new CosXmlResultListener() {
@@ -89,15 +92,18 @@ public class GetObjectSample {
                 stringBuilder.append(cosXmlResult.printHeaders())
                         .append(cosXmlResult.printBody());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
-                handler.sendEmptyMessage(1);
                 show(activity, stringBuilder.toString());
             }
 
+
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

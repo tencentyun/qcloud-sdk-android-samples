@@ -1,21 +1,18 @@
 package com.tencent.qcloud.cosxml.sample.ObjectSample;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Handler;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.object.UploadPartRequest;
 import com.tencent.cos.xml.model.object.UploadPartResult;
-import com.tencent.qcloud.cosxml.sample.ProgressActivity;
-import com.tencent.qcloud.cosxml.sample.ResultActivity;
+import com.tencent.qcloud.core.network.QCloudProgressListener;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.QCloudProgressListener;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 /**
  * Created by bradyxiao on 2017/6/1.
@@ -30,55 +27,44 @@ import com.tencent.qcloud.network.exception.QCloudException;
 public class UploadPartSample {
     UploadPartRequest uploadPartRequest;
     QServiceCfg qServiceCfg;
-    Handler handler;
+    int partNumber;
 
-    boolean isAbort;
-
-    public UploadPartSample(QServiceCfg qServiceCfg, Handler handler){
+    public UploadPartSample(QServiceCfg qServiceCfg, int partNumber){
         this.qServiceCfg = qServiceCfg;
-        this.handler = handler;
-    }
-
-    public void abort() {
-        isAbort = true;
-        if (uploadPartRequest != null) {
-            qServiceCfg.cosXmlService.cancel(uploadPartRequest);
-        }
+        this.partNumber = partNumber;
     }
 
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        uploadPartRequest = new UploadPartRequest();
-        uploadPartRequest.setBucket(qServiceCfg.bucket);
-        uploadPartRequest.setCosPath(qServiceCfg.getMultiUploadCosPath());
-        uploadPartRequest.setUploadId(qServiceCfg.getCurrentUploadId());
-        uploadPartRequest.setPartNumber(1);
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getMultiUploadCosPath();
+        String srcPath = qServiceCfg.getMultiUploadFileUrl();
+        String uploadId = qServiceCfg.getCurrentUploadId();
+
+        uploadPartRequest = new UploadPartRequest(bucket,cosPath,
+                partNumber, srcPath, uploadId);
         uploadPartRequest.setSign(600,null,null);
-        uploadPartRequest.setSrcPath(qServiceCfg.getMultiUploadFileUrl());
+
         uploadPartRequest.setProgressListener(new QCloudProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 Log.w("XIAO","progress =" + progress * 1.0/max);
-                handler.obtainMessage(0, (int) ((100.00 * progress / max))).sendToTarget();
             }
         });
         try {
-            qServiceCfg.blockOtherUploadTask();
             UploadPartResult uploadPartResult =
                     qServiceCfg.cosXmlService.uploadPart(uploadPartRequest);
-            Log.w("XIAO",uploadPartResult.printHeaders());
-            if(uploadPartResult.getHttpCode() >= 300){
-                Log.w("XIAO",uploadPartResult.printError());
-            }else{
-                Log.w("XIAO","etag= " + uploadPartResult.getETag());
-            }
-            handler.sendEmptyMessage(1);
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = uploadPartResult;
-            qServiceCfg.releaseUploadBarrier();
+            qServiceCfg.setPartNumberAndEtag(partNumber, uploadPartResult.getETag());
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO", "exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -88,22 +74,23 @@ public class UploadPartSample {
      * 采用异步回调操作
      *
      */
-    public void startAsync(final Activity activity){
-        uploadPartRequest = new UploadPartRequest();
-        uploadPartRequest.setBucket(qServiceCfg.bucket);
-        uploadPartRequest.setCosPath(qServiceCfg.getMultiUploadCosPath());
-        uploadPartRequest.setUploadId(qServiceCfg.getCurrentUploadId());
-        uploadPartRequest.setPartNumber(1);
+    public void startAsync(){
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getMultiUploadCosPath();
+        String srcPath = qServiceCfg.getMultiUploadFileUrl();
+        String uploadId = qServiceCfg.getCurrentUploadId();
+
+        uploadPartRequest = new UploadPartRequest(bucket,cosPath,
+                partNumber, srcPath, uploadId);
+
         uploadPartRequest.setSign(600,null,null);
         uploadPartRequest.setSrcPath(qServiceCfg.getMultiUploadFileUrl());
         uploadPartRequest.setProgressListener(new QCloudProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 Log.w("XIAO","progress =" + progress * 1.0/max);
-                handler.obtainMessage(0, (int) ((100.00 * progress / max))).sendToTarget();
             }
         });
-        qServiceCfg.blockOtherUploadTask();
         qServiceCfg.cosXmlService.uploadPartAsync(uploadPartRequest, new CosXmlResultListener() {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
@@ -111,37 +98,20 @@ public class UploadPartSample {
                 stringBuilder.append(cosXmlResult.printHeaders())
                         .append(cosXmlResult.printBody());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
-                qServiceCfg.releaseUploadBarrier();
-                if (cosXmlResult.getHttpCode() < 300) {
-                    handler.sendEmptyMessage(1);
-                } else {
-                    show(activity, stringBuilder.toString());
-                }
+
             }
 
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
-                Log.w("XIAO", "failed = " + stringBuilder.toString());
-                qServiceCfg.releaseUploadBarrier();
-                if( !isAbort) {
-                    show(activity, stringBuilder.toString());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
                 }
+                Log.w("XIAO", "failed = " + stringBuilder.toString());
             }
         });
     }
 
-    private void show(Activity activity, String message){
-        if (activity == null) {
-            return;
-        }
-        Intent intent = new Intent(activity, ResultActivity.class);
-        intent.putExtra("RESULT", message);
-        activity.startActivity(intent);
-        if (activity instanceof ProgressActivity) {
-            activity.finish();
-        }
-    }
 }

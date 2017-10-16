@@ -30,6 +30,13 @@
                 android:padding="10dp"
                 android:gravity="center_horizontal"
                 style="@style/TextAppearance.AppCompat.Headline"/>
+
+            <Button
+                android:id="@+id/putObject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Put Object" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,21 +47,37 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/getObject"
                 android:text="Get Object"/>
+
+            <Button
+                android:id="@+id/optionsObject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Options Object" />
+
+            <Button
+                android:id="@+id/putObjectACL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Put Object ACL" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/getObjectACL"
                 android:text="Get Object ACL"/>
+
             <Button
+                android:id="@+id/deleteObject"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/optionsObject"
-                android:text="Options Object"/>
+                android:text="Delete Object" />
+
             <Button
+                android:id="@+id/deleteMultipleObject"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/appendObject"
-                android:text="Append Object"/>
+                android:text="Delete Multiple Object" />
+
             <TextView
                 android:id="@+id/user_object"
                 android:layout_width="match_parent"
@@ -62,26 +85,13 @@
                 android:padding="10dp"
                 android:gravity="center_horizontal"
                 style="@style/TextAppearance.AppCompat.Headline"/>
+
             <Button
+                android:id="@+id/appendObject"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/putObject"
-                android:text="Put Object"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/putObjectACL"
-                android:text="Put Object ACL"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/deleteObject"
-                android:text="Delete Object"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/deleteMultipleObject"
-                android:text="Delete Multiple Object"/>
+                android:text="Append Object" />
+
             <TextView
                 android:id="@+id/multipart_upload_id"
                 android:layout_width="match_parent"
@@ -92,33 +102,21 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/initiateMultipartUpload"
-                android:text="Initiate Multipart Upload"/>
+                android:id="@+id/multipartUpload"
+                android:text="Multipart Upload"/>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/uploadPart"
-                android:text="Upload Part"/>
-            <!--<Button-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/listParts"-->
-                <!--android:text="ListParts"/>-->
-            <!--<Button-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/completeMultipartUpload"-->
-                <!--android:text="CompleteMultipartUpload"/>-->
-            <!--<Button-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/abortMultipartUpload"-->
-                <!--android:text="AbortMultipartUpload"/>-->
+                android:id="@+id/multipartUploadHelper"
+                android:text="Multipart Upload Helper"/>
+
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/multipartHelper"
-                android:text="MultipartHelper"/>
+                android:id="@+id/abortMultiUpload"
+                android:text="abort multi upload"/>
         </LinearLayout>
     </ScrollView>
 

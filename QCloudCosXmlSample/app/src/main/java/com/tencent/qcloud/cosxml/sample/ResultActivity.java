@@ -21,7 +21,9 @@ public class ResultActivity extends AppCompatActivity implements View.OnClickLis
         backText.setOnClickListener(this);
 
         Bundle bundle = this.getIntent().getExtras();
-        contextText.setText(bundle.getString("RESULT"));
+        if (bundle != null) {
+            contextText.setText(bundle.getString("RESULT"));
+        }
     }
 
     @Override

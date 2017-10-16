@@ -215,7 +215,7 @@ public class SignUtils {
         if (qUrlParamList == null) {
             sign.append("&").append("q-url-param-list").append("=");
         } else {
-            sign.append("&").append("q-header-list").append("=").append(qUrlParamList);
+            sign.append("&").append("q-url-param-list").append("=").append(qUrlParamList);
         }
         sign.append("&").append("q-signature").append("=").append(signature);
         return sign.toString();

@@ -16,6 +16,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug{
+            testCoverageEnabled false
+        }
+
     }
 }
 
@@ -26,9 +30,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.+'
     testCompile 'junit:junit:4.12'
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.alibaba:fastjson:latest.release'
-    compile 'org.slf4j:slf4j-android:1.6.1-RC1'
 
     compile ('com.thoughtworks.xstream:xstream:1.4.7') {
         exclude group: 'xmlpull', module: 'xmlpull'

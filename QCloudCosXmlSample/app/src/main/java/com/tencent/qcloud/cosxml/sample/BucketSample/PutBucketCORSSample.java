@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
@@ -13,7 +15,7 @@ import com.tencent.cos.xml.model.tag.CORSRule;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 import java.util.LinkedList;
 import java.util.List;
@@ -36,8 +38,25 @@ public class PutBucketCORSSample {
 
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        putBucketCORSRequest = new PutBucketCORSRequest();
-        putBucketCORSRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        putBucketCORSRequest = new PutBucketCORSRequest(bucket);
+        /**
+         * 实例化 PutBucketCORSRequest(bucketForObjectAPITest)
+         *
+         * CORSRule: 跨域访问配置信息
+         * CORSRule.id： 配置规则的 ID
+         * CORSRule.allowedOrigin: 允许的访问来源，支持通配符 * , 格式为：协议://域名[:端口]如：http://www.qq.com
+         * CORSRule.maxAgeSeconds: 设置 OPTIONS 请求得到结果的有效期
+         * CORSRule.allowedMethod: 允许的 HTTP 操作，如：GET，PUT，HEAD，POST，DELETE
+         * CORSRule.allowedHeader：在发送 OPTIONS 请求时告知服务端，接下来的请求可以使用哪些自定义的 HTTP 请求头部，支持通配符 *
+         * CORSRule.exposeHeader： 设置浏览器可以接收到的来自服务器端的自定义头部信息
+         */
+
+
         putBucketCORSRequest.setSign(600,null,null);
         CORSRule corsRule = new CORSRule();
         corsRule.id = "123";
@@ -61,19 +80,20 @@ public class PutBucketCORSSample {
         exposeHeaders.add("x-cos-metha-3");
         corsRule.exposeHeader = exposeHeaders;
 
-        putBucketCORSRequest.setCORSRuleList(corsRule);
+        putBucketCORSRequest.addCORSRule(corsRule);
         try {
             PutBucketCORSResult putBucketCORSResult =
                     qServiceCfg.cosXmlService.putBucketCORS(putBucketCORSRequest);
-            Log.w("XIAO",putBucketCORSResult.printHeaders());
-            if(putBucketCORSResult.getHttpCode() >= 300){
-                Log.w("XIAO",putBucketCORSResult.printError());
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = putBucketCORSResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        }catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -84,8 +104,13 @@ public class PutBucketCORSSample {
      *
      */
     public void startAsync(final Activity activity){
-        putBucketCORSRequest = new PutBucketCORSRequest();
-        putBucketCORSRequest.setBucket(qServiceCfg.userBucketName);
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        putBucketCORSRequest = new PutBucketCORSRequest(bucket);
+
         putBucketCORSRequest.setSign(600,null,null);
         CORSRule corsRule = new CORSRule();
         corsRule.id = "123";
@@ -109,7 +134,8 @@ public class PutBucketCORSSample {
         exposeHeaders.add("x-cos-metha-3");
         corsRule.exposeHeader = exposeHeaders;
 
-        putBucketCORSRequest.setCORSRuleList(corsRule);
+        putBucketCORSRequest.addCORSRule(corsRule);
+
         qServiceCfg.cosXmlService.putBucketCORSAsync(putBucketCORSRequest, new CosXmlResultListener() {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
@@ -121,10 +147,13 @@ public class PutBucketCORSSample {
             }
 
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

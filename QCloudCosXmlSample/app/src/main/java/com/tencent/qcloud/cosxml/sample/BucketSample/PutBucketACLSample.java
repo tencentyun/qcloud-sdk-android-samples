@@ -4,16 +4,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.bucket.PutBucketACLRequest;
 import com.tencent.cos.xml.model.bucket.PutBucketACLResult;
-import com.tencent.qcloud.cosxml.sample.R;
+
+import com.tencent.cos.xml.model.tag.ACLAccount;
+import com.tencent.cos.xml.model.tag.ACLAccounts;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +33,6 @@ import java.util.List;
 public class PutBucketACLSample {
     PutBucketACLRequest putBucketACLRequest;
     QServiceCfg qServiceCfg;
-    String idFormat = "uin/%s:uin/%s";
-    String subAccountId = "151453739";
 
     public PutBucketACLSample(QServiceCfg qServiceCfg){
         this.qServiceCfg = qServiceCfg;
@@ -39,30 +40,38 @@ public class PutBucketACLSample {
 
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        putBucketACLRequest = new PutBucketACLRequest();
-        putBucketACLRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        putBucketACLRequest = new PutBucketACLRequest(bucket);
+
         putBucketACLRequest.setXCOSACL("public-read");
-        List<String> readIdList = new ArrayList<>();
-        readIdList.add(String.format(idFormat, qServiceCfg.accountId, qServiceCfg.accountId));
-        readIdList.add(String.format(idFormat, qServiceCfg.accountId, subAccountId));
-        putBucketACLRequest.setXCOSGrantReadWithUIN(readIdList);
-        List<String> writeIdList = new ArrayList<>();
-        writeIdList.add(String.format(idFormat, qServiceCfg.accountId, qServiceCfg.accountId));
-        writeIdList.add(String.format(idFormat, qServiceCfg.accountId, subAccountId));
-        putBucketACLRequest.setXCOSGrantWriteWithUIN(writeIdList);
+        ACLAccounts readAccounts = new ACLAccounts();
+        readAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        putBucketACLRequest.setXCOSGrantRead(readAccounts);
+
+        ACLAccounts writeAccounts = new ACLAccounts();
+        writeAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        putBucketACLRequest.setXCOSGrantWrite(writeAccounts);
+
+
         putBucketACLRequest.setSign(600,null,null);
         try {
             PutBucketACLResult putBucketACLResult =
                      qServiceCfg.cosXmlService.putBucketACL(putBucketACLRequest);
-            Log.w("XIAO",putBucketACLResult.printHeaders());
-            if(putBucketACLResult.getHttpCode() >= 300){
-                Log.w("XIAO",putBucketACLResult.printError());
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = putBucketACLResult;
+            qServiceCfg.setBucketForBucketAPITest(bucket);
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -73,17 +82,22 @@ public class PutBucketACLSample {
      *
      */
     public void startAsync(final Activity activity){
-        putBucketACLRequest = new PutBucketACLRequest();
-        putBucketACLRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        putBucketACLRequest = new PutBucketACLRequest(bucket);
         putBucketACLRequest.setXCOSACL("public-read");
-        List<String> readIdList = new ArrayList<>();
-        readIdList.add(String.format(idFormat, qServiceCfg.accountId, qServiceCfg.accountId));
-        readIdList.add(String.format(idFormat, qServiceCfg.accountId, subAccountId));
-        putBucketACLRequest.setXCOSGrantReadWithUIN(readIdList);
-        List<String> writeIdList = new ArrayList<>();
-        writeIdList.add(String.format(idFormat, qServiceCfg.accountId, qServiceCfg.accountId));
-        writeIdList.add(String.format(idFormat, qServiceCfg.accountId, subAccountId));
-        putBucketACLRequest.setXCOSGrantWriteWithUIN(writeIdList);
+        ACLAccounts readAccounts = new ACLAccounts();
+        readAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        putBucketACLRequest.setXCOSGrantRead(readAccounts);
+
+        ACLAccounts writeAccounts = new ACLAccounts();
+        writeAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        putBucketACLRequest.setXCOSGrantWrite(writeAccounts);
+
+        putBucketACLRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.putBucketACLAsync(putBucketACLRequest, new CosXmlResultListener() {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
@@ -93,13 +107,14 @@ public class PutBucketACLSample {
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }
-
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(activity.getString(R.string.acl_warning))
-                        .append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

@@ -1,18 +1,17 @@
 package com.tencent.qcloud.cosxml.sample.ObjectSample;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.object.ListPartsRequest;
 import com.tencent.cos.xml.model.object.ListPartsResult;
-import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 /**
  * Created by bradyxiao on 2017/6/1.
@@ -31,25 +30,26 @@ public class ListPartsSample {
 
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        listPartsRequest = new ListPartsRequest();
-        listPartsRequest.setBucket(qServiceCfg.bucket);
-        listPartsRequest.setCosPath(qServiceCfg.getMultiUploadCosPath());
-        listPartsRequest.setUploadId(qServiceCfg.getCurrentUploadId());
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getMultiUploadCosPath();
+        String uploadId = qServiceCfg.getCurrentUploadId();
+
+        listPartsRequest = new ListPartsRequest(bucket, cosPath,
+                uploadId);
         listPartsRequest.setSign(600,null,null);
         try {
             ListPartsResult listPartsResult =
                     qServiceCfg.cosXmlService.listParts(listPartsRequest);
-            Log.w("XIAO",listPartsResult.printHeaders());
-            if(listPartsResult.getHttpCode() >= 300){
-                Log.w("XIAO",listPartsResult.printError());
-            }else {
-                Log.w("XIAO",listPartsResult.printBody());
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = listPartsResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -59,11 +59,13 @@ public class ListPartsSample {
      * 采用异步回调操作
      *
      */
-    public void startAsync(final Activity activity){
-        listPartsRequest = new ListPartsRequest();
-        listPartsRequest.setBucket(qServiceCfg.bucket);
-        listPartsRequest.setCosPath(qServiceCfg.getMultiUploadCosPath());
-        listPartsRequest.setUploadId(qServiceCfg.getCurrentUploadId());
+    public void startAsync(){
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getMultiUploadCosPath();
+        String uploadId = qServiceCfg.getCurrentUploadId();
+
+        listPartsRequest = new ListPartsRequest(bucket, cosPath,
+                uploadId);
         listPartsRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.listPartsAsync(listPartsRequest, new CosXmlResultListener() {
             @Override
@@ -72,24 +74,21 @@ public class ListPartsSample {
                 stringBuilder.append(cosXmlResult.printHeaders())
                         .append(cosXmlResult.printBody());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
-                show(activity, stringBuilder.toString());
             }
 
+
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
-                show(activity, stringBuilder.toString());
             }
         });
     }
 
-    private void show(Activity activity, String message){
-        Intent intent = new Intent(activity, ResultActivity.class);
-        intent.putExtra("RESULT", message);
-        activity.startActivity(intent);
-    }
 
 }

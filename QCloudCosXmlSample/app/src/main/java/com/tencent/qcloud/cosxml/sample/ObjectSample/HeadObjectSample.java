@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
@@ -12,7 +14,6 @@ import com.tencent.cos.xml.model.object.HeadObjectResult;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
 
 
 
@@ -30,24 +31,26 @@ public class HeadObjectSample {
     }
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        headObjectRequest = new HeadObjectRequest();
-        headObjectRequest.setBucket(qServiceCfg.bucket);
-        headObjectRequest.setCosPath(qServiceCfg.sampleCosPath);
-       // headObjectRequest.setIfModifiedSince("");
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getUploadCosPath();
+
+
+        headObjectRequest = new HeadObjectRequest(bucket, cosPath);
         headObjectRequest.setSign(600,null,null);
 
         try {
             HeadObjectResult headObjectResult =
                    qServiceCfg.cosXmlService.headObject(headObjectRequest);
-            Log.w("XIAO","headers :\n " + headObjectResult.printHeaders());
-            if(headObjectResult.getHttpCode() >= 300){
-                Log.w("XIAO","error :\n " +headObjectResult.printError());
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = headObjectResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        }catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -58,9 +61,11 @@ public class HeadObjectSample {
      *
      */
     public void startAsync(final Activity activity){
-        headObjectRequest = new HeadObjectRequest();
-        headObjectRequest.setBucket(qServiceCfg.bucket);
-        headObjectRequest.setCosPath(qServiceCfg.sampleCosPath);
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getUploadCosPath();
+
+
+        headObjectRequest = new HeadObjectRequest(bucket, cosPath);
         // headObjectRequest.setIfModifiedSince("");
         headObjectRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.headObjectAsync(headObjectRequest, new CosXmlResultListener() {
@@ -73,11 +78,15 @@ public class HeadObjectSample {
                 show(activity, stringBuilder.toString());
             }
 
+
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

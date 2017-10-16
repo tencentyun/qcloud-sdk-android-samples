@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
@@ -13,12 +15,11 @@ import com.tencent.cos.xml.model.object.AppendObjectRequest;
 import com.tencent.cos.xml.model.object.AppendObjectResult;
 import com.tencent.cos.xml.model.object.HeadObjectRequest;
 import com.tencent.cos.xml.model.object.HeadObjectResult;
+import com.tencent.qcloud.core.network.QCloudProgressListener;
 import com.tencent.qcloud.cosxml.sample.ProgressActivity;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.QCloudProgressListener;
-import com.tencent.qcloud.network.exception.QCloudException;
 
 import java.util.List;
 
@@ -36,20 +37,18 @@ import java.util.List;
 public class AppendObjectSample {
     AppendObjectRequest appendObjectRequest;
     QServiceCfg qServiceCfg;
-    Handler handler;
-    public AppendObjectSample(QServiceCfg qServiceCfg, Handler handler){
+    public AppendObjectSample(QServiceCfg qServiceCfg){
         this.qServiceCfg = qServiceCfg;
-        this.handler = handler;
     }
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        appendObjectRequest = new AppendObjectRequest();
-        appendObjectRequest.setBucket(qServiceCfg.bucket);
-        appendObjectRequest.setCosPath(qServiceCfg.getAppendCosPath());
-        appendObjectRequest.setPosition(0);
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getAppendCosPath();
+        String srcPath = qServiceCfg.getAppendUploadFileUrl();
+        long position = hasAlreadyExist(bucket, cosPath);
+        appendObjectRequest = new AppendObjectRequest(bucket, cosPath,
+                srcPath, position);
         appendObjectRequest.setSign(600,null,null);
-        appendObjectRequest.setSrcPath(qServiceCfg.getAppendFileUrl());
-        //appendObjectRequest.setData(new String("this is a append object test by data").getBytes());
         appendObjectRequest.setProgressListener(new QCloudProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
@@ -60,69 +59,78 @@ public class AppendObjectSample {
             AppendObjectResult appendObjectResult =
                    qServiceCfg.cosXmlService.appendObject(appendObjectRequest);
             resultHelper.cosXmlResult = appendObjectResult;
-            Log.w("XIAO",appendObjectResult.printHeaders());
-            if(appendObjectResult.getHttpCode() >= 300){
-                Log.w("XIAO",appendObjectResult.printError());
-            }
+            Log.w("XIAO","success");
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        }  catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
 
-    /**
-     *
-     * 采用异步回调操作
-     *
-     */
-    public void startAsync(final Activity activity){
-        HeadObjectRequest headObjectRequest = new HeadObjectRequest();
-        headObjectRequest.setCosPath(qServiceCfg.getAppendCosPath());
-        headObjectRequest.setBucket(qServiceCfg.bucket);
+    /** 获取已上传的部分长度： Head Object API */
+    private long hasAlreadyExist(String bucket, String cosPath){
+        long appendLength = 0L;
+        HeadObjectRequest headObjectRequest = new HeadObjectRequest(bucket, cosPath);
+        headObjectRequest.setSign(600,null,null);
+        headObjectRequest = new HeadObjectRequest(bucket, cosPath);
+        headObjectRequest.setSign(600,null,null);
+        try {
+            HeadObjectResult headObjectResult =
+                    qServiceCfg.cosXmlService.headObject(headObjectRequest);
+            List<String> resultHeader = headObjectResult.getHeaders().get("Content-Length");
+            if(resultHeader != null && resultHeader.size() > 0){
+                appendLength = Long.parseLong(resultHeader.get(0));
+            }
+        } catch (CosXmlClientException e) {
+
+        } catch (CosXmlServiceException e) {
+        }
+        return appendLength;
+    }
+
+    public void startAsync(final Activity activity) {
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getAppendCosPath();
+        String srcPath = qServiceCfg.getAppendUploadFileUrl();
+        hasAlreadyExist(activity, bucket, cosPath, srcPath);
+    }
+
+    private void hasAlreadyExist(final Activity activity, final String bucket, final String cosPath, final String srcPath){
+
+        HeadObjectRequest headObjectRequest = new HeadObjectRequest(bucket, cosPath);
+        // headObjectRequest.setIfModifiedSince("");
         headObjectRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.headObjectAsync(headObjectRequest, new CosXmlResultListener() {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+                long appendLength = 0L;
                 List<String> resultHeader = cosXmlResult.getHeaders().get("Content-Length");
-                if(resultHeader != null && resultHeader.size() > 0) {
-                    long contentLength = Long.parseLong(resultHeader.get(0));
-                    append(activity, contentLength);
-                } else {
-                    show(activity, "获取文件长度失败");
+                if(resultHeader != null && resultHeader.size() > 0){
+                    appendLength = Long.parseLong(resultHeader.get(0));
                 }
+                doAsync(activity, bucket, cosPath, srcPath, appendLength);
             }
 
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
-                Log.w("XIAO", "failed = " + stringBuilder.toString());
-                if (cosXmlResult.getHttpCode() == 404) {
-                    // 第一次上传
-                    append(activity, 0);
-                } else {
-                    show(activity, "获取文件长度失败\n\n" + stringBuilder.toString());
-                }
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
+                doAsync(activity, bucket, cosPath, srcPath, 0L);
             }
         });
     }
 
-    private void append(final Activity activity, long contentLength) {
-        appendObjectRequest = new AppendObjectRequest();
-        appendObjectRequest.setBucket(qServiceCfg.bucket);
-        appendObjectRequest.setCosPath(qServiceCfg.getAppendCosPath());
-        appendObjectRequest.setPosition(contentLength);
+    private void doAsync(final Activity activity, String bucket, String cosPath, String srcPath, long appendLength){
+        appendObjectRequest = new AppendObjectRequest(bucket, cosPath,
+                srcPath, appendLength);
         appendObjectRequest.setSign(600,null,null);
-        appendObjectRequest.setSrcPath(qServiceCfg.getAppendFileUrl());
-        //appendObjectRequest.setData(new String("this is a append object test by data").getBytes());
         appendObjectRequest.setProgressListener(new QCloudProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 Log.w("XIAO","progress =" + progress * 1.0/max);
-                handler.obtainMessage(0, (int) ((100.00 * progress / max))).sendToTarget();
             }
         });
         qServiceCfg.cosXmlService.appendObjectAsync(appendObjectRequest, new CosXmlResultListener() {
@@ -132,15 +140,17 @@ public class AppendObjectSample {
                 stringBuilder.append(cosXmlResult.printHeaders())
                         .append(cosXmlResult.printBody());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
-                handler.sendEmptyMessage(1);
                 show(activity, stringBuilder.toString());
             }
 
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

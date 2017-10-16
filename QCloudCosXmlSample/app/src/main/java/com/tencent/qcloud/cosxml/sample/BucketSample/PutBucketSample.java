@@ -4,15 +4,20 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.common.COSACL;
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.bucket.PutBucketRequest;
 import com.tencent.cos.xml.model.bucket.PutBucketResult;
+import com.tencent.cos.xml.model.tag.ACLAccount;
+import com.tencent.cos.xml.model.tag.ACLAccounts;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 /**
  * Created by bradyxiao on 2017/6/1.
@@ -32,25 +37,47 @@ public class PutBucketSample {
     }
 
     public ResultHelper start(){
-        Log.d("TAG", "put bucket sample start");
         ResultHelper resultHelper = new ResultHelper();
-        putBucketRequest = new PutBucketRequest();
-        putBucketRequest.setBucket(qServiceCfg.userBucketName);
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            bucket = "buckettest";
+        }else{
+            qServiceCfg.toastShow("同名的 bucket 已存在，可以先删除再创建");
+        }
+
+        putBucketRequest = new PutBucketRequest(bucket);
+
+        putBucketRequest.setXCOSACL(COSACL.PRIVATE);
+        ACLAccounts aclAccounts = new ACLAccounts();
+        ACLAccount aclAccount = new ACLAccount("1278687956", "1278687956");
+        aclAccounts.addACLAccount(aclAccount);
+        putBucketRequest.setXCOSGrantRead(aclAccounts);
+
+        ACLAccounts aclAccounts2 = new ACLAccounts();
+        ACLAccount aclAccount2 = new ACLAccount("1278687956", "1278687956");
+        aclAccounts2.addACLAccount(aclAccount2);
+        putBucketRequest.setXCOSGrantWrite(aclAccounts2);
+
+        ACLAccounts aclAccounts3 = new ACLAccounts();
+        ACLAccount aclAccount3 = new ACLAccount("1278687956", "1278687956");
+        aclAccounts3.addACLAccount(aclAccount3);
+        putBucketRequest.setXCOSReadWrite(aclAccounts3);
+
         putBucketRequest.setSign(600,null,null);
         try {
             PutBucketResult putBucketResult =
                    qServiceCfg.cosXmlService.putBucket(putBucketRequest);
-            Log.w("XIAO",putBucketResult.printHeaders());
-            if(putBucketResult.getHttpCode() >= 300){
-                Log.w("XIAO",putBucketResult.printError());
-            } else {
-                qServiceCfg.setUserBucket(qServiceCfg.userBucketName);
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = putBucketResult;
+            qServiceCfg.setBucketForBucketAPITest(bucket);
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -61,8 +88,16 @@ public class PutBucketSample {
      *
      */
     public void startAsync(final Activity activity){
-        putBucketRequest = new PutBucketRequest();
-        putBucketRequest.setBucket(qServiceCfg.userBucketName);
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            bucket = "buckettest";
+        }else{
+            qServiceCfg.toastShow("同名的 bucket 已存在，可以先删除再创建");
+        }
+        final String finalBucket = bucket;
+
+        putBucketRequest = new PutBucketRequest(bucket);
+
         putBucketRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.putBucketAsync(putBucketRequest, new CosXmlResultListener() {
             @Override
@@ -71,20 +106,18 @@ public class PutBucketSample {
                 stringBuilder.append(cosXmlResult.printHeaders())
                         .append(cosXmlResult.printBody());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
-                qServiceCfg.setUserBucket(qServiceCfg.userBucketName);
+                qServiceCfg.setBucketForBucketAPITest(finalBucket);
                 show(activity, stringBuilder.toString());
             }
-
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
-                Log.w("XIAO", "failed = " + stringBuilder.toString());
-                if(cosXmlResult.getHttpCode() == 409){
-                    // bucket已存在
-                    qServiceCfg.setUserBucket(qServiceCfg.userBucketName);
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
                 }
+                Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }
         });

@@ -1,16 +1,22 @@
 package com.tencent.qcloud.cosxml.sample.common;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import com.tencent.cos.xml.CosXmlService;
 import com.tencent.cos.xml.CosXmlServiceConfig;
-import com.tencent.qcloud.network.auth.BasicCredentialProvider;
-import com.tencent.qcloud.network.auth.BasicLocalCredentialProvider;
-import com.tencent.qcloud.network.auth.SampleSessionCredentialProvider;
+import com.tencent.cos.xml.common.Region;
+import com.tencent.qcloud.core.network.auth.LocalCredentialProvider;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -18,107 +24,150 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * author bradyxiao
  */
 public class QServiceCfg {
-    private final String appid = "xxx";
-    private final String secretId = "xxx";
-    private final String secretKey = "xxx";
-    public final String accountId = "xxx";
-    public final String region = "cn-south";
 
-    // demo演示用的bucket，用于object的操作
-    public final String bucket = "androidsample";
+    /** 腾讯云 cos 服务的 appid */
+    private final String appid = "1253653367";
 
-    // demo演示用的sample文件
-    public final String sampleCosPath = "/sample.txt";
-    // demo演示用的大文件
-    public final String bigfileCosPath = "/bigfile";
-    // demo演示用的上传文件内容
-    private final String uploadContent = "这是我上传的文件内容";
+    /** appid 对应的 秘钥 */
+    private final String secretId = "AKIDPiqmW3qcgXVSKN8jngPzRhvxzYyDL5qP";
 
-    // 上传文件的远程cos唯一地址
-    public final String uploadCosPath;
-    // 分片上传的远程cos唯一地址
-    public final String multiUploadCosPath;
-    // append文件的远程cos唯一地址
-    private final String appendCosPath;
-    // demo演示用的bucket，用于bucket的操作
-    public final String userBucketName;
+    /** appid 对应的 秘钥 */
+    private final String secretKey = "EH8oHoLgpmJmBQUM1Uoywjmv7EFzd5OJ";
 
-    // 本地下载文件和缓存文件路径
-    public final String downloadDir;
-    // 本地上传文件地址
-    private final String uploadFileUrl;
-    // 本地分片上传的大文件地址
-    private final String multiUploadFileUrl;
+    /** bucketForObjectAPITest 所处在的地域 */
+    private String region = Region.AP_Shanghai.getRegion();
 
+
+    /**
+     * bucketForObjectAPITest api 操作测试
+     *
+     * bucketForBucketAPITest : 用于测试 bucket API 的 bucket
+     *
+     */
+    private String bucketForBucketAPITest;
+
+    /**
+     * Object api 操作测试
+     *
+     * bucketForObjectAPITest: 用于测试object API 的 bucket
+     * cosPath: 将文件上传到 cos 上的远端绝对路径，格式为： /dirName/fileName
+     */
+    private String bucketForObjectAPITest;
+
+    /** 用于 put 上传文件的 cosPath: 小文件上传 */
+    private String uploadCosPath;
+
+    /** 用于 分片上传文件的 cosPath：大文件分片上传 */
+    private String multiUploadCosPath;
+
+    /** 用于 append 上传文件的 cosPath：追加形式上传文件 */
+    private String appendCosPath;
+
+    /** 用于 下载文件的 cosPath：cos 上文件的位置 */
+    private String getCosPath;
+
+   /** 下载文件到本地的路径*/
+   private String downloadDir;
+
+    /** 本地文件的路径: 小文件*/
+    private String uploadFileUrl;
+
+    /** 本地文件的路径: 追加文件*/
+    private String appendUploadFileUrl;
+
+    /** 本地文件的路径: 大文件*/
+    private String multiUploadFileUrl;
+
+    /** 用于分片上传中 保留的 分片号 和对应的 eTag */
+    private Map<Integer, String> partNumberAndEtag;
+
+
+
+    /**
+     *  xml sdk 服务类: 通过 CosXmlService 调用各种API服务
+     */
     public CosXmlService cosXmlService;
 
-    // demo使用的一个设备唯一标识
-    private final int identity;
 
-    private static QServiceCfg instance;
+    private final int identity;
+    private static volatile QServiceCfg instance;
+    private Context context;
 
     public static QServiceCfg instance(Context context) {
         if (instance == null) {
-            instance = new QServiceCfg(context);
+            synchronized (QServiceCfg.class) {
+                if (instance == null) {
+                    instance = new QServiceCfg(context);
+                }
+            }
         }
 
         return instance;
     }
 
     private QServiceCfg(Context context){
-        CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig(appid,region);
-        cosXmlServiceConfig.setSocketTimeout(450000);
+        this.context = context;
+
+        /** 初始化服务配置 CosXmlServiceConfig */
+        CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
+                .setAppidAndRegion(appid, region)
+                .setDebuggable(true)
+                .setConnectionTimeout(45000)
+                .setSocketTimeout(30000)
+                .build();
 
         /**
+         * 设置密钥获取方式,此处使用 LocalCredentialProvider类提供的方法
+         *
          * 可以使用以下两种密钥策略：
          *
-         * 1. 通过 CAM 获取带token的临时会话密钥  {@link SampleSessionCredentialProvider}
-         * 2. 用永久密钥和一个有效期生成的临时密钥 {@link BasicLocalCredentialProvider}
+         * 1. 通过 CAM 获取带token的临时会话密钥  {@link com.tencent.qcloud.core.network.auth.LocalSessionCredentialProvider}
+         * 2. 用永久密钥和一个有效期生成的临时密钥 {@link com.tencent.qcloud.core.network.auth.LocalCredentialProvider}
          *
          * 此处只是示例，出于安全考虑客户端不应该缓存 secretKey，生成密钥的过程建议放到server端
          *
          */
-        BasicCredentialProvider credentialProvider =
-//                new SampleSessionCredentialProvider(secretId, secretKey, appid);
-                new BasicLocalCredentialProvider(secretId,secretKey,600);
 
-        cosXmlService = new CosXmlService(context,cosXmlServiceConfig, credentialProvider);
+        /** 初始化服务类 CosXmlService */
+        cosXmlService = new CosXmlService(context,cosXmlServiceConfig,
+                new LocalCredentialProvider(secretId,secretKey,600));
 
+
+        /**
+         * 初始化参数值
+         */
         identity = Identifier.getIdentifier(context);
 
-        userBucketName = String.format("xmlbucket%d", identity);
+        bucketForObjectAPITest = "objecttest";
 
         uploadCosPath = String.format("/upload_%d.txt", identity);
         multiUploadCosPath = String.format("/bigfile_%d", identity);
         appendCosPath = String.format("/append_%d", identity);
+        getCosPath = uploadCosPath;
 
-        uploadFileUrl = context.getExternalCacheDir() + File.separator + "upload.txt";
-        multiUploadFileUrl = context.getExternalCacheDir() + File.separator + "bigfile";
-        downloadDir = context.getExternalCacheDir().getPath();
+        uploadFileUrl = context.getExternalCacheDir().getPath() + File.separator + "upload.txt";
+        multiUploadFileUrl = context.getExternalCacheDir().getPath() + File.separator + "bigfile.txt";
+        appendUploadFileUrl = context.getExternalCacheDir().getPath() + File.separator + "append.txt";
+        downloadDir = context.getExternalCacheDir().getPath() +  File.separator + "download";
+
+        partNumberAndEtag = new LinkedHashMap<Integer, String>();
     }
 
-    public String getUserBucket() {
-        return Identifier.getUserBucket();
+    public String getBucketForBucketAPITest() {
+        bucketForBucketAPITest = Identifier.getUserBucket();
+        return bucketForBucketAPITest;
     }
 
-    public void setUserBucket(String userBucket) {
-        Identifier.setUserBucket(userBucket);
+    public void setBucketForBucketAPITest(String bucketForBucketAPITest) {
+        Identifier.setUserBucket(bucketForBucketAPITest);
     }
 
-    public String getUserObject() {
-        return Identifier.getUserObject();
+    public String getBucketForObjectAPITest() {
+        return bucketForObjectAPITest;
     }
 
-    public void setUserObject(String userObject) {
-        Identifier.setUserObject(userObject);
-    }
-
-    public void setCurrentUploadId(String currentUploadId) {
-        Identifier.setUploadId(currentUploadId);
-    }
-
-    public String getCurrentUploadId() {
-        return Identifier.getUploadId();
+    public String getUploadCosPath() {
+        return uploadCosPath;
     }
 
     public String getMultiUploadCosPath() {
@@ -129,57 +178,86 @@ public class QServiceCfg {
         return appendCosPath;
     }
 
-    public String getMultiUploadFileUrl() {
-        return multiUploadFileUrl;
-    }
-
-    public boolean hasMultiUploadFile() {
-        return new File(multiUploadFileUrl).exists();
-    }
-
-    public String getAppendFileUrl() {
-        File sampleFile = new File(downloadDir + sampleCosPath);
-        return sampleFile.exists() ? sampleFile.toString() : null;
+    public String getGetCosPath() {
+        return getCosPath;
     }
 
     public String getUploadFileUrl() {
         if (!new File(uploadFileUrl).exists()) {
-            return writeLocalFile(uploadFileUrl, uploadContent);
+            return writeLocalFile(uploadFileUrl, "construct a file for put object api test");
         }
-
         return uploadFileUrl;
-    }
-
-    // 不允许多个上传任务
-    AtomicBoolean canUpload = new AtomicBoolean(true);
-    public void blockOtherUploadTask() {
-        canUpload.set(false);
-    }
-
-    public void releaseUploadBarrier() {
-        canUpload.set(true);
-    }
-
-    public boolean canUpload() {
-        return canUpload.get();
     }
 
     private String writeLocalFile(String localUrl, String content) {
         PrintWriter out = null;
         try {
-            out = new PrintWriter(localUrl);
+            out = new PrintWriter(localUrl, "UTF-8");
             out.println(content);
-
             return localUrl;
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } finally {
             if (out != null) {
                 out.close();
             }
         }
-
         return null;
+    }
+
+    public String getAppendUploadFileUrl() {
+        if (!new File(appendUploadFileUrl).exists()) {
+            return writeLocalFile(appendUploadFileUrl, 1024 * 1024 * 1);
+        }
+        return appendUploadFileUrl;
+    }
+
+
+
+    public void setCurrentUploadId(String currentUploadId) {
+        Identifier.setUploadId(currentUploadId);
+    }
+
+    public String getCurrentUploadId() {
+        return Identifier.getUploadId();
+    }
+
+    public String getMultiUploadFileUrl() {
+       return writeLocalFile(multiUploadFileUrl, 1024 * 1024 * 2);
+    }
+
+    /** construct a large file for multi upload file */
+    private String writeLocalFile(String fileName, long fileSize){
+        File file = new File(fileName);
+        if(!file.exists()){
+            try {
+                file.createNewFile();
+                RandomAccessFile randomAccessFile = new RandomAccessFile(file,"rw");
+                randomAccessFile.setLength(fileSize);
+                randomAccessFile.close();
+            } catch (IOException e) {
+               e.printStackTrace();
+            }
+        }
+        return fileName;
+    }
+
+    public String getDownloadDir() {
+        return downloadDir;
+    }
+
+    public void setPartNumberAndEtag(int partNumber, String eTag){
+        partNumberAndEtag.put(partNumber, eTag);
+    }
+
+    public Map<Integer, String> getPartNumberAndEtag() {
+        return partNumberAndEtag;
+    }
+
+    public void toastShow(String message){
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
 }

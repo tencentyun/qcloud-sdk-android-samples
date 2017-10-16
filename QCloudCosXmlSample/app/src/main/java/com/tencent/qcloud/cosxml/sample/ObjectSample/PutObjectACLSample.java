@@ -4,21 +4,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.object.PutObjectACLRequest;
 import com.tencent.cos.xml.model.object.PutObjectACLResult;
-import com.tencent.qcloud.cosxml.sample.R;
+import com.tencent.cos.xml.model.tag.ACLAccount;
+import com.tencent.cos.xml.model.tag.ACLAccounts;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by bradyxiao on 2017/6/1.
@@ -31,8 +28,7 @@ import java.util.Set;
 public class PutObjectACLSample {
     PutObjectACLRequest putObjectACLRequest;
     QServiceCfg qServiceCfg;
-    String idFormat = "uin/%s:uin/%s";
-    String subAccountId = "151453739";
+
 
     public PutObjectACLSample(QServiceCfg qServiceCfg){
         this.qServiceCfg = qServiceCfg;
@@ -40,35 +36,34 @@ public class PutObjectACLSample {
 
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        putObjectACLRequest = new PutObjectACLRequest();
-        putObjectACLRequest.setBucket(qServiceCfg.bucket);
-        putObjectACLRequest.setCosPath(qServiceCfg.uploadCosPath);
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getUploadCosPath();
+
+        putObjectACLRequest = new PutObjectACLRequest(bucket, cosPath);
+
         putObjectACLRequest.setXCOSACL("public-read");
-        List<String> readIdList = new ArrayList<>();
-        readIdList.add(String.format(idFormat, qServiceCfg.accountId, qServiceCfg.accountId));
-        readIdList.add(String.format(idFormat, qServiceCfg.accountId, subAccountId));
-        putObjectACLRequest.setXCOSGrantReadWithUIN(readIdList);
-        List<String> writeIdList = new ArrayList<>();
-        writeIdList.add(String.format(idFormat, qServiceCfg.accountId, qServiceCfg.accountId));
-        writeIdList.add(String.format(idFormat, qServiceCfg.accountId, subAccountId));
-        putObjectACLRequest.setXCOSGrantWriteWithUIN(writeIdList);
-        Set<String> header = new HashSet<>();
-        header.add("content-length");
-        header.add("content-type");
-        header.add("date");
+        ACLAccounts readAccounts = new ACLAccounts();
+        readAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        putObjectACLRequest.setXCOSGrantRead(readAccounts);
+
+        ACLAccounts writeAccounts = new ACLAccounts();
+        writeAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        putObjectACLRequest.setXCOSGrantWrite(writeAccounts);
+
         putObjectACLRequest.setSign(600,null,null);
         try {
             PutObjectACLResult putObjectACLResult =
                     qServiceCfg.cosXmlService.putObjectACL(putObjectACLRequest);
-            Log.w("XIAO",putObjectACLResult.printHeaders());
-            if(putObjectACLResult.getHttpCode() >= 300){
-                Log.w("XIAO",putObjectACLResult.printError());
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = putObjectACLResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -79,22 +74,20 @@ public class PutObjectACLSample {
      *
      */
     public void startAsync(final Activity activity){
-        putObjectACLRequest = new PutObjectACLRequest();
-        putObjectACLRequest.setBucket(qServiceCfg.bucket);
-        putObjectACLRequest.setCosPath(qServiceCfg.uploadCosPath);
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getUploadCosPath();
+
+        putObjectACLRequest = new PutObjectACLRequest(bucket, cosPath);
+
         putObjectACLRequest.setXCOSACL("public-read");
-        List<String> readIdList = new ArrayList<>();
-        readIdList.add(String.format(idFormat, qServiceCfg.accountId, qServiceCfg.accountId));
-        readIdList.add(String.format(idFormat, qServiceCfg.accountId, subAccountId));
-        putObjectACLRequest.setXCOSGrantReadWithUIN(readIdList);
-        List<String> writeIdList = new ArrayList<>();
-        writeIdList.add(String.format(idFormat, qServiceCfg.accountId, qServiceCfg.accountId));
-        writeIdList.add(String.format(idFormat, qServiceCfg.accountId, subAccountId));
-        putObjectACLRequest.setXCOSGrantWriteWithUIN(writeIdList);
-        Set<String> header = new HashSet<>();
-        header.add("content-length");
-        header.add("content-type");
-        header.add("date");
+        ACLAccounts readAccounts = new ACLAccounts();
+        readAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        putObjectACLRequest.setXCOSGrantRead(readAccounts);
+
+        ACLAccounts writeAccounts = new ACLAccounts();
+        writeAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        putObjectACLRequest.setXCOSGrantWrite(writeAccounts);
+
         putObjectACLRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.putObjectACLAsync(putObjectACLRequest, new CosXmlResultListener() {
             @Override
@@ -107,11 +100,13 @@ public class PutObjectACLSample {
             }
 
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(activity.getString(R.string.acl_warning))
-                        .append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

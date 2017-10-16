@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
@@ -13,7 +15,7 @@ import com.tencent.cos.xml.model.tag.Tag;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 /**
  * Created by bradyxiao on 2017/6/1.
@@ -29,29 +31,35 @@ public class PutBucketTaggingSample {
 
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        putBucketTaggingRequest = new PutBucketTaggingRequest();
-        putBucketTaggingRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        putBucketTaggingRequest = new PutBucketTaggingRequest(bucket);
+
         Tag tag = new Tag();
         tag.key = "1";
         tag.value = "value_1";
-        putBucketTaggingRequest.setTagList(tag);
+        putBucketTaggingRequest.addTag(tag);
         Tag tag2 = new Tag();
         tag2.key = "2";
         tag2.value = "value_2";
-        putBucketTaggingRequest.setTagList(tag2);
+        putBucketTaggingRequest.addTag(tag2);
         putBucketTaggingRequest.setSign(600,null,null);
         try {
             PutBucketTaggingResult putBucketTaggingResult =
                  qServiceCfg.cosXmlService.putBucketTagging(putBucketTaggingRequest);
-            Log.w("XIAO",putBucketTaggingResult.printHeaders());
-            if(putBucketTaggingResult.getHttpCode() >= 300){
-                Log.w("XIAO",putBucketTaggingResult.printError());
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = putBucketTaggingResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -62,16 +70,21 @@ public class PutBucketTaggingSample {
      *
      */
     public void startAsync(final Activity activity){
-        putBucketTaggingRequest = new PutBucketTaggingRequest();
-        putBucketTaggingRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        putBucketTaggingRequest = new PutBucketTaggingRequest(bucket);
+
         Tag tag = new Tag();
         tag.key = "1";
         tag.value = "value_1";
-        putBucketTaggingRequest.setTagList(tag);
+        putBucketTaggingRequest.addTag(tag);
         Tag tag2 = new Tag();
         tag2.key = "2";
         tag2.value = "value_2";
-        putBucketTaggingRequest.setTagList(tag2);
+        putBucketTaggingRequest.addTag(tag2);
         putBucketTaggingRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.putBucketTaggingAsync(putBucketTaggingRequest, new CosXmlResultListener() {
             @Override
@@ -84,10 +97,13 @@ public class PutBucketTaggingSample {
             }
 
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

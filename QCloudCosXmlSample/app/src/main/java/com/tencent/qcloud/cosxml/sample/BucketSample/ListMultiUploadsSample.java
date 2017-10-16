@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
@@ -12,7 +14,6 @@ import com.tencent.cos.xml.model.bucket.ListMultiUploadsResult;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
 
 /**
  * Created by bradyxiao on 2017/6/1.
@@ -31,23 +32,26 @@ public class ListMultiUploadsSample {
 
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        listMultiUploadsRequest = new ListMultiUploadsRequest();
-        listMultiUploadsRequest.setBucket(qServiceCfg.bucket);
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        listMultiUploadsRequest = new ListMultiUploadsRequest(bucket);
         listMultiUploadsRequest.setSign(600,null,null);
         try {
             ListMultiUploadsResult listMultiUploadsResult =
                      qServiceCfg.cosXmlService.listMultiUploads(listMultiUploadsRequest);
-            Log.w("XIAO",listMultiUploadsResult.printHeaders());
-            if(listMultiUploadsResult.getHttpCode() >= 300){
-                Log.w("XIAO",listMultiUploadsResult.printError());
-            }else{
-                Log.w("XIAO","" + listMultiUploadsResult.printBody());
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = listMultiUploadsResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        }catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -58,8 +62,12 @@ public class ListMultiUploadsSample {
      *
      */
     public void startAsync(final Activity activity){
-        listMultiUploadsRequest = new ListMultiUploadsRequest();
-        listMultiUploadsRequest.setBucket(qServiceCfg.bucket);
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        listMultiUploadsRequest = new ListMultiUploadsRequest(bucket);
         listMultiUploadsRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.listMultiUploadsAsync(listMultiUploadsRequest, new CosXmlResultListener() {
             @Override
@@ -70,12 +78,14 @@ public class ListMultiUploadsSample {
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }
-
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

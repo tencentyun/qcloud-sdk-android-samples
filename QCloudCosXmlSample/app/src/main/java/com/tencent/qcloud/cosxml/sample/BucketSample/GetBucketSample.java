@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
@@ -12,7 +14,7 @@ import com.tencent.cos.xml.model.bucket.GetBucketResult;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 /**
  * Created by bradyxiao on 2017/6/1.
@@ -36,23 +38,32 @@ public class GetBucketSample {
      */
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        getBucketRequest = new GetBucketRequest();
-        getBucketRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        getBucketRequest = new GetBucketRequest(bucket);
         getBucketRequest.setMaxKeys(2);
         getBucketRequest.setSign(600,null,null);
+
+        getBucketRequest.setPrefix("prefix");
+        getBucketRequest.setMaxKeys(100);
+        getBucketRequest.setEncodingType("url");
+        getBucketRequest.setDelimiter('c');
         try {
             GetBucketResult getBucketResult =
                      qServiceCfg.cosXmlService.getBucket(getBucketRequest);
-            Log.w("XIAO",getBucketResult.printHeaders());
-            Log.w("XIAO","etag =" + getBucketResult.getETag());
-            if(getBucketResult.getHttpCode() >= 300){
-                Log.w("XIAO",getBucketResult.printError());
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = getBucketResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -63,8 +74,12 @@ public class GetBucketSample {
      *
      */
     public void startAsync(final Activity activity) {
-        getBucketRequest = new GetBucketRequest();
-        getBucketRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        getBucketRequest = new GetBucketRequest(bucket);
         getBucketRequest.setMaxKeys(2);
         getBucketRequest.setSign(600, null, null);
         qServiceCfg.cosXmlService.getBucketAsync(getBucketRequest, new CosXmlResultListener() {
@@ -76,12 +91,14 @@ public class GetBucketSample {
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }
-
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

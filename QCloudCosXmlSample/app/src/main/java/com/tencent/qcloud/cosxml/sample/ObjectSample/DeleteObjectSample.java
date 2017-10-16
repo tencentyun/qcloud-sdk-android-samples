@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
@@ -12,7 +14,7 @@ import com.tencent.cos.xml.model.object.DeleteObjectResult;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 /**
  * Created by bradyxiao on 2017/5/31.
@@ -29,24 +31,24 @@ public class DeleteObjectSample {
     }
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        deleteObjectRequest = new DeleteObjectRequest();
-        deleteObjectRequest.setBucket(qServiceCfg.bucket);
-        deleteObjectRequest.setCosPath(qServiceCfg.uploadCosPath);
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getUploadCosPath();
+
+        deleteObjectRequest = new DeleteObjectRequest(bucket, cosPath);
         deleteObjectRequest.setSign(600,null,null);
         try {
             DeleteObjectResult deleteObjectResult =
                     qServiceCfg.cosXmlService.deleteObject(deleteObjectRequest);
-            Log.w("XIAO",deleteObjectResult.printHeaders());
-            if(deleteObjectResult.getHttpCode() >= 300){
-                Log.w("XIAO",deleteObjectResult.printError());
-            } else {
-                qServiceCfg.setUserObject(null);
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = deleteObjectResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -57,9 +59,10 @@ public class DeleteObjectSample {
      *
      */
     public void startAsync(final Activity activity){
-        deleteObjectRequest = new DeleteObjectRequest();
-        deleteObjectRequest.setBucket(qServiceCfg.bucket);
-        deleteObjectRequest.setCosPath(qServiceCfg.uploadCosPath);
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getUploadCosPath();
+
+        deleteObjectRequest = new DeleteObjectRequest(bucket, cosPath);
         deleteObjectRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.deleteObjectAsync(deleteObjectRequest, new CosXmlResultListener() {
             @Override
@@ -68,15 +71,18 @@ public class DeleteObjectSample {
                 stringBuilder.append(cosXmlResult.printHeaders())
                         .append(cosXmlResult.printBody());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
-                qServiceCfg.setUserObject(null);
                 show(activity, stringBuilder.toString());
             }
 
+
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

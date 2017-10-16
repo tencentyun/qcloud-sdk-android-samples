@@ -24,7 +24,7 @@ public class Identifier {
         }
 
         String identity = Build.DEVICE + Build.BRAND + Build.SERIAL + Build.FINGERPRINT;
-        int code = Math.abs(identity.hashCode());
+        int code = Math.abs(identity.hashCode() & 0xFFFFF);
 
         sharedPreferences.edit().putInt(key, code).apply();
 
@@ -38,14 +38,6 @@ public class Identifier {
 
     public static void setUserBucket(String userBucket) {
         sharedPreferences.edit().putString("userBucket", userBucket).apply();
-    }
-
-    public static String getUserObject() {
-        return sharedPreferences.getString("userObject", null);
-    }
-
-    public static void setUserObject(String userObject) {
-        sharedPreferences.edit().putString("userObject", userObject).apply();
     }
 
     public static String getUploadId() {

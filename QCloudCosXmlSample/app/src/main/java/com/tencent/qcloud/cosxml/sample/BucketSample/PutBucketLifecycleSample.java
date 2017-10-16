@@ -4,18 +4,21 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.common.COSStorageClass;
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.bucket.PutBucketLifecycleRequest;
 import com.tencent.cos.xml.model.bucket.PutBucketLifecycleResult;
-import com.tencent.cos.xml.model.tag.AbortIncompleteMultiUpload;
-import com.tencent.cos.xml.model.tag.Expiration;
+import com.tencent.cos.xml.model.tag.Filter;
 import com.tencent.cos.xml.model.tag.Rule;
+import com.tencent.cos.xml.model.tag.Transition;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 /**
  * Created by bradyxiao on 2017/6/2.
@@ -23,10 +26,10 @@ import com.tencent.qcloud.network.exception.QCloudException;
  *
  * Put Bucket Lifecycle 用于为 Bucket 创建一个新的生命周期配置。如果该 Bucket 已配置生命周期，使用该接口创建新的配置的同时则会覆盖原有的配置。
  *
- * 不建议使用
+ *
  *
  */
-@Deprecated
+
 public class PutBucketLifecycleSample {
     PutBucketLifecycleRequest putBucketLifecycleRequest;
     QServiceCfg qServiceCfg;
@@ -37,38 +40,39 @@ public class PutBucketLifecycleSample {
 
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        putBucketLifecycleRequest = new PutBucketLifecycleRequest();
-        putBucketLifecycleRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        putBucketLifecycleRequest = new PutBucketLifecycleRequest(bucket);
 
         Rule rule = new Rule();
         rule.id = "lifeID";
+        Filter filter = new Filter();
+        filter.prefix = "2/";
+        rule.filter = filter;
         rule.status = "Enabled";
-        //配置未完成分块上传的定期删除规则
-        rule.abortIncompleteMultiUpload = new AbortIncompleteMultiUpload();
-        rule.abortIncompleteMultiUpload.daysAfterInitiation = "1";
+        Transition transition = new Transition();
+        transition.days = 100;
+        transition.storageClass = COSStorageClass.NEARLINE.getStorageClass();
+        rule.transition = transition;
         putBucketLifecycleRequest.setRuleList(rule);
-
-//        Rule rule2 = new Rule();
-//        rule2.id = "lifeID2";
-//        rule2.status = "Enabled";
-//        //配置文件的定期删除规则
-//        rule2.expiration = new Expiration();
-//        rule2.expiration.days = "1";
-//        putBucketLifecycleRequest.setRuleList(rule2);
 
         putBucketLifecycleRequest.setSign(600,null,null);
         try {
             PutBucketLifecycleResult putBucketLifecycleResult =
                     qServiceCfg.cosXmlService.putBucketLifecycle(putBucketLifecycleRequest);
-            Log.w("XIAO",putBucketLifecycleResult.printHeaders());
-            if(putBucketLifecycleResult.getHttpCode() >= 300){
-                Log.w("XIAO",putBucketLifecycleResult.printError());
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = putBucketLifecycleResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        }catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -79,16 +83,26 @@ public class PutBucketLifecycleSample {
      *
      */
     public void startAsync(final Activity activity){
-        putBucketLifecycleRequest = new PutBucketLifecycleRequest();
-        putBucketLifecycleRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        putBucketLifecycleRequest = new PutBucketLifecycleRequest(bucket);
 
         Rule rule = new Rule();
         rule.id = "lifeID";
+        Filter filter = new Filter();
+        filter.prefix = "2/";
+        rule.filter = filter;
         rule.status = "Enabled";
-        //配置未完成分块上传的定期删除规则
-        rule.abortIncompleteMultiUpload = new AbortIncompleteMultiUpload();
-        rule.abortIncompleteMultiUpload.daysAfterInitiation = "1";
+        Transition transition = new Transition();
+        transition.days = 100;
+        transition.storageClass = COSStorageClass.NEARLINE.getStorageClass();
+        rule.transition = transition;
         putBucketLifecycleRequest.setRuleList(rule);
+
+        putBucketLifecycleRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.putBucketLifecycleAsync(putBucketLifecycleRequest, new CosXmlResultListener() {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
@@ -100,10 +114,13 @@ public class PutBucketLifecycleSample {
             }
 
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

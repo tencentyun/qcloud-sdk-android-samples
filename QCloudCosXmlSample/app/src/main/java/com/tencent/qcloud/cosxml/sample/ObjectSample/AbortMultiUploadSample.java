@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
@@ -13,7 +15,7 @@ import com.tencent.qcloud.cosxml.sample.ProgressActivity;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 /**
  * Created by bradyxiao on 2017/5/31.
@@ -32,25 +34,26 @@ public class AbortMultiUploadSample {
     }
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        abortMultiUploadRequest = new AbortMultiUploadRequest();
-        abortMultiUploadRequest.setBucket(qServiceCfg.bucket);
-        abortMultiUploadRequest.setCosPath(qServiceCfg.getMultiUploadCosPath());
-        abortMultiUploadRequest.setUploadId(qServiceCfg.getCurrentUploadId());
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getMultiUploadCosPath();
+        String uploadId = qServiceCfg.getCurrentUploadId();
+
+        abortMultiUploadRequest = new AbortMultiUploadRequest(bucket, cosPath,
+                uploadId);
         abortMultiUploadRequest.setSign(600,null,null);
         try {
             AbortMultiUploadResult abortMultiUploadResult =
                  qServiceCfg.cosXmlService.abortMultiUpload(abortMultiUploadRequest);
-            Log.w("XIAO",abortMultiUploadResult.printHeaders());
-            if(abortMultiUploadResult.getHttpCode() >= 300){
-                Log.w("XIAO",abortMultiUploadResult.printError());
-            } else {
-                qServiceCfg.setCurrentUploadId(null);
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = abortMultiUploadResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -61,10 +64,12 @@ public class AbortMultiUploadSample {
      *
      */
     public void startAsync(final Activity activity){
-        abortMultiUploadRequest = new AbortMultiUploadRequest();
-        abortMultiUploadRequest.setBucket(qServiceCfg.bucket);
-        abortMultiUploadRequest.setCosPath(qServiceCfg.getMultiUploadCosPath());
-        abortMultiUploadRequest.setUploadId(qServiceCfg.getCurrentUploadId());
+        String bucket = qServiceCfg.getBucketForObjectAPITest();
+        String cosPath = qServiceCfg.getMultiUploadCosPath();
+        String uploadId = qServiceCfg.getCurrentUploadId();
+
+        abortMultiUploadRequest = new AbortMultiUploadRequest(bucket, cosPath,
+                uploadId);
         abortMultiUploadRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.abortMultiUploadAsync(abortMultiUploadRequest, new CosXmlResultListener() {
             @Override
@@ -78,10 +83,13 @@ public class AbortMultiUploadSample {
             }
 
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

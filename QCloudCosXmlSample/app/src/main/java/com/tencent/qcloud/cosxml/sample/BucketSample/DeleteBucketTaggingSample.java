@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.tencent.cos.xml.exception.CosXmlClientException;
+import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.model.CosXmlResultListener;
@@ -12,7 +14,7 @@ import com.tencent.cos.xml.model.bucket.DeleteBucketTaggingResult;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
-import com.tencent.qcloud.network.exception.QCloudException;
+
 
 /**
  * Created by bradyxiao on 2017/6/1.
@@ -28,22 +30,28 @@ public class DeleteBucketTaggingSample {
 
     public ResultHelper start(){
         ResultHelper resultHelper = new ResultHelper();
-        deleteBucketTaggingRequest = new DeleteBucketTaggingRequest();
-        deleteBucketTaggingRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        deleteBucketTaggingRequest = new DeleteBucketTaggingRequest(bucket);
+
         deleteBucketTaggingRequest.setSign(600,null,null);
 
         try {
             DeleteBucketTaggingResult deleteBucketTaggingResult =
                     qServiceCfg.cosXmlService.deleteBucketTagging(deleteBucketTaggingRequest);
-            Log.w("XIAO",deleteBucketTaggingResult.printHeaders());
-            if(deleteBucketTaggingResult.getHttpCode() >= 300){
-                Log.w("XIAO",deleteBucketTaggingResult.printError());
-            }
+            Log.w("XIAO","success");
             resultHelper.cosXmlResult = deleteBucketTaggingResult;
             return resultHelper;
-        } catch (QCloudException e) {
-            Log.w("XIAO","exception =" + e.getExceptionType() + "; " + e.getDetailMessage());
-            resultHelper.exception = e;
+        } catch (CosXmlClientException e) {
+            Log.w("XIAO","QCloudException =" + e.getMessage());
+            resultHelper.qCloudException = e;
+            return resultHelper;
+        } catch (CosXmlServiceException e) {
+            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
     }
@@ -54,8 +62,13 @@ public class DeleteBucketTaggingSample {
      *
      */
     public void startAsync(final Activity activity){
-        deleteBucketTaggingRequest = new DeleteBucketTaggingRequest();
-        deleteBucketTaggingRequest.setBucket(qServiceCfg.getUserBucket());
+        String bucket = qServiceCfg.getBucketForBucketAPITest();
+        if(bucket == null){
+            qServiceCfg.toastShow("bucket 不存在，需要创建");
+        }
+
+        deleteBucketTaggingRequest = new DeleteBucketTaggingRequest(bucket);
+
         deleteBucketTaggingRequest.setSign(600,null,null);
         qServiceCfg.cosXmlService.deleteBucketTaggingAsync(deleteBucketTaggingRequest, new CosXmlResultListener() {
             @Override
@@ -68,10 +81,13 @@ public class DeleteBucketTaggingSample {
             }
 
             @Override
-            public void onFail(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
+            public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printError());
+                if(qcloudException != null){
+                    stringBuilder.append(qcloudException.getMessage());
+                }else {
+                    stringBuilder.append(qcloudServiceException.toString());
+                }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

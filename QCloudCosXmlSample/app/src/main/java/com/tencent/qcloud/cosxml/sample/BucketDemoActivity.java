@@ -14,10 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.qcloud.cosxml.sample.BucketSample.DeleteBucketCORSSample;
+import com.tencent.qcloud.cosxml.sample.BucketSample.DeleteBucketLifecycleSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.DeleteBucketSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.DeleteBucketTaggingSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.GetBucketACLSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.GetBucketCORSSample;
+import com.tencent.qcloud.cosxml.sample.BucketSample.GetBucketLifecycleSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.GetBucketLocationSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.GetBucketSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.GetBucketTaggingSample;
@@ -25,6 +27,7 @@ import com.tencent.qcloud.cosxml.sample.BucketSample.HeadBucketSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.ListMultiUploadsSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.PutBucketACLSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.PutBucketCORSSample;
+import com.tencent.qcloud.cosxml.sample.BucketSample.PutBucketLifecycleSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.PutBucketSample;
 import com.tencent.qcloud.cosxml.sample.BucketSample.PutBucketTaggingSample;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
@@ -88,16 +91,16 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
         getBucketACL = (Button)findViewById(R.id.getBucketACL);
         getBucketCORS = (Button)findViewById(R.id.getBucketCORS);
         getBucketLocation = (Button)findViewById(R.id.getBucketLocation);
-//        getBucketLifecycle = (Button)findViewById(R.id.getBucketLifecycle);
+        getBucketLifecycle = (Button)findViewById(R.id.getBucketLifecycle);
         getBucketTagging = (Button)findViewById(R.id.getBucketTagging);
         putBucket = (Button)findViewById(R.id.putBucket);
         putBucketACL = (Button)findViewById(R.id.putBucketACL);
         putBucketCORS = (Button)findViewById(R.id.putBucketCORS);
-//        putBucketLifecycle = (Button)findViewById(R.id.putBucketLifecycle);
+        putBucketLifecycle = (Button)findViewById(R.id.putBucketLifecycle);
         putBucketTagging = (Button)findViewById(R.id.putBucketTagging);
         deleteBucket = (Button)findViewById(R.id.deleteBucket);
         deleteBucketCORS = (Button)findViewById(R.id.deleteBucketCORS);
-//        deleteBucketLifecycle = (Button)findViewById(R.id.deleteBucketLifecycle);
+        deleteBucketLifecycle = (Button)findViewById(R.id.deleteBucketLifecycle);
         deleteBucketTagging = (Button)findViewById(R.id.deleteBucketTagging);
         headBucket = (Button)findViewById(R.id.headBucket);
         ListMultiUploads = (Button)findViewById(R.id.ListMultiUploads);
@@ -108,16 +111,16 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
         getBucketACL.setOnClickListener(this);
         getBucketCORS.setOnClickListener(this);
         getBucketLocation.setOnClickListener(this);
-//        getBucketLifecycle.setOnClickListener(this);
+        getBucketLifecycle.setOnClickListener(this);
         getBucketTagging.setOnClickListener(this);
         putBucket.setOnClickListener(this);
         putBucketACL.setOnClickListener(this);
         putBucketCORS.setOnClickListener(this);
-//        putBucketLifecycle.setOnClickListener(this);
+        putBucketLifecycle.setOnClickListener(this);
         putBucketTagging.setOnClickListener(this);
         deleteBucket.setOnClickListener(this);
         deleteBucketCORS.setOnClickListener(this);
-//        deleteBucketLifecycle.setOnClickListener(this);
+        deleteBucketLifecycle.setOnClickListener(this);
         deleteBucketTagging.setOnClickListener(this);
         headBucket.setOnClickListener(this);
         ListMultiUploads.setOnClickListener(this);
@@ -125,8 +128,8 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setUserBucketText() {
-        String userBucket = qServiceCfg.getUserBucket();
-        userBucketText.setText(userBucket == null ? "bucket： 暂无" : "bucket： " + userBucket);
+        String userBucket = qServiceCfg.getBucketForBucketAPITest();
+        userBucketText.setText(userBucket == null ? "BucketForBucketAPITest： 暂无" : "BucketForBucketAPITest： " + userBucket);
         userBucketText.setTag(userBucket);
     }
 
@@ -177,16 +180,16 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                         GetBucketLocationSample getBucketLocationSample = new GetBucketLocationSample(qServiceCfg);
                         result = getBucketLocationSample.start();
                         break;
-//                    case R.id.getBucketLifecycle:
-//                        GetBucketLifecycleSample getBucketLifecycleSample = new GetBucketLifecycleSample(qServiceCfg);
-//                        result = getBucketLifecycleSample.start();
-//                        break;
+                    case R.id.getBucketLifecycle:
+                        GetBucketLifecycleSample getBucketLifecycleSample = new GetBucketLifecycleSample(qServiceCfg);
+                        result = getBucketLifecycleSample.start();
+                        break;
                     case R.id.getBucketTagging:
                         GetBucketTaggingSample getBucketTaggingSample = new GetBucketTaggingSample(qServiceCfg);
                         result = getBucketTaggingSample.start();
                         break;
                     case R.id.putBucket:
-                        Log.d("TAG", "put bucket clicked");
+                        Log.d("TAG", "put bucketForObjectAPITest clicked");
                         PutBucketSample putBucketSample = new PutBucketSample(qServiceCfg);
                         result = putBucketSample.start();
                         break;
@@ -198,10 +201,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                         PutBucketCORSSample putBucketCORSSample = new PutBucketCORSSample(qServiceCfg);
                         result = putBucketCORSSample.start();
                         break;
-//                    case R.id.putBucketLifecycle:
-//                        PutBucketLifecycleSample putBucketLifecycleSample = new PutBucketLifecycleSample(qServiceCfg);
-//                        result = putBucketLifecycleSample.start();
-//                        break;
+                    case R.id.putBucketLifecycle:
+                        PutBucketLifecycleSample putBucketLifecycleSample = new PutBucketLifecycleSample(qServiceCfg);
+                        result = putBucketLifecycleSample.start();
+                        break;
                     case R.id.putBucketTagging:
                         PutBucketTaggingSample putBucketTaggingSample = new PutBucketTaggingSample(qServiceCfg);
                         result = putBucketTaggingSample.start();
@@ -214,10 +217,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                         DeleteBucketCORSSample deleteBucketCORSSample = new DeleteBucketCORSSample(qServiceCfg);
                         result = deleteBucketCORSSample.start();
                         break;
-//                    case R.id.deleteBucketLifecycle:
-//                        DeleteBucketLifecycleSample deleteBucketLifecycleSample = new DeleteBucketLifecycleSample(qServiceCfg);
-//                        result = deleteBucketLifecycleSample.start();
-//                        break;
+                    case R.id.deleteBucketLifecycle:
+                        DeleteBucketLifecycleSample deleteBucketLifecycleSample = new DeleteBucketLifecycleSample(qServiceCfg);
+                        result = deleteBucketLifecycleSample.start();
+                        break;
                     case R.id.deleteBucketTagging:
                         DeleteBucketTaggingSample deleteBucketTaggingSample = new DeleteBucketTaggingSample(qServiceCfg);
                         result = deleteBucketTaggingSample.start();
@@ -266,10 +269,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                 GetBucketLocationSample getBucketLocationSample = new GetBucketLocationSample(qServiceCfg);
                 getBucketLocationSample.startAsync(this);
                 break;
-//            case R.id.getBucketLifecycle:
-//                GetBucketLifecycleSample getBucketLifecycleSample = new GetBucketLifecycleSample(qServiceCfg);
-//                getBucketLifecycleSample.startAsync(this);
-//                break;
+            case R.id.getBucketLifecycle:
+                GetBucketLifecycleSample getBucketLifecycleSample = new GetBucketLifecycleSample(qServiceCfg);
+                getBucketLifecycleSample.startAsync(this);
+                break;
             case R.id.getBucketTagging:
                 GetBucketTaggingSample getBucketTaggingSample = new GetBucketTaggingSample(qServiceCfg);
                 getBucketTaggingSample.startAsync(this);
@@ -286,10 +289,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                 PutBucketCORSSample putBucketCORSSample = new PutBucketCORSSample(qServiceCfg);
                 putBucketCORSSample.startAsync(this);
                 break;
-//            case R.id.putBucketLifecycle:
-//                PutBucketLifecycleSample putBucketLifecycleSample = new PutBucketLifecycleSample(qServiceCfg);
-//                putBucketLifecycleSample.startAsync(this);
-//                break;
+            case R.id.putBucketLifecycle:
+                PutBucketLifecycleSample putBucketLifecycleSample = new PutBucketLifecycleSample(qServiceCfg);
+                putBucketLifecycleSample.startAsync(this);
+                break;
             case R.id.putBucketTagging:
                 PutBucketTaggingSample putBucketTaggingSample = new PutBucketTaggingSample(qServiceCfg);
                 putBucketTaggingSample.startAsync(this);
@@ -302,10 +305,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                 DeleteBucketCORSSample deleteBucketCORSSample = new DeleteBucketCORSSample(qServiceCfg);
                 deleteBucketCORSSample.startAsync(this);
                 break;
-//            case R.id.deleteBucketLifecycle:
-//                DeleteBucketLifecycleSample deleteBucketLifecycleSample = new DeleteBucketLifecycleSample(qServiceCfg);
-//                deleteBucketLifecycleSample.startAsync(this);
-//                break;
+            case R.id.deleteBucketLifecycle:
+                DeleteBucketLifecycleSample deleteBucketLifecycleSample = new DeleteBucketLifecycleSample(qServiceCfg);
+                deleteBucketLifecycleSample.startAsync(this);
+                break;
             case R.id.deleteBucketTagging:
                 DeleteBucketTaggingSample deleteBucketTaggingSample = new DeleteBucketTaggingSample(qServiceCfg);
                 deleteBucketTaggingSample.startAsync(this);
