@@ -6,12 +6,12 @@ import android.util.Log;
 
 import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
+import com.tencent.cos.xml.listener.CosXmlProgressListener;
+import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
-import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.object.PutObjectRequest;
 import com.tencent.cos.xml.model.object.PutObjectResult;
-import com.tencent.qcloud.core.network.QCloudProgressListener;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
@@ -41,7 +41,7 @@ public class PutObjectSample {
         putObjectRequest = new PutObjectRequest(bucket,cosPath,
                 srcPath);
 
-        putObjectRequest.setProgressListener(new QCloudProgressListener() {
+        putObjectRequest.setProgressListener(new CosXmlProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 float result = (float) (progress * 100.0 / max);
@@ -78,7 +78,7 @@ public class PutObjectSample {
 
         putObjectRequest = new PutObjectRequest(bucket,cosPath,
                 srcPath);
-        putObjectRequest.setProgressListener(new QCloudProgressListener() {
+        putObjectRequest.setProgressListener(new CosXmlProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 float result = (float) (progress * 100.0 / max);
@@ -90,8 +90,7 @@ public class PutObjectSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

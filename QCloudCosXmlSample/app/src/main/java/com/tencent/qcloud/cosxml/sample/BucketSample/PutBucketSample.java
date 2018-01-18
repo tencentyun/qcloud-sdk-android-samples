@@ -7,13 +7,12 @@ import android.util.Log;
 import com.tencent.cos.xml.common.COSACL;
 import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
+import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
-import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.bucket.PutBucketRequest;
 import com.tencent.cos.xml.model.bucket.PutBucketResult;
 import com.tencent.cos.xml.model.tag.ACLAccount;
-import com.tencent.cos.xml.model.tag.ACLAccounts;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
@@ -40,7 +39,7 @@ public class PutBucketSample {
         ResultHelper resultHelper = new ResultHelper();
         String bucket = qServiceCfg.getBucketForBucketAPITest();
         if(bucket == null){
-            bucket = "buckettest";
+            bucket = "buckettest"+ System.currentTimeMillis();
         }else{
             qServiceCfg.toastShow("同名的 bucket 已存在，可以先删除再创建");
         }
@@ -48,20 +47,10 @@ public class PutBucketSample {
         putBucketRequest = new PutBucketRequest(bucket);
 
         putBucketRequest.setXCOSACL(COSACL.PRIVATE);
-        ACLAccounts aclAccounts = new ACLAccounts();
-        ACLAccount aclAccount = new ACLAccount("1278687956", "1278687956");
-        aclAccounts.addACLAccount(aclAccount);
-        putBucketRequest.setXCOSGrantRead(aclAccounts);
 
-        ACLAccounts aclAccounts2 = new ACLAccounts();
-        ACLAccount aclAccount2 = new ACLAccount("1278687956", "1278687956");
-        aclAccounts2.addACLAccount(aclAccount2);
-        putBucketRequest.setXCOSGrantWrite(aclAccounts2);
-
-        ACLAccounts aclAccounts3 = new ACLAccounts();
-        ACLAccount aclAccount3 = new ACLAccount("1278687956", "1278687956");
-        aclAccounts3.addACLAccount(aclAccount3);
-        putBucketRequest.setXCOSReadWrite(aclAccounts3);
+        ACLAccount aclAccount = new ACLAccount();
+        aclAccount.addAccount("2832742109", "2832742109");
+        putBucketRequest.setXCOSGrantRead(aclAccount);
 
         putBucketRequest.setSign(600,null,null);
         try {
@@ -90,7 +79,7 @@ public class PutBucketSample {
     public void startAsync(final Activity activity){
         String bucket = qServiceCfg.getBucketForBucketAPITest();
         if(bucket == null){
-            bucket = "buckettest";
+            bucket = "buckettest"+ System.currentTimeMillis();
         }else{
             qServiceCfg.toastShow("同名的 bucket 已存在，可以先删除再创建");
         }
@@ -103,8 +92,7 @@ public class PutBucketSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 qServiceCfg.setBucketForBucketAPITest(finalBucket);
                 show(activity, stringBuilder.toString());

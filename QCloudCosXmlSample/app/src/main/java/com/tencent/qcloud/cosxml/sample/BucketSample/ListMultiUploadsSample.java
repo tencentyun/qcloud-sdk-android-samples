@@ -6,9 +6,9 @@ import android.util.Log;
 
 import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
+import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
-import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.bucket.ListMultiUploadsRequest;
 import com.tencent.cos.xml.model.bucket.ListMultiUploadsResult;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
@@ -73,8 +73,7 @@ public class ListMultiUploadsSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

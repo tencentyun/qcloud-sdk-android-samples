@@ -97,7 +97,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
         putBucketACL = (Button)findViewById(R.id.putBucketACL);
         putBucketCORS = (Button)findViewById(R.id.putBucketCORS);
         putBucketLifecycle = (Button)findViewById(R.id.putBucketLifecycle);
+
         putBucketTagging = (Button)findViewById(R.id.putBucketTagging);
+
+
         deleteBucket = (Button)findViewById(R.id.deleteBucket);
         deleteBucketCORS = (Button)findViewById(R.id.deleteBucketCORS);
         deleteBucketLifecycle = (Button)findViewById(R.id.deleteBucketLifecycle);
@@ -125,6 +128,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
         headBucket.setOnClickListener(this);
         ListMultiUploads.setOnClickListener(this);
 
+        putBucketTagging.setVisibility(View.GONE);
+        getBucketTagging.setVisibility(View.GONE);
+        deleteBucketTagging.setVisibility(View.GONE);
+
     }
 
     private void setUserBucketText() {
@@ -141,6 +148,15 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
             progressDialog.dismiss();
         }
         setUserBucketText();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("XIAO", "onPause");
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        super.onPause();
     }
 
     @Override
@@ -184,10 +200,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                         GetBucketLifecycleSample getBucketLifecycleSample = new GetBucketLifecycleSample(qServiceCfg);
                         result = getBucketLifecycleSample.start();
                         break;
-                    case R.id.getBucketTagging:
-                        GetBucketTaggingSample getBucketTaggingSample = new GetBucketTaggingSample(qServiceCfg);
-                        result = getBucketTaggingSample.start();
-                        break;
+//                    case R.id.getBucketTagging:
+//                        GetBucketTaggingSample getBucketTaggingSample = new GetBucketTaggingSample(qServiceCfg);
+//                        result = getBucketTaggingSample.start();
+//                        break;
                     case R.id.putBucket:
                         Log.d("TAG", "put bucketForObjectAPITest clicked");
                         PutBucketSample putBucketSample = new PutBucketSample(qServiceCfg);
@@ -205,10 +221,11 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                         PutBucketLifecycleSample putBucketLifecycleSample = new PutBucketLifecycleSample(qServiceCfg);
                         result = putBucketLifecycleSample.start();
                         break;
-                    case R.id.putBucketTagging:
-                        PutBucketTaggingSample putBucketTaggingSample = new PutBucketTaggingSample(qServiceCfg);
-                        result = putBucketTaggingSample.start();
-                        break;
+//                    case R.id.putBucketTagging:
+////                        PutBucketTaggingSample putBucketTaggingSample = new PutBucketTaggingSample(qServiceCfg);
+////                        result = putBucketTaggingSample.start();
+//                        Toast.makeText(this, "暂不支持给接口", Toast.LENGTH_SHORT).show();
+//                        break;
                     case R.id.deleteBucket:
                         DeleteBucketSample deleteBucketSample = new DeleteBucketSample(qServiceCfg);
                         result = deleteBucketSample.start();
@@ -221,10 +238,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                         DeleteBucketLifecycleSample deleteBucketLifecycleSample = new DeleteBucketLifecycleSample(qServiceCfg);
                         result = deleteBucketLifecycleSample.start();
                         break;
-                    case R.id.deleteBucketTagging:
-                        DeleteBucketTaggingSample deleteBucketTaggingSample = new DeleteBucketTaggingSample(qServiceCfg);
-                        result = deleteBucketTaggingSample.start();
-                        break;
+//                    case R.id.deleteBucketTagging:
+//                        DeleteBucketTaggingSample deleteBucketTaggingSample = new DeleteBucketTaggingSample(qServiceCfg);
+//                        result = deleteBucketTaggingSample.start();
+//                        break;
                     case R.id.headBucket:
                         HeadBucketSample headBucketSample = new HeadBucketSample(qServiceCfg);
                         result = headBucketSample.start();
@@ -273,10 +290,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                 GetBucketLifecycleSample getBucketLifecycleSample = new GetBucketLifecycleSample(qServiceCfg);
                 getBucketLifecycleSample.startAsync(this);
                 break;
-            case R.id.getBucketTagging:
-                GetBucketTaggingSample getBucketTaggingSample = new GetBucketTaggingSample(qServiceCfg);
-                getBucketTaggingSample.startAsync(this);
-                break;
+//            case R.id.getBucketTagging:
+//                GetBucketTaggingSample getBucketTaggingSample = new GetBucketTaggingSample(qServiceCfg);
+//                getBucketTaggingSample.startAsync(this);
+//                break;
             case R.id.putBucket:
                 PutBucketSample putBucketSample = new PutBucketSample(qServiceCfg);
                 putBucketSample.startAsync(this);
@@ -293,10 +310,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                 PutBucketLifecycleSample putBucketLifecycleSample = new PutBucketLifecycleSample(qServiceCfg);
                 putBucketLifecycleSample.startAsync(this);
                 break;
-            case R.id.putBucketTagging:
-                PutBucketTaggingSample putBucketTaggingSample = new PutBucketTaggingSample(qServiceCfg);
-                putBucketTaggingSample.startAsync(this);
-                break;
+//            case R.id.putBucketTagging:
+//                PutBucketTaggingSample putBucketTaggingSample = new PutBucketTaggingSample(qServiceCfg);
+//                putBucketTaggingSample.startAsync(this);
+//                break;
             case R.id.deleteBucket:
                 DeleteBucketSample deleteBucketSample = new DeleteBucketSample(qServiceCfg);
                 deleteBucketSample.startAsync(this);
@@ -309,10 +326,10 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                 DeleteBucketLifecycleSample deleteBucketLifecycleSample = new DeleteBucketLifecycleSample(qServiceCfg);
                 deleteBucketLifecycleSample.startAsync(this);
                 break;
-            case R.id.deleteBucketTagging:
-                DeleteBucketTaggingSample deleteBucketTaggingSample = new DeleteBucketTaggingSample(qServiceCfg);
-                deleteBucketTaggingSample.startAsync(this);
-                break;
+//            case R.id.deleteBucketTagging:
+//                DeleteBucketTaggingSample deleteBucketTaggingSample = new DeleteBucketTaggingSample(qServiceCfg);
+//                deleteBucketTaggingSample.startAsync(this);
+//                break;
             case R.id.headBucket:
                 HeadBucketSample headBucketSample = new HeadBucketSample(qServiceCfg);
                 headBucketSample.startAsync(this);

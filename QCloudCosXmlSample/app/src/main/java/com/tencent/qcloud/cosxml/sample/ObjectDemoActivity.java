@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -125,6 +126,15 @@ public class ObjectDemoActivity extends AppCompatActivity implements View.OnClic
         uploadIdText.setTag(uploadId);
     }
 
+    @Override
+    protected void onPause() {
+        Log.d("XIAO", "onPause");
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        super.onPause();
+    }
+
     private boolean checkUserObject() {
         if (userObjectText.getTag() == null) {
             runOnUiThread(new Runnable() {
@@ -178,7 +188,7 @@ public class ObjectDemoActivity extends AppCompatActivity implements View.OnClic
             finish();
         }else{
             start(id);
-            //startAsync(id);
+//            startAsync(id);
         }
     }
 
@@ -335,6 +345,10 @@ public class ObjectDemoActivity extends AppCompatActivity implements View.OnClic
                 MultiUploadSample multiUploadSample = new MultiUploadSample(qServiceCfg);
                 multiUploadSample.startAsync(this);
                 break;
+//            case R.id.multipartUploadHelper:
+//                MultipartUploadHelperSample multipartUploadHelperSample = new MultipartUploadHelperSample(qServiceCfg);
+//                multipartUploadHelperSample.start();
+//                break;
             case R.id.abortMultiUpload:
                 AbortMultiUploadSample abortMultiUploadSample = new AbortMultiUploadSample(qServiceCfg);
                 abortMultiUploadSample.startAsync(this);

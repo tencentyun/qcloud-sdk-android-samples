@@ -7,12 +7,12 @@ import android.util.Log;
 
 import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
+import com.tencent.cos.xml.listener.CosXmlProgressListener;
+import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
-import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.object.GetObjectRequest;
 import com.tencent.cos.xml.model.object.GetObjectResult;
-import com.tencent.qcloud.core.network.QCloudProgressListener;
 import com.tencent.qcloud.cosxml.sample.ProgressActivity;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
@@ -43,7 +43,7 @@ public class GetObjectSample {
 
         getObjectRequest.setSign(600,null,null);
         getObjectRequest.setRange(1);
-        getObjectRequest.setProgressListener(new QCloudProgressListener() {
+        getObjectRequest.setProgressListener(new CosXmlProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 Log.w("XIAO","progress = "+progress+" max = "+max);
@@ -59,7 +59,7 @@ public class GetObjectSample {
             resultHelper.qCloudException = e;
             return resultHelper;
         } catch (CosXmlServiceException e) {
-            Log.w("XIAO","QCloudServiceException =" + e.toString());
+            Log.w("XIAO","QCloudServiceException =" + e.getMessage());
             resultHelper.qCloudServiceException = e;
             return resultHelper;
         }
@@ -79,7 +79,7 @@ public class GetObjectSample {
 
         getObjectRequest.setSign(600,null,null);
         getObjectRequest.setRange(1);
-        getObjectRequest.setProgressListener(new QCloudProgressListener() {
+        getObjectRequest.setProgressListener(new CosXmlProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 Log.w("XIAO","progress = "+progress+" max = "+max);
@@ -89,8 +89,7 @@ public class GetObjectSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }
@@ -102,7 +101,7 @@ public class GetObjectSample {
                 if(qcloudException != null){
                     stringBuilder.append(qcloudException.getMessage());
                 }else {
-                    stringBuilder.append(qcloudServiceException.toString());
+                    stringBuilder.append(qcloudServiceException.getMessage());
                 }
                 Log.w("XIAO", "failed = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());

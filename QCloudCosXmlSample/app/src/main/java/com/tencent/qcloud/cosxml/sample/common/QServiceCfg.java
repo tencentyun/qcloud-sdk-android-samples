@@ -6,7 +6,7 @@ import android.widget.Toast;
 import com.tencent.cos.xml.CosXmlService;
 import com.tencent.cos.xml.CosXmlServiceConfig;
 import com.tencent.cos.xml.common.Region;
-import com.tencent.qcloud.core.network.auth.LocalCredentialProvider;
+import com.tencent.qcloud.core.auth.ShortTimeCredentialProvider;
 
 
 import java.io.File;
@@ -17,7 +17,6 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by bradyxiao on 2017/5/31.
@@ -96,12 +95,9 @@ public class QServiceCfg {
     public static QServiceCfg instance(Context context) {
         if (instance == null) {
             synchronized (QServiceCfg.class) {
-                if (instance == null) {
-                    instance = new QServiceCfg(context);
-                }
+                instance = new QServiceCfg(context);
             }
         }
-
         return instance;
     }
 
@@ -110,19 +106,18 @@ public class QServiceCfg {
 
         /** 初始化服务配置 CosXmlServiceConfig */
         CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
+                .isHttps(false)
                 .setAppidAndRegion(appid, region)
                 .setDebuggable(true)
-                .setConnectionTimeout(45000)
-                .setSocketTimeout(30000)
-                .build();
+                .builder();
 
         /**
-         * 设置密钥获取方式,此处使用 LocalCredentialProvider类提供的方法
+         * 设置密钥获取方式,此处使用 ShortTimeCredentialProvider 演示
          *
          * 可以使用以下两种密钥策略：
          *
-         * 1. 通过 CAM 获取带token的临时会话密钥  {@link com.tencent.qcloud.core.network.auth.LocalSessionCredentialProvider}
-         * 2. 用永久密钥和一个有效期生成的临时密钥 {@link com.tencent.qcloud.core.network.auth.LocalCredentialProvider}
+         * 1. 通过 CAM 获取带token的临时会话密钥  可以参考{@link com.tencent.qcloud.core.auth.SessionCredentialProvider}
+         * 2. 用永久密钥和一个有效期生成的临时密钥 可以参考{@link com.tencent.qcloud.core.auth.ShortTimeCredentialProvider}
          *
          * 此处只是示例，出于安全考虑客户端不应该缓存 secretKey，生成密钥的过程建议放到server端
          *
@@ -130,7 +125,7 @@ public class QServiceCfg {
 
         /** 初始化服务类 CosXmlService */
         cosXmlService = new CosXmlService(context,cosXmlServiceConfig,
-                new LocalCredentialProvider(secretId,secretKey,600));
+                new ShortTimeCredentialProvider(secretId,secretKey,600));
 
 
         /**

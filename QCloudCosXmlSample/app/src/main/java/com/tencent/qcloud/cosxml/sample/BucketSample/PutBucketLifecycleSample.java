@@ -7,14 +7,14 @@ import android.util.Log;
 import com.tencent.cos.xml.common.COSStorageClass;
 import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
+import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
-import com.tencent.cos.xml.model.CosXmlResultListener;
+
 import com.tencent.cos.xml.model.bucket.PutBucketLifecycleRequest;
 import com.tencent.cos.xml.model.bucket.PutBucketLifecycleResult;
-import com.tencent.cos.xml.model.tag.Filter;
-import com.tencent.cos.xml.model.tag.Rule;
-import com.tencent.cos.xml.model.tag.Transition;
+
+import com.tencent.cos.xml.model.tag.LifecycleConfiguration;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
@@ -47,16 +47,14 @@ public class PutBucketLifecycleSample {
 
         putBucketLifecycleRequest = new PutBucketLifecycleRequest(bucket);
 
-        Rule rule = new Rule();
-        rule.id = "lifeID";
-        Filter filter = new Filter();
-        filter.prefix = "2/";
-        rule.filter = filter;
+        LifecycleConfiguration.Rule rule = new LifecycleConfiguration.Rule();
+        rule.id = "LifeID";
         rule.status = "Enabled";
-        Transition transition = new Transition();
-        transition.days = 100;
-        transition.storageClass = COSStorageClass.NEARLINE.getStorageClass();
-        rule.transition = transition;
+        rule.filter = new LifecycleConfiguration.Filter();
+        rule.filter.prefix = "aws";
+        rule.expiration = new LifecycleConfiguration.Expiration();
+        rule.expiration.days = 1;
+       // rule.expiration.date = "Mon, 11 Dec 2017 15:43:39 GMT";
         putBucketLifecycleRequest.setRuleList(rule);
 
         putBucketLifecycleRequest.setSign(600,null,null);
@@ -89,17 +87,14 @@ public class PutBucketLifecycleSample {
         }
 
         putBucketLifecycleRequest = new PutBucketLifecycleRequest(bucket);
-
-        Rule rule = new Rule();
-        rule.id = "lifeID";
-        Filter filter = new Filter();
-        filter.prefix = "2/";
-        rule.filter = filter;
+        LifecycleConfiguration.Rule rule = new LifecycleConfiguration.Rule();
+        rule.id = "LifeID";
         rule.status = "Enabled";
-        Transition transition = new Transition();
-        transition.days = 100;
-        transition.storageClass = COSStorageClass.NEARLINE.getStorageClass();
-        rule.transition = transition;
+        rule.filter = new LifecycleConfiguration.Filter();
+        rule.filter.prefix = "aws";
+        rule.expiration = new LifecycleConfiguration.Expiration();
+        rule.expiration.days = 1;
+        // rule.expiration.date = "Mon, 11 Dec 2017 15:43:39 GMT";
         putBucketLifecycleRequest.setRuleList(rule);
 
         putBucketLifecycleRequest.setSign(600,null,null);
@@ -107,8 +102,7 @@ public class PutBucketLifecycleSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

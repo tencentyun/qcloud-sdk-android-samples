@@ -8,14 +8,15 @@ import android.util.Log;
 
 import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
+import com.tencent.cos.xml.listener.CosXmlProgressListener;
+import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
-import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.object.AppendObjectRequest;
 import com.tencent.cos.xml.model.object.AppendObjectResult;
 import com.tencent.cos.xml.model.object.HeadObjectRequest;
 import com.tencent.cos.xml.model.object.HeadObjectResult;
-import com.tencent.qcloud.core.network.QCloudProgressListener;
+import com.tencent.qcloud.core.common.QCloudProgressListener;
 import com.tencent.qcloud.cosxml.sample.ProgressActivity;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
@@ -49,7 +50,7 @@ public class AppendObjectSample {
         appendObjectRequest = new AppendObjectRequest(bucket, cosPath,
                 srcPath, position);
         appendObjectRequest.setSign(600,null,null);
-        appendObjectRequest.setProgressListener(new QCloudProgressListener() {
+        appendObjectRequest.setProgressListener(new CosXmlProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 Log.w("XIAO","progress =" + progress * 1.0/max);
@@ -82,7 +83,7 @@ public class AppendObjectSample {
         try {
             HeadObjectResult headObjectResult =
                     qServiceCfg.cosXmlService.headObject(headObjectRequest);
-            List<String> resultHeader = headObjectResult.getHeaders().get("Content-Length");
+            List<String> resultHeader = headObjectResult.headers.get("Content-Length");
             if(resultHeader != null && resultHeader.size() > 0){
                 appendLength = Long.parseLong(resultHeader.get(0));
             }
@@ -109,7 +110,7 @@ public class AppendObjectSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 long appendLength = 0L;
-                List<String> resultHeader = cosXmlResult.getHeaders().get("Content-Length");
+                List<String> resultHeader = cosXmlResult.headers.get("Content-Length");
                 if(resultHeader != null && resultHeader.size() > 0){
                     appendLength = Long.parseLong(resultHeader.get(0));
                 }
@@ -127,7 +128,7 @@ public class AppendObjectSample {
         appendObjectRequest = new AppendObjectRequest(bucket, cosPath,
                 srcPath, appendLength);
         appendObjectRequest.setSign(600,null,null);
-        appendObjectRequest.setProgressListener(new QCloudProgressListener() {
+        appendObjectRequest.setProgressListener(new CosXmlProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                 Log.w("XIAO","progress =" + progress * 1.0/max);
@@ -137,8 +138,7 @@ public class AppendObjectSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

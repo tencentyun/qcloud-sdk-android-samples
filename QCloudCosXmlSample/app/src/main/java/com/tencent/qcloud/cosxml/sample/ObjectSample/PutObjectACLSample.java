@@ -6,13 +6,12 @@ import android.util.Log;
 
 import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
+import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
-import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.object.PutObjectACLRequest;
 import com.tencent.cos.xml.model.object.PutObjectACLResult;
 import com.tencent.cos.xml.model.tag.ACLAccount;
-import com.tencent.cos.xml.model.tag.ACLAccounts;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
@@ -42,12 +41,12 @@ public class PutObjectACLSample {
         putObjectACLRequest = new PutObjectACLRequest(bucket, cosPath);
 
         putObjectACLRequest.setXCOSACL("public-read");
-        ACLAccounts readAccounts = new ACLAccounts();
-        readAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        ACLAccount readAccounts = new ACLAccount();
+        readAccounts.addAccount("1278687956", "1278687956");
         putObjectACLRequest.setXCOSGrantRead(readAccounts);
 
-        ACLAccounts writeAccounts = new ACLAccounts();
-        writeAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        ACLAccount writeAccounts = new ACLAccount();
+        writeAccounts.addAccount("1278687956", "1278687956");
         putObjectACLRequest.setXCOSGrantWrite(writeAccounts);
 
         putObjectACLRequest.setSign(600,null,null);
@@ -80,12 +79,12 @@ public class PutObjectACLSample {
         putObjectACLRequest = new PutObjectACLRequest(bucket, cosPath);
 
         putObjectACLRequest.setXCOSACL("public-read");
-        ACLAccounts readAccounts = new ACLAccounts();
-        readAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        ACLAccount readAccounts = new ACLAccount();
+        readAccounts.addAccount("1278687956", "1278687956");
         putObjectACLRequest.setXCOSGrantRead(readAccounts);
 
-        ACLAccounts writeAccounts = new ACLAccounts();
-        writeAccounts.addACLAccount(new ACLAccount("1278687956", "1278687956"));
+        ACLAccount writeAccounts = new ACLAccount();
+        writeAccounts.addAccount("1278687956", "1278687956");
         putObjectACLRequest.setXCOSGrantWrite(writeAccounts);
 
         putObjectACLRequest.setSign(600,null,null);
@@ -93,8 +92,7 @@ public class PutObjectACLSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

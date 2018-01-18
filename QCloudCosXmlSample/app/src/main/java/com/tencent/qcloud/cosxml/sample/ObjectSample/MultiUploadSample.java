@@ -7,14 +7,15 @@ import android.util.Log;
 
 import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
+import com.tencent.cos.xml.listener.CosXmlProgressListener;
+import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
-import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.object.CompleteMultiUploadRequest;
 import com.tencent.cos.xml.model.object.InitMultipartUploadRequest;
 import com.tencent.cos.xml.model.object.InitMultipartUploadResult;
 import com.tencent.cos.xml.model.object.UploadPartRequest;
-import com.tencent.qcloud.core.network.QCloudProgressListener;
+import com.tencent.cos.xml.model.object.UploadPartResult;
 import com.tencent.qcloud.cosxml.sample.ProgressActivity;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
@@ -83,8 +84,7 @@ public class MultiUploadSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 qServiceCfg.setCurrentUploadId(((InitMultipartUploadResult)cosXmlResult).initMultipartUpload.uploadId);
 
@@ -119,7 +119,7 @@ public class MultiUploadSample {
 
         uploadPartRequest.setSign(600,null,null);
         uploadPartRequest.setSrcPath(qServiceCfg.getMultiUploadFileUrl());
-        uploadPartRequest.setProgressListener(new QCloudProgressListener() {
+        uploadPartRequest.setProgressListener(new CosXmlProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
                // Log.w("XIAO","progress =" + progress * 1.0/max);
@@ -129,10 +129,9 @@ public class MultiUploadSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
-                qServiceCfg.setPartNumberAndEtag(partNumber, cosXmlResult.getETag());
+                qServiceCfg.setPartNumberAndEtag(partNumber, ((UploadPartResult)cosXmlResult).eTag);
 
                 // step3
                 completeUpload(activity);
@@ -165,8 +164,7 @@ public class MultiUploadSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

@@ -27,14 +27,11 @@ public class ResultHelper {
     public String showMessage(){
         StringBuilder stringBuilder = new StringBuilder();
         if(cosXmlResult != null){
-            stringBuilder.append("Headers:\n")
-                    .append(cosXmlResult.printHeaders()).append("\n")
-                    .append("Body:\n")
-                    .append(cosXmlResult.printBody()).append("\n");
+            stringBuilder.append(cosXmlResult.printResult()).append("\n");
             Log.w("XIAO",stringBuilder.toString());
             return stringBuilder.toString();
         }else if(qCloudException != null){
-            stringBuilder.append("CloudException:\n");
+            stringBuilder.append("ClientException:\n");
             StringWriter stringWriter = new StringWriter();
             PrintWriter pw = new PrintWriter(stringWriter);
             qCloudException.printStackTrace(pw);
@@ -44,9 +41,9 @@ public class ResultHelper {
             Log.w("XIAO",stringBuilder.toString());
             return stringBuilder.toString();
         }else if(qCloudServiceException != null){
-            stringBuilder.append("CloudServiceException:\n")
+            stringBuilder.append("ServiceException:\n")
                     .append("detail:\n")
-                    .append(qCloudServiceException.toString())
+                    .append(qCloudServiceException.getMessage())
                     .append("\n");
             Log.w("XIAO",stringBuilder.toString());
             return stringBuilder.toString();

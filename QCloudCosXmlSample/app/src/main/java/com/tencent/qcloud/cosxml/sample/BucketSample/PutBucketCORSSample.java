@@ -6,17 +6,18 @@ import android.util.Log;
 
 import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
+import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
-import com.tencent.cos.xml.model.CosXmlResultListener;
 import com.tencent.cos.xml.model.bucket.PutBucketCORSRequest;
 import com.tencent.cos.xml.model.bucket.PutBucketCORSResult;
-import com.tencent.cos.xml.model.tag.CORSRule;
+import com.tencent.cos.xml.model.tag.CORSConfiguration;
 import com.tencent.qcloud.cosxml.sample.ResultActivity;
 import com.tencent.qcloud.cosxml.sample.ResultHelper;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
 
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,27 +59,24 @@ public class PutBucketCORSSample {
 
 
         putBucketCORSRequest.setSign(600,null,null);
-        CORSRule corsRule = new CORSRule();
-        corsRule.id = "123";
-        corsRule.allowedOrigin = "http://www.qcloud.com";
-        corsRule.maxAgeSeconds = "5000";
-        List<String> methods = new LinkedList<>();
-        methods.add("put");
-        methods.add("post");
-        methods.add("get");
-        corsRule.allowedMethod = methods;
 
-        List<String> headers = new LinkedList<>();
-        headers.add("host");
-        headers.add("content-type");
-        headers.add("authorizion");
-        corsRule.allowedHeader = headers;
+        CORSConfiguration.CORSRule corsRule = new CORSConfiguration.CORSRule();
 
-        List<String> exposeHeaders = new LinkedList<>();
-        exposeHeaders.add("x-cos-metha-1");
-        exposeHeaders.add("x-cos-metha-2");
-        exposeHeaders.add("x-cos-metha-3");
-        corsRule.exposeHeader = exposeHeaders;
+        corsRule.allowedOrigin = "http://cloud.tencent.com";
+
+        corsRule.allowedHeader = new ArrayList<>();
+        corsRule.allowedHeader.add("Host");
+        corsRule.allowedHeader.add("Authorization");
+
+        corsRule.allowedMethod = new ArrayList<>();
+        corsRule.allowedMethod.add("PUT");
+        corsRule.allowedMethod.add("GET");
+
+        corsRule.exposeHeader = new ArrayList<>();
+        corsRule.exposeHeader.add("x-cos-meta");
+        corsRule.exposeHeader.add("x-cos-meta-2");
+        corsRule.id = "CORSID";
+        corsRule.maxAgeSeconds = 5000;
 
         putBucketCORSRequest.addCORSRule(corsRule);
         try {
@@ -112,27 +110,24 @@ public class PutBucketCORSSample {
         putBucketCORSRequest = new PutBucketCORSRequest(bucket);
 
         putBucketCORSRequest.setSign(600,null,null);
-        CORSRule corsRule = new CORSRule();
-        corsRule.id = "123";
-        corsRule.allowedOrigin = "http://www.qcloud.com";
-        corsRule.maxAgeSeconds = "5000";
-        List<String> methods = new LinkedList<>();
-        methods.add("put");
-        methods.add("post");
-        methods.add("get");
-        corsRule.allowedMethod = methods;
 
-        List<String> headers = new LinkedList<>();
-        headers.add("host");
-        headers.add("content-type");
-        headers.add("authorizion");
-        corsRule.allowedHeader = headers;
+        CORSConfiguration.CORSRule corsRule = new CORSConfiguration.CORSRule();
 
-        List<String> exposeHeaders = new LinkedList<>();
-        exposeHeaders.add("x-cos-metha-1");
-        exposeHeaders.add("x-cos-metha-2");
-        exposeHeaders.add("x-cos-metha-3");
-        corsRule.exposeHeader = exposeHeaders;
+        corsRule.allowedOrigin = "http://cloud.tencent.com";
+
+        corsRule.allowedHeader = new ArrayList<>();
+        corsRule.allowedHeader.add("Host");
+        corsRule.allowedHeader.add("Authorization");
+
+        corsRule.allowedMethod = new ArrayList<>();
+        corsRule.allowedMethod.add("PUT");
+        corsRule.allowedMethod.add("GET");
+
+        corsRule.exposeHeader = new ArrayList<>();
+        corsRule.exposeHeader.add("x-cos-meta");
+        corsRule.exposeHeader.add("x-cos-meta-2");
+        corsRule.id = "CORSID";
+        corsRule.maxAgeSeconds = 5000;
 
         putBucketCORSRequest.addCORSRule(corsRule);
 
@@ -140,8 +135,7 @@ public class PutBucketCORSSample {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(cosXmlResult.printHeaders())
-                        .append(cosXmlResult.printBody());
+                stringBuilder.append(cosXmlResult.printResult());
                 Log.w("XIAO", "success = " + stringBuilder.toString());
                 show(activity, stringBuilder.toString());
             }

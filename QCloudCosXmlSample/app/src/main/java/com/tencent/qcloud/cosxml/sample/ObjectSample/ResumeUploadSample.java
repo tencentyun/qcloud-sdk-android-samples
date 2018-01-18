@@ -6,7 +6,7 @@ import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.model.bucket.ListMultiUploadsRequest;
 import com.tencent.cos.xml.model.bucket.ListMultiUploadsResult;
-import com.tencent.cos.xml.model.tag.Upload;
+import com.tencent.cos.xml.model.tag.ListMultipartUploads;
 import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class ResumeUploadSample {
      *  step 1: 首先 列举 bucket下面 有哪些未上传完成 的 object, 调用 ListMultiUploadsRequest实现，并
      *  获取 到 ListMultiUploadsResult；
      *
-     *  step2: 根据 ListMultiUploadsResult中的 ListMultipartUploads 中的 Upload就可以 获取到对应的
+     *  step2: 根据 ListMultiUploadsResult中的 ListMultipartUploads 中的 Upload 就可以 获取到对应的
      *  uploadId 和 key
      *
      *  step3: 根据 Key 做匹配，确实是否是这个 object
@@ -53,10 +53,10 @@ public class ResumeUploadSample {
         if(listMultiUploadsResult == null)return null;
         if(listMultiUploadsResult.listMultipartUploads == null)return null;
         if(listMultiUploadsResult.listMultipartUploads.uploads == null)return  null;
-        List<Upload>  uploadList = listMultiUploadsResult.listMultipartUploads.uploads;
-        for(Upload upload : uploadList){
+        List<ListMultipartUploads.Upload>  uploadList = listMultiUploadsResult.listMultipartUploads.uploads;
+        for(ListMultipartUploads.Upload upload : uploadList){
             if(upload.key.equals(cosPath)){
-                return  upload.uploadId;
+                return  upload.uploadID;
             }
         }
         return null;
