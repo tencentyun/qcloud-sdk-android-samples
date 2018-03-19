@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    tools:context=".MainActivity"
+    android:layout_height="match_parent">
+
+    <Button android:id="@+id/analytics_main"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onAnalyticsClicked"
+        android:text="@string/analytics_main"
+        android:textAllCaps="false"/>
+
+    <Button android:id="@+id/messaging_main"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onMessageClicked"
+        android:text="@string/messaging_main"
+        android:textAllCaps="false"/>
+
+    <Button android:id="@+id/crash_main"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onCrashMainClicked"
+        android:text="@string/crash_main"
+        android:textAllCaps="false"/>
+
+    <Button android:id="@+id/payment_main"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onPaymentClicked"
+        android:text="@string/payment_main"
+        android:textAllCaps="false"/>
+
+    <Button android:id="@+id/storage_main"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onStorageClicked"
+        android:text="@string/storage_main"
+        android:textAllCaps="false"/>
+
+    <Button android:id="@+id/auth_main"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onAuthorizationClicked"
+        android:text="@string/auth_main"
+        android:textAllCaps="false"/>
+
+</LinearLayout>

@@ -1,0 +1,8 @@
+{
+  "services": {
+    "crash": {
+      "excludeModuleFilters": [
+      ]
+    }
+  }
+}

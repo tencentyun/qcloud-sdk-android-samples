@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">TACDemo</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_first">FirstActivity</string>
+    <string name="title_activity_lbs">LbsActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_lbs_main">LbsMainActivity</string>
+
+
+    <string name="analytics_main">Analytics主页</string>
+    <string name="messaging_main">Messaging主页</string>
+    <string name="crash_main">Crash主页</string>
+    <string name="payment_main">Payment主页</string>
+    <string name="storage_main">Storage主页</string>
+    <string name="auth_main">三方登录主页</string>
+
+    <string name="java_crash_test">Java Crash 测试</string>
+    <string name="anr_crash_test">ANR Crash 测试</string>
+    <string name="native_crash_test">Native Crash 测试</string>
+
+
+    <string name="coin_payment">游戏币支付</string>
+    <string name="subscription_payment">包月支付</string>
+    <string name="item_payment">游戏道具支付</string>
+    <string name="get_balance_m">查询余额</string>
+    <string name="pay_m">扣除游戏币</string>
+    <string name="pay_m_number">扣除游戏币数量</string>
+    <string name="wechat_pay">微信支付</string>
+    <string name="qq_pay">QQ 支付</string>
+
+    <string name="storage_download_file">下载文件</string>
+    <string name="storage_upload_file">上传文件</string>
+    <string name="storage_delete_file">删除文件</string>
+    <string name="title_activity_auth_main">AuthMainActivity</string>
+
+    <string name="messaging_start">启动 Messaging 服务</string>
+    <string name="messaging_stop">停止 Messaging 服务</string>
+    <string name="messaging_get_token">获取 token </string>
+    <string name="messaging_local_notification">添加本地通知</string>
+    <string name="add_notification_builder">添加自定义Builder</string>
+
+</resources>

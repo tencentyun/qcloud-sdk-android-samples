@@ -1,0 +1,9 @@
+{
+  "services": {
+    "social": {
+      "wechat": {
+        "appId": "wxefa56787037ee550"
+      }
+    }
+  }
+}
