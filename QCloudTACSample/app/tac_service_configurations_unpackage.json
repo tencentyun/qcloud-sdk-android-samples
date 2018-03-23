@@ -1,7 +1,7 @@
 {
     "services": {
         "crash": {
-            "appKey": "81c2c6ab-3ee3-4a6c-8ead-2d18e690fa06"
+            "appKey": "<your crash app key>"
         }
     }
 }
