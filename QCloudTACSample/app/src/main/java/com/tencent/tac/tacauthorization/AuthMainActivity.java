@@ -56,29 +56,34 @@ public class AuthMainActivity extends Activity implements QCloudResultListener<O
         if (mLastCredentials != null && mLastCredentials.isExpired()) {
             if (WeChatAuthProvider.PLATFORM.equals(mLastCredentials.getPlatform())) {
                 // 后台刷新微信token
-                weChatAuthProvider.refreshCredentialInBackground(mLastCredentials,
-                        new QCloudResultListener<OAuth2Credentials>() {
-                            @Override
-                            public void onSuccess(OAuth2Credentials result) {
-                                Toast.makeText(AuthMainActivity.this, "token刷新成功", Toast.LENGTH_LONG).show();
-                                AuthMainActivity.this.onSuccess(result);
-                            }
-
-                            @Override
-                            public void onFailure(QCloudClientException clientException,
-                                                  QCloudServiceException serviceException) {
-                                if (WeChatAuthProvider.isUserNeedSignIn(serviceException)) {
-                                    // 刷新失败，需要用户重新登录微信授权
-                                    loginWeChat(null);
-                                } else {
-                                    Toast.makeText(AuthMainActivity.this, "token刷新失败",
-                                            Toast.LENGTH_LONG).show();
+                if (mLastCredentials.getRefreshToken() != null) {
+                    weChatAuthProvider.refreshCredentialInBackground(mLastCredentials,
+                            new QCloudResultListener<OAuth2Credentials>() {
+                                @Override
+                                public void onSuccess(OAuth2Credentials result) {
+                                    Toast.makeText(AuthMainActivity.this, "token刷新成功", Toast.LENGTH_LONG).show();
+                                    AuthMainActivity.this.onSuccess(result);
                                 }
-                            }
-                        });
+
+                                @Override
+                                public void onFailure(QCloudClientException clientException,
+                                                      QCloudServiceException serviceException) {
+                                    if (WeChatAuthProvider.isUserNeedSignIn(serviceException)) {
+                                        // 刷新失败，需要用户重新登录微信授权
+                                        loginWeChat(null);
+                                    } else {
+                                        Toast.makeText(AuthMainActivity.this, "token刷新失败",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                }
             } else if (QQAuthProvider.PLATFORM.equals(mLastCredentials.getPlatform())) {
                 // 用户重新登录QQ授权
                 loginQQ(null);
+            } else {
+                Toast.makeText(AuthMainActivity.this, "无法刷新token",
+                        Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(AuthMainActivity.this, "无token 或者 token有效",
@@ -107,8 +112,11 @@ public class AuthMainActivity extends Activity implements QCloudResultListener<O
                 } else if (QQAuthProvider.PLATFORM.equals(mLastCredentials.getPlatform())) {
                     qqAuthProvider.getUserInfo(mLastCredentials, resultListener);
                 }
-            } else {
+            } else if (mLastCredentials.getOpenId() != null) {
                 Toast.makeText(AuthMainActivity.this, "token过期，需要刷新或者重新登录",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(AuthMainActivity.this, "没有获取用户id",
                         Toast.LENGTH_LONG).show();
             }
         }
