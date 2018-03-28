@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.tencent.cos.xml.model.object.AbortMultiUploadResult;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.AbortMultiUploadSample;
-import com.tencent.qcloud.cosxml.sample.ObjectSample.AppendObjectSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.DeleteMultiObjectSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.DeleteObjectSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.GetObjectACLSample;
@@ -32,7 +31,6 @@ import com.tencent.qcloud.cosxml.sample.common.QServiceCfg;
 public class ObjectDemoActivity extends AppCompatActivity implements View.OnClickListener{
 
     TextView backText;
-    Button appendObject;
     Button getObject;
     Button getObjectACL;
     Button putObject;
@@ -83,7 +81,6 @@ public class ObjectDemoActivity extends AppCompatActivity implements View.OnClic
 
         backText.setOnClickListener(this);
 
-        appendObject = (Button)findViewById(R.id.appendObject);
         getObject = (Button)findViewById(R.id.getObject);
         getObjectACL = (Button)findViewById(R.id.getObjectACL);
         putObject = (Button)findViewById(R.id.putObject);
@@ -100,7 +97,6 @@ public class ObjectDemoActivity extends AppCompatActivity implements View.OnClic
         userObjectText = (TextView) findViewById(R.id.user_object);
         uploadIdText = (TextView) findViewById(R.id.multipart_upload_id);
 
-        appendObject.setOnClickListener(this);
         getObject.setOnClickListener(this);
         getObjectACL.setOnClickListener(this);
         putObject.setOnClickListener(this);
@@ -270,10 +266,6 @@ public class ObjectDemoActivity extends AppCompatActivity implements View.OnClic
                         DeleteMultiObjectSample deleteMultiObjectSample = new DeleteMultiObjectSample(qServiceCfg);
                         result = deleteMultiObjectSample.start();
                         break;
-                    case R.id.appendObject:
-                        AppendObjectSample appendObjectSample = new AppendObjectSample(qServiceCfg);
-                        result = appendObjectSample.start();
-                        break;
                     case R.id.multipartUpload:
                         MultiUploadSample multiUploadSample = new MultiUploadSample(qServiceCfg);
                         result = multiUploadSample.start();
@@ -336,10 +328,6 @@ public class ObjectDemoActivity extends AppCompatActivity implements View.OnClic
             case R.id.deleteMultipleObject:
                 DeleteMultiObjectSample deleteMultiObjectSample = new DeleteMultiObjectSample(qServiceCfg);
                 deleteMultiObjectSample.startAsync(this);
-                break;
-            case R.id.appendObject:
-                AppendObjectSample appendObjectSample = new AppendObjectSample(qServiceCfg);
-                appendObjectSample.startAsync(this);
                 break;
             case R.id.multipartUpload:
                 MultiUploadSample multiUploadSample = new MultiUploadSample(qServiceCfg);

@@ -103,24 +103,6 @@
                 android:text="Delete Bucket Lifecycle"/>
 
             <Button
-                android:id="@+id/putBucketTagging"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Put Bucket Tagging" />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/getBucketTagging"
-                android:text="Get Bucket Tagging"/>
-
-            <Button
-                android:id="@+id/deleteBucketTagging"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Delete Bucket Tagging" />
-
-            <Button
                 android:id="@+id/ListMultiUploads"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

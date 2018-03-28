@@ -14,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.qcloud.cosxml.sample.ObjectSample.AbortMultiUploadSample;
-import com.tencent.qcloud.cosxml.sample.ObjectSample.AppendObjectSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.CompleteMultiUploadSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.GetObjectSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.ListPartsSample;
