@@ -6,7 +6,7 @@
 
 ### 第一步：创建项目和应用
 
-在使用我们的服务前，您必须先在 MobileLine 控制台上 [创建项目和应用](https://cloud.tencent.com/document/product/666/15345)，注意在控制台上创建的应用包名必须为 `com.tencent.tac.sample`。
+在使用我们的服务前，您必须先在 MobileLine 控制台上 [创建项目和应用](https://cloud.tencent.com/document/product/666/15345)，注意在控制台上创建的应用包名必须和我们的示例工程的包名保持一致，为 `com.tencent.tac.sample`。
 
 ### 第二步：添加配置文件
 
@@ -18,12 +18,86 @@
 
 <img src="http://tac-android-libs-1253960454.cosgz.myqcloud.com/tac_android_configuration.jpg" width="50%" height="50%">
 
-## 结果
+## 使用
 
 将工程在 Android Studio 中构建，并在 Android 设备中运行，结果如下：
 
+### 移动分析服务 Analytics 使用
 
+运行示例工程后，会自动将应用的数据上报您的控制台，您可以在控制台上查看信息。
 
+### 崩溃监测服务 Crashlytics 使用
+
+运行示例工程后，若应用发生了 Crash，会自动将 Crash 信息发送到控制台，帮助您定位和修复 Bug。您也可以通过点击应用提供的 Crash 按钮，来帮助您测试数据是否正常上报。
+
+### 移动推送服务 Messaging 使用
+
+运行示例工程后，您可以在通知台发送通知栏消息，应用会接收到消息，并展示到通知栏上。接收到通知后，您也会收到回调信息，以帮助您进一步处理消息。
+
+### 腾讯计费 Payment 使用
+
+在使用前您需要：
+
+- [配置后台服务器](https://cloud.tencent.com/document/product/666/14600)
+- [添加支付渠道信息](https://cloud.tencent.com/document/product/666/14599)
+
+配置好后，您即可发起 app 支付，并在控制台上查看支付信息。
+
+### 移动存储服务 Storage 使用
+
+运行示例工程后，您首先需要修改 `com.tencent.tac.App` 类下的 `initStorage()` 方法来配置签名获取服务器（[如何配置](https://cloud.tencent.com/document/product/666/15350)）。配置好后，您即上传、下载或者删除数据。
+
+### 授权服务 Authorization 使用
+
+下载示例代码后，需要您首先集成 QQ 登录或者微信登录：
+
+#### 集成 QQ 登录
+
+##### 注册应用
+
+如果您还没有在 [QQ 互联平台](https://connect.qq.com/) 注册应用，请先移步注册您的应用。
+
+##### 配置应用
+
+在您的应用模块的 assets 文件夹下，新建一个名为 tac\_service\_configurations\_qq.json 的文件，内容如下：
+
+```
+{
+  "services": {
+    "social": {
+      "qq": {
+        "appId": "您的QQ互联平台的app id"
+      }
+    }
+  }
+}
+```
+
+#### 集成微信登录
+
+##### 注册应用
+
+如果您还没有在 [微信开放平台](https://open.weixin.qq.com/cgi-bin/index?t=home/index&lang=zh_CN) 注册应用，请先移步注册您的应用，并且获取应用登录能力。
+
+##### 配置应用
+
+在您的应用模块的 assets 文件夹下，新建一个名为 tac\_service\_configurations\_wechat.json 的文件，内容如下：
+
+```
+{
+  "services": {
+    "social": {
+      "wechat": {
+        "appId": "您的微信开放平台app id"
+      }
+    }
+  }
+}
+```
+
+#### 在应用拉起登录
+
+您自己配置好微信和 QQ 登录后，即可在示例代码中进行微信和 QQ 登录。
 
 ## 后续步骤
 
