@@ -49,55 +49,7 @@
 
 ### 授权服务 Authorization 使用
 
-下载示例代码后，需要您首先集成 QQ 登录或者微信登录：
-
-#### 集成 QQ 登录
-
-##### 注册应用
-
-如果您还没有在 [QQ 互联平台](https://connect.qq.com/) 注册应用，请先移步注册您的应用。
-
-##### 配置应用
-
-在您的应用模块的 assets 文件夹下，新建一个名为 tac\_service\_configurations\_qq.json 的文件，内容如下：
-
-```
-{
-  "services": {
-    "social": {
-      "qq": {
-        "appId": "您的QQ互联平台的app id"
-      }
-    }
-  }
-}
-```
-
-#### 集成微信登录
-
-##### 注册应用
-
-如果您还没有在 [微信开放平台](https://open.weixin.qq.com/cgi-bin/index?t=home/index&lang=zh_CN) 注册应用，请先移步注册您的应用，并且获取应用登录能力。
-
-##### 配置应用
-
-在您的应用模块的 assets 文件夹下，新建一个名为 tac\_service\_configurations\_wechat.json 的文件，内容如下：
-
-```
-{
-  "services": {
-    "social": {
-      "wechat": {
-        "appId": "您的微信开放平台app id"
-      }
-    }
-  }
-}
-```
-
-#### 在应用拉起登录
-
-您自己配置好微信和 QQ 登录后，即可在示例代码中进行微信和 QQ 登录。
+下载示例代码后，即可在示例代码中进行微信和 QQ 登录。
 
 ## 后续步骤
 
