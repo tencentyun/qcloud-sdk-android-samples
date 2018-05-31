@@ -4,6 +4,10 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.tencent.qcloud.cosxml.sample.tools.CreateBucketTool;
+import com.tencent.qcloud.cosxml.sample.tools.DeleteEmptyBuckets;
+import com.tencent.qcloud.cosxml.sample.tools.DeleteObjectTool;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -20,7 +24,13 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
+//        DeleteEmptyBuckets deleteEmptyBuckets = new DeleteEmptyBuckets(appContext);
+//        deleteEmptyBuckets.delete();
+//        DeleteObjectTool deleteObjectTool = new DeleteObjectTool(appContext);
+//        deleteObjectTool.deleteObject("ee3e//");
 
-        assertEquals("com.tencent.qcloud.net", appContext.getPackageName());
+        CreateBucketTool createBucketTool = new CreateBucketTool(appContext);
+        createBucketTool.createBucket("mm");
+
     }
 }
