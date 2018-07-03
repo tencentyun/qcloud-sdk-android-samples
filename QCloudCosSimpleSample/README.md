@@ -68,12 +68,13 @@ CosXmlSampleLite 提供了一个简单 Android 示例工程，在运行该工程
 
 启动示例 app 后，默认会显示您账号下所有 region 为北京的 bucket 列表，您也可以点击菜单在该 region 下创建新的 bucket：
 
+![](http://cos-terminal-resource-1253960454.cossh.myqcloud.com/list_bucket.jpg)
 
 ### 上传文件
 
 您可以点击最下面的按钮依次【选择文件】->【开始上传】->【取消上传】来进行上传测试：
 
-
+![](http://cos-terminal-resource-1253960454.cossh.myqcloud.com/upload_file.jpg)
 
 
 
