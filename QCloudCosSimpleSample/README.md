@@ -64,7 +64,7 @@ python3 main.py
 
 ### 配置客户端
 
-CosXmlSampleLite 提供了一个简单 Android 示例工程，在运行该工程前，您首先需要修改 `../CosXmlSampleLite/app/src/main/res/values/remote_storage.xml` 中的 `appid` 和 `host` 两个字段，其中 `appid` 可以在控制台上进行查看，而 `host` 字段为您的服务端所在的 IP 地址，修改后即可运行示例工程。
+CosXmlSampleLite 提供了一个简单 Android 示例工程，在运行该工程前，您首先需要修改 [../CosXmlSampleLite/app/src/main/res/values/remote_storage.xml](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCosSimpleSample/CosXMLSampleLite/app/src/main/res/values/remote_storage.xml) 中的 `appid` 和 `host` 两个字段，其中 `appid` 可以在控制台上进行查看，而 `host` 字段为您的服务端所在的 IP 地址，修改后即可运行示例工程。
 
 ### 运行示例 Demo
 
