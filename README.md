@@ -7,8 +7,10 @@
 当前仓库内提供的示例有:
 
 * QCloudCosXmlSample - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436)
+* QCloudCosSimpleSample - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 开箱即用示例
 * QCloudFaceInSample - [腾讯云 FaceIn 人脸核身](https://cloud.tencent.com/product/facein)
 * QCloudTACSample - [腾讯云 MobileLine 移动开发平台]()
+
 
 ## 在 Android Studio 运行示例
 
