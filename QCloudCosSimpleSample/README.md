@@ -22,7 +22,7 @@ pip3 install flask
 
 ### 配置密钥信息
 
-cos\_signer\_lite 需要你在 ../cos\_signer\_lite/cam/config.py 中配置密钥信息，然后 cos\_signer\_lite 会在您每次请求时向 CAM 服务请求临时密钥。
+cos\_signer\_lite 需要你在 [../cos_signer_lite/cam/config.py](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCosSimpleSample/cos_signer_lite/cam/config.py) 中配置密钥信息，然后 cos\_signer\_lite 会在您每次请求时向 CAM 服务请求临时密钥。
 
 ```
     # 用户的secret id
