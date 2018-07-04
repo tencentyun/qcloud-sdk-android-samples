@@ -64,7 +64,7 @@ python3 main.py
 
 ### 配置客户端
 
-CosXmlSampleLite 提供了一个简单 Android 示例工程，在运行该工程前，您首先需要修改 `../CosXmlSampleLite/app/src/main/res/values/remote_storage.xml` 中的 `appid` 和 `host` 两个字段，其中 `appid` 可以在控制台上进行查看，而 `host` 字段为您的服务端所在的 IP 地址。修改后即可运行示例工程，示例工程主要有如下两个功能：
+CosXmlSampleLite 提供了一个简单 Android 示例工程，在运行该工程前，您首先需要修改 `../CosXmlSampleLite/app/src/main/res/values/remote_storage.xml` 中的 `appid` 和 `host` 两个字段，其中 `appid` 可以在控制台上进行查看，而 `host` 字段为您的服务端所在的 IP 地址，修改后即可运行示例工程。
 
 ### 运行示例 Demo
 
@@ -81,4 +81,4 @@ CosXmlSampleLite 提供了一个简单 Android 示例工程，在运行该工程
 ![](http://cos-terminal-resource-1253960454.cossh.myqcloud.com/upload_file.jpg)
 
 
-> 您可以参考 `../src/main/java/com/tencent/cosxml/assistant/data/RemoteStorage.java` 文件来编写上传文件功能。
+您可以参考 `../src/main/java/com/tencent/cosxml/assistant/data/RemoteStorage.java` 文件来编写上传文件功能。
