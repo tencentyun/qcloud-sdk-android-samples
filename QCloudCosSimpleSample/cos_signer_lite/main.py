@@ -19,7 +19,8 @@ def temporary_key():
     real_url = url_generator.url()
     print(real_url)
     req = urllib.request.Request(real_url, method='GET')
-    req.set_proxy(type='https', host='10.14.87.100:8080')
+    # 如果你的机器访问外网需要代理，请在这里设置
+    # req.set_proxy(type='https', host='10.14.87.100:8080')
     req.method = 'GET'
     req.add_header('host', 'sts.api.qcloud.com')
     response = urllib.request.urlopen(req).read()
