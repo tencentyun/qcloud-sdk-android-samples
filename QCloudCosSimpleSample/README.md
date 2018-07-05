@@ -10,7 +10,7 @@
 
 ### 下载快速体验代码
 
-快速体验 SDK 涉及到的代码均放置在 Github 上，您可以在 [快速体验 SDK](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCosSimpleSample) 这里查看和下载代码。代码分为两个部分：[cos\_signer\_lite]() 即为上图所示用户服务端，主要用于给终端提供临时密钥，而 [CosXMLSampleLite]() 即为上图所示的用户客户端。
+快速体验涉及到的代码均放置在 Github 上，您可以在 [快速体验 SDK](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCosSimpleSample) 这里查看和下载代码。代码分为两个部分：[cos\_signer\_lite]() 即为上图所示用户服务端，主要用于给终端提供临时密钥，而 [CosXMLSampleLite]() 即为上图所示的用户客户端。
 
 ## 搭建用户服务端
 
