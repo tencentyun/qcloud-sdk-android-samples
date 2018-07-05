@@ -60,6 +60,18 @@ python3 main.py
  }
 ```
 
+### 出错自救指南
+搭建临时密钥的过程中可能会出错，如果出现了对应的错误，可以参考以下的信息：
+1. 问题：运行安装命令 pip3 install flask 提示 comment not found pip3    
+解决方案：这是因为没有安装 python3，或者 path 没有设置对（如果安装了 Python 3 ），可根据系统对应寻找安装
+方式
+
+2. 运行起来以后，获取临时密钥时提示 URLError: urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed 字样的错误    
+该问题常见于 MAC OS X 系统，安装 certifi 模块即可，具体操作方式可参考 [安装命令](https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error/42334357#42334357) 。
+
+
+
+
 ## 搭建用户客户端
 
 ### 配置客户端
