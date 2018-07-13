@@ -41,10 +41,10 @@ public class DeleteEmptyBuckets {
     private final String appid = "1253653367";
 
     /** appid 对应的 秘钥 */
-    private final String secretId = "AKIDPiqmW3qcgXVSKN8jngPzRhvxzYyDL5qP";
+    private final String secretId= "xxx";
 
     /** appid 对应的 秘钥 */
-    private final String secretKey = "EH8oHoLgpmJmBQUM1Uoywjmv7EFzd5OJ";
+    private final String secretKey = "xxx";
 
     /** bucketForObjectAPITest 所处在的地域 */
     private String region = Region.AP_Shanghai.getRegion();

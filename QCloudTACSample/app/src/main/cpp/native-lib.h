@@ -1,8 +1,0 @@
-//
-// Created by wang ricken on 2018/2/2.
-//
-
-#ifndef QCLOUDTACSAMPLE_NATIVE_LIB_H
-#define QCLOUDTACSAMPLE_NATIVE_LIB_H
-
-#endif //QCLOUDTACSAMPLE_NATIVE_LIB_H
