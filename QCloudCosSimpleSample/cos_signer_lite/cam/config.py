@@ -22,9 +22,9 @@ class Config(object):
     # 临时证书有效期
     DURATION_SECOND = 1800
     # 用户的secret id
-    SECRET_ID = 'xxx'
+    SECRET_ID = '填入您的serret id'
     # 用户的secret key
-    SECRET_KEY = 'xxx'
+    SECRET_KEY = '填入您的 secret key'
 
     @staticmethod
     def init_app(app):
