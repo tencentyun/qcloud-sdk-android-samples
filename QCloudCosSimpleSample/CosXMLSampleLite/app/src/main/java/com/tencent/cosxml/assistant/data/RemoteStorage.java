@@ -96,7 +96,7 @@ public class RemoteStorage {
     public RemoteStorage(Context context) {
 
         this.context = context;
-        uploads = new HashMap<>();
+        uploads = new ConcurrentHashMap<>();
         APPID = context.getString(R.string.appid);
         TEMP_HOST = context.getString(R.string.host);
     }
