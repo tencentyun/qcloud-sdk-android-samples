@@ -1,58 +1,45 @@
 ## 开发准备
-
 ### 预备知识
-
 一般来说 COS 服务的整体架构可以如下图所示：
-
 ![](http://mc.qcloudimg.com/static/img/b1e187a9ec129ffc766c07a733ef4dd6/image.jpg)
+其中 CAM 权限系统和 COS 对象存储是腾讯云提供给开发者的两大服务模块，分别用于用户鉴权和存储文件。而用户服务端和用户客户端需要用户自己去搭建，本文介绍如何基于 COS Android SDK 来快速搭建应用传输服务。
 
-其中 CAM 权限系统和 COS 对象存储是腾讯云提供给开发者的两大服务模块，分别用于用户鉴权和存储文件。而用户服务端和用户客户端需要用户自己去搭建，下面本文即介绍您如何基于 COS Android SDK 来快速搭建应用传输服务。
+## 快速体验
 
-### 下载快速体验代码
+### 环境要求
 
-快速体验涉及到的代码均放置在 Github 上，您可以在 [快速体验 SDK](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCosSimpleSample) 这里查看和下载代码。代码分为两个部分：`cos\_signer\_lite` 即为上图所示用户服务端，主要用于给终端提供临时密钥，而 `CosXMLSampleLite` 即为上图所示的用户客户端。
+搭建要求：
 
-## 搭建用户服务端
+- 一台安装了 python3 环境的 Linux机器
+- 一台 Android 4.0 (api level 15)及以上版本的手机。
 
-在本示例中，用户服务端仅仅提供临时密钥的功能。cos\_signer\_lite 是一个基于 flask 服务框架的临时秘钥服务，该项目采用 python3 编写，您可以在自己的机器或者虚拟机上运行该 python 项目，为您的 COS 终端（Android/IOS）SDK 提供临时密钥服务。
+### 搭建服务端
 
-> 注意：该项目只是用于示例，不可直接用于生产环境，生产环境中您可以使用 COS 服务端 SDK 的临时秘钥接口。
+#### 安装 cossign
 
-
-### 配置环境
-
-cos\_signer\_lite 采用 python3 编写，你首先需要安装 python3 环境，并在 python3 环境下安装 flask 模块。
-
-```
-pip3 install flask
-```
-
-### 配置密钥信息
-
-cos\_signer\_lite 需要你在 [../cos\_signer\_lite/cam/config.py](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCosSimpleSample/cos_signer_lite/cam/config.py) 中配置密钥信息，然后 cos\_signer\_lite 会在您每次请求时向 CAM 服务请求临时密钥。
+cossign 目前只支持 python3，它可以给您提供临时秘钥服务，您可以直接使用 pip 进行安装。
 
 ```
-    # 用户的secret id
-    SECRET_ID = 'xxx'
-    # 用户的secret key
-    SECRET_KEY = 'xxx'
+pip3 install cossign
 ```
 
-> 密钥信息可以在 [这里查询](https://console.cloud.tencent.com/cam/capi)
+#### 运行 cossign
 
-
-### 启动服务
-
-您可以通过如下代码启动服务：
+安装后，您可以运行如下命令启动临时秘钥服务（您可以不指定端口号，默认为 5000）：
 
 ```
-python3 main.py
+cossign --secret_id your_secret_id --secret_key your_secret_key --port 5000
 ```
+> 密钥信息可以在 [云 API 密钥控制台](https://console.cloud.tencent.com/cam/capi) 查询。
 
-### 测试服务
+#### 测试服务
 
-你可以通过浏览器访问 `http://0.0.0.0:5000/sign` 链接，如果浏览器返回如下信息，则说明服务已经成功运行。
+运行成功后，您可以直接 curl 如下地址：
 
+```
+http://your_server_ip:5000/sign
+```
+若返回如下信息，则说明服务已经成功运行。
 ```
 {
  "code":0,
@@ -66,40 +53,33 @@ python3 main.py
   "expiredTime":1530515889}
  }
 ```
+若没有返回上述信息，请在参考文末的 [常见问题](#FAQ) 部分。
 
-如果没有返回上述信息，请在参考文末的 FAQ 部分。
+### 搭建客户端
 
-## 搭建用户客户端
+#### 下载并安装 APK
 
-### 配置客户端
+您可以扫描二维码直接下载 apk 文件：
 
-CosXmlSampleLite 提供了一个简单 Android 示例工程，在运行该工程前，您首先需要修改 [../CosXmlSampleLite/app/src/main/res/values/remote_storage.xml](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCosSimpleSample/CosXMLSampleLite/app/src/main/res/values/remote_storage.xml) 中的 `appid` 和 `host` 两个字段，其中 `appid` 可以在控制台上进行查看，而 `host` 字段为您的服务端所在的 IP 地址，修改后即可运行示例工程。
+![](http://tac-resource-do-not-remove-1253653367.cosgz.myqcloud.com/1532524409.png) 
 
-### 运行示例 Demo
+#### 配置基本信息
 
-#### 查询 bucket 列表并创建 bucket
+您必须在 app 中配置您的 appid、服务端的地址和端口号（默认为 5000），才能正确的使用我们的服务：
 
-启动示例 app 后，默认会显示您账号下所有 region 为北京的 bucket 列表，您也可以点击菜单在该 region 下创建新的 bucket：
-
-![](http://cos-terminal-resource-1253960454.cossh.myqcloud.com/list_bucket.jpg)
-
-#### 上传文件
-
-您可以点击最下面的按钮依次【选择文件】->【开始上传】->【取消上传】来进行上传测试：
-
-![](http://cos-terminal-resource-1253960454.cossh.myqcloud.com/upload_file.jpg)
+选择【右上角的菜单栏】-> 点击【配置参数】
 
 
-您可以参考 [../src/main/java/com/tencent/cosxml/assistant/data/RemoteStorage.java](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCosSimpleSample/CosXMLSampleLite/app/src/main/java/com/tencent/cosxml/assistant/data/RemoteStorage.java) 文件来编写上传文件功能代码。
 
+[项目 GitHub 地址](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCosSimpleSample)。
 
-## FAQ
+<a id="FAQ"></a>
+## 常见问题
 
 搭建临时密钥的过程中可能会出错，如果出现了对应的错误，可以参考以下的信息：
+1. **问题：**运行安装命令`pip3 install flask`提示`comment not found pip3`。
+**分析：**因为没有安装 Python3，或安装了 Python3 但 path 没有设置正确。
+**解决方案：**可根据系统对应寻找 Python3 安装方式进行安装，或检查 path 设置。
 
-1. 问题：运行安装命令 pip3 install flask 提示 comment not found pip3    
-解决方案：这是因为没有安装 python3，或者 path 没有设置对（如果安装了 Python 3 ），可根据系统对应寻找安装
-方式
-
-2. 运行起来以后，获取临时密钥时提示 URLError: urlopen error [SSL: CERTIFICATE\_VERIFY\_FAILED] certificate verify failed 字样的错误    
-该问题常见于 MAC OS X 系统，安装 certifi 模块即可，具体操作方式可参考 [安装命令](https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error/42334357#42334357) 。
+2. **问题：**服务运行起来以后，获取临时密钥时提示`URLError: urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed`错误。
+**解决方案：**该问题常见于 MAC OS X 系统，安装 certifi 模块即可，具体操作方式可参考 [Stack Overflow FAQ](https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error/42334357#42334357)。
