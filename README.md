@@ -7,7 +7,7 @@
 当前仓库内提供的示例有:
 
 * QCloudCosXmlSample - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436)
-* QCloudCosSimpleSample - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 开箱即用示例
+* QCloudCosQuickStart - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 快速体验，包含了 cossign 临时密钥服务和 Android 简单示例两个工程。
 * QCloudFaceInSample - [腾讯云 FaceIn 人脸核身](https://cloud.tencent.com/product/facein)
 
 
