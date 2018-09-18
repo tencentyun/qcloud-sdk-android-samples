@@ -18,7 +18,6 @@ import com.tencent.cosxml.assistant.R;
  */
 public class TransferActivity extends AppCompatActivity {
 
-
     private final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1000;
 
     @Override

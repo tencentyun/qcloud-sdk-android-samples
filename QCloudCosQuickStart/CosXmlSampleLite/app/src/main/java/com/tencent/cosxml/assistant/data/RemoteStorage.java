@@ -153,6 +153,8 @@ public class RemoteStorage {
             cosXmlService.putBucketAsync(new PutBucketRequest(bucketName), resultListener);
         }
 
+
+
     }
 
     /**
@@ -185,6 +187,7 @@ public class RemoteStorage {
         resumeData.cosPath = cosPath;
         resumeData.bucket = bucketName;
         resumeData.srcPath = localPath;
+        resumeData.uploadId = "";
 
         /**
          * 上传服务类，这个类封装了 {@link CosXmlService} 几个上传相关的接口，通过使用该接口，您可以更加方便的上传文件。
