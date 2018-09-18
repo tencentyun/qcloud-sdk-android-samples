@@ -57,6 +57,12 @@ public class RemoteStorage {
     private boolean isHttps;
     private String appid;
     private String region;
+
+    /**
+     * 您的服务器对应的主域名，默认为 myqcloud.com，设置后访问地址为：
+     *
+     * {bucket-name}-{appid}.cos.{cos-region}.{domainSuffix}
+     */
     private String domainSuffix;
 
     public RemoteStorage(Context context, String appid, String region, String domainSuffix) {
