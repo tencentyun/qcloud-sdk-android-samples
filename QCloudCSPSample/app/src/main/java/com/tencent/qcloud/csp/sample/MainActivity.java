@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
             String bucketNameText = bucketName.getText().toString();
             if (!TextUtils.isEmpty(bucketNameText)) {
                 //taskFactory.createPutObjectTask(this, remoteStorage, bucketNameText, filePath, filePath).execute();
-                taskFactory.createSimplePutObjectTask(this, remoteStorage, bucketNameText, filePath, filePath).execute();
+                taskFactory.createPutObjectTask(this, remoteStorage, bucketNameText, filePath, filePath).execute();
             }
         }
     }
