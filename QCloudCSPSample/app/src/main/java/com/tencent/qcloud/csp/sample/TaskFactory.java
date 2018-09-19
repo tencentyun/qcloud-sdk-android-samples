@@ -123,7 +123,9 @@ public class TaskFactory {
         @Override
         protected void onPostExecute(PutBucketResult putBucketResult) {
 
-            Toast.makeText(context, putBucketResult.printResult(), Toast.LENGTH_SHORT).show();
+            if (putBucketResult != null) {
+                Toast.makeText(context, putBucketResult.printResult(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -173,7 +175,9 @@ public class TaskFactory {
         @Override
         protected void onPostExecute(UploadService.UploadServiceResult uploadServiceResult) {
 
-            Toast.makeText(context, uploadServiceResult.printResult(), Toast.LENGTH_SHORT).show();
+            if (uploadServiceResult != null) {
+                Toast.makeText(context, uploadServiceResult.printResult(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -223,7 +227,9 @@ public class TaskFactory {
         @Override
         protected void onPostExecute(PutObjectResult putObjectResult) {
 
-            Toast.makeText(context, putObjectResult.printResult(), Toast.LENGTH_SHORT).show();
+            if (putObjectResult != null) {
+                Toast.makeText(context, putObjectResult.printResult(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

@@ -21,10 +21,12 @@ import com.tencent.cos.xml.model.object.PutObjectResult;
 import com.tencent.cos.xml.model.service.GetServiceRequest;
 import com.tencent.cos.xml.model.service.GetServiceResult;
 import com.tencent.cos.xml.transfer.UploadService;
+import com.tencent.qcloud.core.auth.COSXmlSignSourceProvider;
 import com.tencent.qcloud.core.auth.COSXmlSigner;
 import com.tencent.qcloud.core.auth.QCloudCredentialProvider;
 import com.tencent.qcloud.core.auth.QCloudCredentials;
 import com.tencent.qcloud.core.auth.QCloudSignSourceProvider;
+import com.tencent.qcloud.core.auth.QCloudSigner;
 import com.tencent.qcloud.core.auth.ShortTimeCredentialProvider;
 import com.tencent.qcloud.core.common.QCloudClientException;
 import com.tencent.qcloud.core.http.HttpConstants;
@@ -40,10 +42,6 @@ import okhttp3.RequestBody;
 import okio.BufferedSink;
 
 /**
- * 这里给出了如下几点示例：
- *
- * 1、如何利用 {@link UploadService} 对象来上传。
- * 2、封装了 {@link GetServiceRequest} 和 {@link PutBucketRequest} 两个简单请求。
  *
  * Created by rickenwang on 2018/6/29.
  * <p>
@@ -58,26 +56,19 @@ public class RemoteStorage {
     private String appid;
     private String region;
 
-    /**
-     * 您的服务器对应的主域名，默认为 myqcloud.com，设置后访问地址为：
-     *
-     * {bucket-name}-{appid}.cos.{cos-region}.{domainSuffix}
-     */
-    private String domainSuffix;
 
     public RemoteStorage(Context context, String appid, String region, String domainSuffix) {
 
         isHttps = false;
         this.appid = appid;
         this.region = region;
-        this. domainSuffix = domainSuffix;
 
         /**
          * 初始化配置
          */
         CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
                 .isHttps(isHttps)
-                .setAppidAndRegion(appid, region)
+                .setAppidAndRegion(appid, region) // appid 和 region 均可以为空
                 .setDebuggable(true)
                 .setDomainSuffix(domainSuffix)  // 私有云需要设置主域名
                 .builder();
@@ -86,9 +77,9 @@ public class RemoteStorage {
          * 私有云暂时不支持临时密钥进行签名，如果直接在客户端直接使用永久密钥会有安全性问题，因此这里采用
          * 服务端直接下发签名的方式来进行鉴权。
          */
-        QCloudCredentialProvider credentialProvider = null;
+        QCloudSigner qCloudSigner = new MyQCloudSigner();
 
-        cosXmlService = new CosXmlService(context, cosXmlServiceConfig, credentialProvider);
+        cosXmlService = new CosXmlService(context, cosXmlServiceConfig, qCloudSigner);
     }
 
 
@@ -98,12 +89,6 @@ public class RemoteStorage {
     public GetServiceResult getService() throws CosXmlServiceException, CosXmlClientException {
 
         GetServiceRequest getServiceRequest = new GetServiceRequest();
-
-        /**
-         * 从远程服务端获取签名来授权请求
-         */
-        String sign = getSignFromRemoteService(getServiceRequest);
-        getServiceRequest.setSign(sign);
 
         return cosXmlService.getService(getServiceRequest);
     }
@@ -117,12 +102,6 @@ public class RemoteStorage {
     public PutBucketResult putBucket(String bucketName) throws CosXmlServiceException, CosXmlClientException {
 
         PutBucketRequest putBucketRequest = new PutBucketRequest(bucketName);
-
-        /**
-         * 从远程服务端获取签名来授权请求
-         */
-        String sign = getSignFromRemoteService(putBucketRequest);
-        putBucketRequest.setSign(sign);
 
         return cosXmlService.putBucket(putBucketRequest);
     }
@@ -161,98 +140,7 @@ public class RemoteStorage {
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, cosPath, localPath);
         putObjectRequest.setProgressListener(progressListener);
 
-        /**
-         * 从远程服务端获取签名来授权请求
-         */
-        String sign = getSignFromRemoteService(putObjectRequest);
-        putObjectRequest.setSign(sign);
-
         return cosXmlService.putObject(putObjectRequest);
     }
 
-
-    /**
-     * 您需要向您的服务器去请求签名；
-     *
-     * @param request
-     * @return
-     */
-    private String getSignFromRemoteService(CosXmlRequest request) throws CosXmlClientException {
-
-        /**
-         * 获取 {@link CosXmlRequest} 的 HTTP 参数
-         */
-        String method = request.getMethod();
-        String scheme = isHttps ? "https" : "http";
-        String host = request.getHost(appid, region, domainSuffix, false);
-        String path = request.getPath();
-        Map<String, List<String>> headers = request.getRequestHeaders();
-
-        /**
-         * 根据 HTTP 参数计算签名，这里测试是在本地计算签名，请您在服务端生成签名
-         */
-        return exampleLocalSignerService(method, scheme, host, path, headers, request.getSignSourceProvider());
-    }
-
-
-    /**
-     * 这里仅仅是为了方便测试，在本地生成了签名串，生产环境下不能使用这个方法。
-     *
-     * 正式使用时请在服务端根据 COS 签名文档来计算 COS 请求对应的签名串，然后返回给终端用于身份校验。
-     *
-     * @return
-     */
-    @Deprecated
-    private String exampleLocalSignerService(String method, String schema, String host, String path,
-                                             Map<String, List<String>> headers, QCloudSignSourceProvider sourceProvider) {
-
-        String secretId = "AKIDZuxhBMAbeOovjDtI42h3mCJ7dsnQwkSq";
-        String secretKey = "MUKs73g01j8DzTdU2HDqBDzpLbYBSOzF";
-
-        ShortTimeCredentialProvider credentialProvider = new ShortTimeCredentialProvider(secretId, secretKey, 600);
-        QCloudHttpRequest.Builder httpRequestBuilder = null;
-
-        httpRequestBuilder = new QCloudHttpRequest.Builder()
-                .method(method)
-                .scheme(schema)
-                .host(host)
-                .path(path)
-                .addHeader(HttpConstants.Header.HOST, host)
-                .userAgent(CosXmlServiceConfig.DEFAULT_USER_AGENT)
-                .signer("CosXmlSigner", sourceProvider);
-
-        /**
-         * PUT HTTP 请求 body 不能为空
-         */
-        if (method.equalsIgnoreCase("put")) {
-            httpRequestBuilder.body(new RequestBodySerializer() {
-                @Override
-                public RequestBody body() {
-                    return new RequestBody() {
-                        @Nullable
-                        @Override
-                        public MediaType contentType() {
-                            return MediaType.parse("plaint/text");
-                        }
-
-                        @Override
-                        public void writeTo(BufferedSink bufferedSink) throws IOException {
-                            bufferedSink.write(new byte[3]);
-                        }
-                    };
-                }
-            });
-        }
-
-        QCloudHttpRequest httpRequest = httpRequestBuilder.build();
-
-        try {
-            COSXmlSigner cosXmlSigner =  new COSXmlSigner();
-            cosXmlSigner.sign(httpRequest, credentialProvider.getCredentials());
-        } catch (QCloudClientException e) {
-            e.printStackTrace();
-        }
-        Object auth = httpRequest.headers().get("Authorization");
-        return (String) ((List)auth).get(0);
-    }
 }

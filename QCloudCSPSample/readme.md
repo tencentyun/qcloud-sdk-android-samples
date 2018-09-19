@@ -21,7 +21,7 @@
 
 您可以在这里 [COS XML Android SDK-release](https://github.com/tencentyun/qcloud-sdk-android/releases) 下载所有的 jar 包，建议您使用最新的 release 包。
 
-> cos-android-sdk.jar 必须使用 5.4.14 及其以上版本。
+> cos-android-sdk.jar 必须使用 5.4.14 及其以上版本、qcloud-foundation 必须使用 1.5.3 及其以上版本。
 
 ### 配置权限
 
@@ -34,7 +34,7 @@
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 ```
 
-> 示例 demo 请参考 []()
+> 示例 demo 请参考 [QCloudCSPSample](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCSPSample)
 
 ## 快速入门
 
@@ -60,25 +60,60 @@ String domainSuffix = "your domain suffix";
 //创建 CosXmlServiceConfig 对象，根据需要修改默认的配置参数
 CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
                 .isHttps(isHttps)
-                .setAppidAndRegion(appid, region)
+                .setAppidAndRegion(appid, region) // 如果没有 appid 和 region，请设置为空
                 .setDebuggable(true)
-                .setDomainSuffix(domainSuffix)  //私有云需要设置主域名
+                .setDomainSuffix(domainSuffix)  //私有云需要设置主域名，默认为 myqcloud.com
                 .builder();
 ```
 
 #### 初始化授权类
 
-`QCloudCredentialProvider` 是 COS 服务的授权类，可以给请求添加签名来认证您的身份。
+您需要实例化一个COS 服务的授权类，来给请求添加签名来认证您的身份。
 
 ##### 通过设置签名字符串进行授权（推荐）
 
-私有云存储暂时不支持用临时密钥进行授权，您必须给每个 CSP 请求单独设置签名串来进行授权，签名串的计算方式请参考 [请求签名](https://cloud.tencent.com/document/product/436/7778)，这里您首先需要将授权类配置为 `null`：
+私有云存储暂时不支持用临时密钥进行授权，您必须在服务端计算签名后，返回给客户端使用，
+
+首先您需要实现 `QCloudSigner` 接口
 
 ```
-/**
- * 初始化 {@link QCloudCredentialProvider} 对象，来给 SDK 提供临时密钥。
- */
-QCloudCredentialProvider credentialProvider = null;
+public class MyQCloudSigner implements QCloudSigner {
+
+    /**
+     * @param request 即为发送到 CSP 服务端的请求，您需要根据这个 HTTP 请求的参数来计算签名，并给其添加 Authorization header
+     * @param credentials 空字段，请不要使用
+     * @throws QCloudClientException 您可以在处理过程中抛出异常
+     */
+    @Override
+    public void sign(QCloudHttpRequest request, QCloudCredentials credentials) throws QCloudClientException {
+
+        /**
+         * 获取计算签名所需字段
+         */
+        URL url = request.url();
+        String method = request.method();
+        String host = url.getHost();
+        String schema = url.getProtocol();
+        String path = url.getPath();
+        Map<String, List<String>> headers = request.headers();
+
+        /**
+         * 向您自己的服务端请求签名
+         */
+        String sign = getSignFromYourServer(method, schema, host, path, headers);
+
+        /**
+         * 给请求设置 Authorization Header
+         */
+        request.addHeader("Authorization", sign);
+    }
+
+```
+
+然后实例化一个实现了 `QCloudSigner` 接口的对象：
+
+```
+QCloudSigner credentialProvider = new MyQCloudSigner();
 ```
 ##### 通过永久密钥进行授权
 
@@ -105,15 +140,18 @@ CosXmlService cosXmlService = new CosXmlService(context, serviceConfig, credenti
 
 ### 上传文件
 
-将本地文件上传到 COS，适用于图片类小文件(20M以下)上传，最大支持 5 GB(含), 5 GB 以上必须使用分块上传。如果COS上已存在对象, 则会进行覆盖。简单上传接口无法进行暂停和续传，一旦在上传过程中出现异常情况导致失败，那么您需要重新上传，具体代码如下：
+`UploadService` 是一个通用的上传类，它可以上传不超过 50T 大小的文件，并支持暂停、恢复以及取消上传请求，同时对于超过 2M 的文件会有断点续传功能，我们推荐您使用这种方式来上传文件，更多用法请参考 [通过 UploadService 上传](https://cloud.tencent.com/document/product/436/11238#.3Cspan-id-.3D-.22upload_service.22.3E.E9.80.9A.E8.BF.87-uploadservice-.E4.B8.8A.E4.BC.A0.EF.BC.88.E6.8E.A8.E8.8D.90.EF.BC.89.3C.2Fspan.3E)，上传部分示例代码如下：
 
 ```java
-String bucketName = "your bucket name";
-String cosPath = "上传到 cos 的路径";
-String localPath = "本地文件路径";
+UploadService.ResumeData uploadData = new UploadService.ResumeData();
+uploadData.bucket = "存储桶名称";
+uploadData.cosPath = "[对象键](https://cloud.tencent.com/document/product/436/13324)，即存储到 COS 上的绝对路径"; //格式如 cosPath = "test.txt";
+uploadData.srcPath = "本地文件的绝对路径"; // 如 srcPath =Environment.getExternalStorageDirectory().getPath() + "/test.txt";
+uploadData.sliceSize = 1024 * 1024; //每个分片的大小
+uploadData.uploadId = null; // 若是续传，则uploadId不为空
 
-PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, cosPath, localPath);
-putObjectRequest.setProgressListener(new CosXmlProgressListener() {
+UploadService uploadService = new UploadService(cosXmlService, uploadData);
+uploadService.setProgressListener(new CosXmlProgressListener() {
     @Override
     public void onProgress(long progress, long max) {
         // todo Do something to update progress...
@@ -121,14 +159,18 @@ putObjectRequest.setProgressListener(new CosXmlProgressListener() {
 });
 
 /**
- * 从远程服务端获取签名来授权请求，如果您通过永久密钥进行授权，那么不再需要调用 setSign() 方法。
+ * 开始上传
  */
-String sign = getSignFromRemoteService(putObjectRequest);
-putObjectRequest.setSign(sign);
-
-return cosXmlService.putObject(putObjectRequest);
+try {
+    CosXmlResult cosXmlResult = uploadService.upload();
+} catch (CosXmlClientException e) {
+    e.printStackTrace();
+} catch (CosXmlServiceException e) {
+    e.printStackTrace();
+}
 ```
-> 所有的请求都有同步和异步两种方式，以上示例代码中采用的是同步方式。
+> 如果您的文件大部分为不超过 20M 的小文件，可以使用 [简单上传接口](https://cloud.tencent.com/document/product/436/11238#.E7.AE.80.E5.8D.95.E4.B8.8A.E4.BC.A0.E6.96.87.E4.BB.B6) 来上传。
+
 
 ### 下载文件
 
@@ -168,9 +210,9 @@ cosXmlService.release();
 ## 和公有云对比
 
 - 公有云 `domainSuffix` 不可修改，私有云默认和公有云保持一致，为 `myqcloud.com`，但是允许用户自定义；
+- 私有云的 appid、region 可以为空；
 - 公有云支持临时密钥，私有云不支持；
-- 公有云支持 UploadService 上传，私有云不支持；
-- cos-android-sdk.jar 必须使用 5.4.14 及其以上版本。
+- 私有云必须使用 cos-android-sdk.jar 5.4.14 及其以上版本，qcloud-foundation 1.5.3 及其以上版本。
 
 
 > 更多使用接口请参考：[Android SDK 接口文档](https://cloud.tencent.com/document/product/436/11238)
