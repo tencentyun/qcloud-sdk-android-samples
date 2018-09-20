@@ -109,7 +109,7 @@ public class MyQCloudSigner implements QCloudSigner {
          */
         request.addHeader("Authorization", sign);
     }
-
+}
 ```
 
 然后实例化一个实现了 `QCloudSigner` 接口的对象：
