@@ -126,14 +126,14 @@ QCloudSigner credentialProvider = new MyQCloudSigner();
 
 ###### 请求示例
 
-将所有签名需要的参数以 JSON 的格式放在 HTTP 请求的 body 中，注意每一个 header 的 key 对应的是一个字符串数组。
+将所有签名需要的参数以 JSON 的格式放在 HTTP 请求的 body 中。
 
 ```
 PUT http://10.19.90.144:5000/auth http/1.1
 Content-Length: 165
 Host: 10.19.90.144
 
-{"method":"GET","schema":"http","host":"service.cos.wh.yun.ccb.com","path":"\/","headers":"{Host=[service.cos.wh.yun.ccb.com], User-Agent=[cos-android-sdk-5.4.14]}"}
+{"method":"PUT","schema":"http","host":"cos.wh.yun.ccb.com","path":"\/man-2.mov","headers":{"User-Agent":"cos-android-sdk-5.4.14","Host":"cos.wh.yun.ccb.com","Content-MD5":"fTWBVPpSSep2CwMe7gEAaw=="},"params":{"partNumber":"10","uploadId":"uploadid"}}
 ```
 
 ###### 响应示例
