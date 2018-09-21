@@ -129,7 +129,7 @@ QCloudSigner credentialProvider = new MyQCloudSigner();
 将所有签名需要的参数以 JSON 的格式放在 HTTP 请求的 body 中。
 
 ```
-PUT http://10.19.90.144:5000/auth http/1.1
+PUT /auth http/1.1
 Content-Length: 165
 Host: 10.19.90.144
 
