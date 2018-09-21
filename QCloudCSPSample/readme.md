@@ -120,7 +120,7 @@ QCloudSigner credentialProvider = new MyQCloudSigner();
 ```
 ##### 按照指定协议进行授权
 
-为了尽可能的简化用户的开发成本，如果您使用 HTTP 协议，并按如下格式实现终端和服务端授权通信，那么您可以直接使用 [RemoteCOSSigner]() 类来进行授权，该类只需要您传递一个实现了签名服务的 `URL` 地址即可。
+为了尽可能的简化用户的开发成本，如果您使用 HTTP 协议，并按如下格式实现终端和服务端授权通信，那么您可以直接使用 [RemoteCOSSigner](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCSPSample/app/src/main/java/com/tencent/qcloud/csp/sample/RemoteCOSSigner.java) 类来进行授权，该类只需要您传递一个实现了签名服务的 `URL` 地址即可。
 
 > `RemoteCOSSigner` 并没有放在 SDK 中，请您直接从 [QCloudCSPSample](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCSPSample) 中拷贝到您的工程下。
 
