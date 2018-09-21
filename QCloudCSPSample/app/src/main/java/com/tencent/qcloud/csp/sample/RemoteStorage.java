@@ -1,19 +1,11 @@
 package com.tencent.qcloud.csp.sample;
-
-/**
- * Created by rickenwang on 2018/9/18.
- * <p>
- * Copyright (c) 2010-2020 Tencent Cloud. All rights reserved.
- */
 import android.content.Context;
-import android.support.annotation.Nullable;
 
 import com.tencent.cos.xml.CosXmlService;
 import com.tencent.cos.xml.CosXmlServiceConfig;
 import com.tencent.cos.xml.exception.CosXmlClientException;
 import com.tencent.cos.xml.exception.CosXmlServiceException;
 import com.tencent.cos.xml.listener.CosXmlProgressListener;
-import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.bucket.PutBucketRequest;
 import com.tencent.cos.xml.model.bucket.PutBucketResult;
 import com.tencent.cos.xml.model.object.PutObjectRequest;
@@ -21,25 +13,11 @@ import com.tencent.cos.xml.model.object.PutObjectResult;
 import com.tencent.cos.xml.model.service.GetServiceRequest;
 import com.tencent.cos.xml.model.service.GetServiceResult;
 import com.tencent.cos.xml.transfer.UploadService;
-import com.tencent.qcloud.core.auth.COSXmlSignSourceProvider;
-import com.tencent.qcloud.core.auth.COSXmlSigner;
-import com.tencent.qcloud.core.auth.QCloudCredentialProvider;
-import com.tencent.qcloud.core.auth.QCloudCredentials;
-import com.tencent.qcloud.core.auth.QCloudSignSourceProvider;
 import com.tencent.qcloud.core.auth.QCloudSigner;
-import com.tencent.qcloud.core.auth.ShortTimeCredentialProvider;
-import com.tencent.qcloud.core.common.QCloudClientException;
-import com.tencent.qcloud.core.http.HttpConstants;
-import com.tencent.qcloud.core.http.QCloudHttpRequest;
-import com.tencent.qcloud.core.http.RequestBodySerializer;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okio.BufferedSink;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  *
@@ -70,6 +48,7 @@ public class RemoteStorage {
                 .isHttps(isHttps)
                 .setAppidAndRegion(appid, region) // appid 和 region 均可以为空
                 .setDebuggable(true)
+                .setBucketInPath(true)
                 .setDomainSuffix(domainSuffix)  // 私有云需要设置主域名
                 .builder();
 
@@ -77,9 +56,19 @@ public class RemoteStorage {
          * 私有云暂时不支持临时密钥进行签名，如果直接在客户端直接使用永久密钥会有安全性问题，因此这里采用
          * 服务端直接下发签名的方式来进行鉴权。
          */
-        QCloudSigner qCloudSigner = new MyQCloudSigner();
 
-        cosXmlService = new CosXmlService(context, cosXmlServiceConfig, qCloudSigner);
+        /**
+         * 您的服务端签名的 URL 地址
+         */
+        URL url = null;
+        try {
+            url = new URL("http", "10.65.94.33", 5000, "/auth");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        QCloudSigner cosSigner = new RemoteCOSSigner(url);
+
+        cosXmlService = new CosXmlService(context, cosXmlServiceConfig, cosSigner);
     }
 
 
