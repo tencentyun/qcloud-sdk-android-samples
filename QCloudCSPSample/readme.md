@@ -21,7 +21,7 @@
 - okhttp.jar
 - okio.jar
 
-您可以在这里 [COS XML Android SDK-release](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCSPSample/app/libs) 下载所有的 jar 包。
+您可以直接 clone 示例 demo [QCloudCSPSample](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCSPSample)，然后在 app/libs 目录下获取所有的 jar 包。
 
 > cos-android-sdk.jar 必须使用 5.4.14.1 及其以上版本、qcloud-foundation 必须使用 1.5.3.1 及其以上版本。
 
@@ -110,7 +110,7 @@ public class MyQCloudSigner implements QCloudSigner {
          */
         request.addHeader("Authorization", sign);
     }
-
+}
 ```
 
 然后实例化一个实现了 `QCloudSigner` 接口的对象：
