@@ -23,11 +23,12 @@
 
 您可以在这里 [COS XML Android SDK-release](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCSPSample/app/libs) 下载所有的 jar 包。
 
-> cos-android-sdk.jar 必须使用 5.4.14 及其以上版本、qcloud-foundation 必须使用 1.5.3 及其以上版本。
+> cos-android-sdk.jar 必须使用 5.4.14.1 及其以上版本、qcloud-foundation 必须使用 1.5.3.1 及其以上版本。
 
 ### 配置权限
 
 使用该 SDK 需要网络、存储等相关的一些访问权限，可在 AndroidManifest.xml 中增加如下权限声明（Android 5.0 以上还需要动态获取权限）：
+
 ```html
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -117,7 +118,55 @@ public class MyQCloudSigner implements QCloudSigner {
 ```
 QCloudSigner credentialProvider = new MyQCloudSigner();
 ```
-##### 通过永久密钥进行授权
+##### 按照指定协议进行授权
+
+为了尽可能的简化用户的开发成本，如果您使用 HTTP 协议，并按如下格式实现终端和服务端授权通信，那么您可以直接使用 [RemoteCOSSigner]() 类来进行授权，该类只需要您传递一个实现了签名服务的 `URL` 地址即可。
+
+> `RemoteCOSSigner` 并没有放在 SDK 中，请您直接从 [QCloudCSPSample](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCSPSample) 中拷贝到您的工程下。
+
+###### 请求示例
+
+将所有签名需要的参数以 JSON 的格式放在 HTTP 请求的 body 中，注意每一个 header 的 key 对应的是一个字符串数组。
+
+```
+PUT http://10.19.90.144:5000/auth http/1.1
+Content-Length: 165
+Host: 10.19.90.144
+
+{"method":"GET","schema":"http","host":"service.cos.wh.yun.ccb.com","path":"\/","headers":"{Host=[service.cos.wh.yun.ccb.com], User-Agent=[cos-android-sdk-5.4.14]}"}
+```
+
+###### 响应示例
+
+将签名以 JSON 的格式放在 HTTP 响应的 body 中，注意 JSON 的 key 必须为 "sign"。
+
+```
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 20
+Server: Werkzeug/0.14.1 Python/3.6.5
+Date: Thu, 20 Sep 2018 13:42:35 GMT
+
+{"sign":"q-sign-algorithm=sha1&q-ak=AKIDZuxhBMAbeOovjDtI42h3mCJ7dsnQwkSq&q-sign-time=1537494643;1537495243&q-key-time=1537494643;1537495243&q-header-list=&q-url-param-list=&q-signature=5a80f9fd31a4db772969a164bdad15a96efee73c"}
+```
+
+如果您的签名服务器是以如上协议来给终端发送签名，那么您可以如下初始化授权类：
+
+```
+/**
+ * 您的服务端签名的 URL 地址
+ */
+URL url = null;
+try {
+    url = new URL("http", "10.65.94.33", 5000, "/auth");
+} catch (MalformedURLException e) {
+    e.printStackTrace();
+}
+
+QCloudSigner credentialProvider = new RemoteCOSSigner(url);
+```
+
+##### 通过永久密钥本地计算签名进行授权
 
 除了通过直接设置签名串来进行授权，您还可以使用永久密钥来初始化授权类，需要指出的是，由于会存在泄漏密钥的风险，我们**强烈不推荐您使用这种方式**，您应该仅仅在安全的环境下临时测试时使用：
 
@@ -214,7 +263,7 @@ cosXmlService.release();
 - 公有云 `domainSuffix` 不可修改，私有云默认和公有云保持一致，为 `myqcloud.com`，但是允许用户自定义；
 - 私有云的 appid、region 可以为空；
 - 公有云支持临时密钥，私有云不支持；
-- 私有云必须使用 cos-android-sdk.jar 5.4.14 及其以上版本，qcloud-foundation 1.5.3 及其以上版本。
+- 私有云必须使用 cos-android-sdk.jar 5.4.14.1 及其以上版本，qcloud-foundation 1.5.3.1 及其以上版本。
 
 
 > 更多使用接口请参考：[Android SDK 接口文档](https://cloud.tencent.com/document/product/436/11238)

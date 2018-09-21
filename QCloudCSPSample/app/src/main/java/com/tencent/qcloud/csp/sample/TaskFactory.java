@@ -90,8 +90,12 @@ public class TaskFactory {
 
         protected void onPostExecute(GetServiceResult getServiceResult) {
 
-            List<ListAllMyBuckets.Bucket> buckets = getServiceResult.listAllMyBuckets.buckets;
-            Toast.makeText(context, buckets.toString(), Toast.LENGTH_SHORT).show();
+            if (getServiceResult != null && getServiceResult.listAllMyBuckets != null) {
+                List<ListAllMyBuckets.Bucket> buckets = getServiceResult.listAllMyBuckets.buckets;
+                Toast.makeText(context, buckets.toString(), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "GetService failed", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
