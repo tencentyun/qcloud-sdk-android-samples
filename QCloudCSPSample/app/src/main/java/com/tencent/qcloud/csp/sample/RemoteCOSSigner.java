@@ -10,10 +10,13 @@ import com.tencent.qcloud.core.http.QCloudHttpClient;
 import com.tencent.qcloud.core.http.QCloudHttpRequest;
 import com.tencent.qcloud.core.http.RequestBodySerializer;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,11 +52,13 @@ public class RemoteCOSSigner implements QCloudSigner {
         String host = url.getHost();
         String schema = url.getProtocol();
         String path = url.getPath();
-        Map<String, List<String>> headers = request.headers();
+        Map<String, String> headers = getHeaderMap(request.headers());
+        Map<String, String> params = getQueryMap(url.getQuery());
+
 
         String signFieldJson = null;
         try {
-            signFieldJson = signField2Json(method, schema, host, path, headers);
+            signFieldJson = signField2Json(method, schema, host, path, headers, params);
         } catch (JSONException e) {
             e.printStackTrace();
             throw new QCloudClientException("sign field transfer to json failed");
@@ -94,21 +99,61 @@ public class RemoteCOSSigner implements QCloudSigner {
         request.addHeader("Authorization", sign);
     }
 
+    private Map<String, String> getHeaderMap(Map<String, List<String>> multiValuesHeaders) {
+
+        Map<String, String> header = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : multiValuesHeaders.entrySet()) {
+
+            if (entry.getValue().size() > 0) {
+                header.put(entry.getKey(), entry.getValue().get(0));
+            }
+        }
+
+        return header;
+    }
+
+    private Map<String, String> getQueryMap(String query)
+    {
+
+        Map<String, String> map = new HashMap<>();
+        if (TextUtils.isEmpty(query)) {
+            return map;
+        }
+
+        String[] params = query.split("&");
+        for (String param : params)
+        {
+            String[] paramKeyValue = param.split("=");
+            if (paramKeyValue.length >= 2) {
+                String name = paramKeyValue[0];
+                String value = paramKeyValue[1];
+                map.put(name, value);
+            }
+        }
+        return map;
+    }
+
     /**
      * 将签名需要的字段转化为 json 字符串
      *
      * @return
      */
-    private String signField2Json(String method, String schema, String host, String path, Map<String, List<String>> headers) throws JSONException {
+    private String signField2Json(String method, String schema, String host, String path,
+                                 Map<String, String> headers, Map<String, String> params) throws JSONException {
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("method", method);
-        jsonObject.put("schema", schema);
-        jsonObject.put("host", host);
-        jsonObject.put("path", path);
-        jsonObject.put("headers", headers);
+        JSONObject signJson = new JSONObject();
+        signJson.put("method", method);
+        signJson.put("schema", schema);
+        signJson.put("host", host);
+        signJson.put("path", path);
 
-        return jsonObject.toString();
+        JSONObject headersJSON = new JSONObject(headers);
+        signJson.put("headers", headersJSON);
+
+        JSONObject paramsJSON = new JSONObject(params);
+        signJson.put("params", paramsJSON);
+
+        return signJson.toString();
     }
 
     private String getSignFromResponse(String response) throws JSONException {
