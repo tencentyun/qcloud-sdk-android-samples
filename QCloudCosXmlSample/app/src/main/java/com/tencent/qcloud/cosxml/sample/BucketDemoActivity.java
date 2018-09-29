@@ -153,8 +153,8 @@ public class BucketDemoActivity extends AppCompatActivity implements View.OnClic
                 Toast.makeText(this, "请先点击 \"Put Bucket\" 创建Bucket", Toast.LENGTH_LONG).show();
                 return;
             }
-            //  start(id);
-            startAsync(id);
+            start(id);
+            //startAsync(id);
         }
     }
     public void start(final int id) {

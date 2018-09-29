@@ -25,16 +25,16 @@ import java.util.Map;
 public class QServiceCfg {
 
     /** 腾讯云 cos 服务的 appid */
-    private final String appid = "1253653367";
+    private final String appid = "1252386093";
 
     /** appid 对应的 秘钥 */
-    private final String secretId = "XXX";
+    private final String secretId = "填写密钥secretId";
 
     /** appid 对应的 秘钥 */
-    private final String secretKey = "XXXX";
+    private final String secretKey = "填写密钥secretKey";
 
     /** bucketForObjectAPITest 所处在的地域 */
-    private String region = Region.AP_Shanghai.getRegion();
+    private String region = Region.AP_Guangzhou.getRegion();
 
 
     /**
@@ -133,7 +133,7 @@ public class QServiceCfg {
          */
         identity = Identifier.getIdentifier(context);
 
-        bucketForObjectAPITest = "objecttest";
+        bucketForObjectAPITest = "rickenwang-guagnzhou";
 
         uploadCosPath = String.format("/upload_%d.txt", identity);
         multiUploadCosPath = String.format("/bigfile_%d", identity);

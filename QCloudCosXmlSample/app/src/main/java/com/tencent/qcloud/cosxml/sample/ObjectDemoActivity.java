@@ -13,14 +13,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tencent.cos.xml.model.object.AbortMultiUploadResult;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.AbortMultiUploadSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.DeleteMultiObjectSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.DeleteObjectSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.GetObjectACLSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.GetObjectSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.HeadObjectSample;
-import com.tencent.qcloud.cosxml.sample.ObjectSample.InitMultipartUploadSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.MultiUploadSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.MultipartUploadHelperSample;
 import com.tencent.qcloud.cosxml.sample.ObjectSample.OptionObjectSample;
