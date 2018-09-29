@@ -13,8 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.tencent.qcloud.cosxml.sample.R;
-
 public class MainActivity extends AppCompatActivity {
 
     Button serviceBtn;
@@ -71,11 +69,16 @@ public class MainActivity extends AppCompatActivity {
                 android.os.Process.killProcess(Process.myPid());
             }
         });
+
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.w("XIAO","requestCode =" + requestCode + "; permission =" + permissions[1] + "; grantResult =" + grantResults[0]);
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
     }
+
+
 }
+

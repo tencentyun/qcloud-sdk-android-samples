@@ -1,7 +1,0 @@
-{
-    "services": {
-        "crash": {
-            "appKey": "<your crash app key>"
-        }
-    }
-}
