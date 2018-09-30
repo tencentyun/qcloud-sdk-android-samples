@@ -13,6 +13,35 @@
 
 ### 集成 SDK
 
+#### 自动集成（**推荐**）
+
+1、在您的项目根目录下的 build.gradle 文件中添加 maven 仓库：
+
+```
+allprojects {
+
+    repositories {
+        ...
+        // 添加如下 maven 仓库地址
+        maven {
+            url "https://dl.bintray.com/tencentqcloudterminal/maven"
+        }
+    }
+}
+```
+
+2、在应用的根目录下的 build.gradle 中添加依赖：
+
+```
+dependencies {
+	...
+    // 增加这行
+    implementation 'com.tencent.qcloud:cosxml:5.4.+'
+}
+```
+
+#### 手动集成
+
 需要在工程项目中导入下列 jar 包，存放在 libs 文件夹下：
 
 - cos-android-sdk.jar
@@ -20,10 +49,12 @@
 - bolts-tasks.jar
 - okhttp.jar
 - okio.jar
+- mid-sdk.jar
+- mta-android-sdk.jar
 
-您可以直接 clone 示例 demo [QCloudCSPSample](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCSPSample)，然后在 app/libs 目录下获取所有的 jar 包。
+您可以在这里 [COS XML Android SDK-release](https://github.com/tencentyun/qcloud-sdk-android/releases) 下载所有的 jar 包，建议您使用最新的 release 包。
 
-> cos-android-sdk.jar 必须使用 5.4.14.1 及其以上版本、qcloud-foundation 必须使用 1.5.3.1 及其以上版本。
+> cos-android-sdk.jar 必须使用 5.4.14 及其以上版本、qcloud-foundation 必须使用 1.5.3 及其以上版本。
 
 ### 配置权限
 
@@ -64,8 +95,9 @@ String domainSuffix = "your domain suffix";
 CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
                 .isHttps(isHttps)
                 .setAppidAndRegion(appid, region) // 如果没有 appid 和 region，请设置为空
-                .setDebuggable(true)
                 .setDomainSuffix(domainSuffix)  //私有云需要设置主域名，默认为 myqcloud.com
+                .setBucketInPath(false) // 是否将 Bucket 放在 URL 的 Path 中，默认为 false
+                .setDebuggable(true) // 是否打印调试日志
                 .builder();
 ```
 
@@ -158,7 +190,7 @@ Date: Thu, 20 Sep 2018 13:42:35 GMT
  */
 URL url = null;
 try {
-    url = new URL("http", "10.65.94.33", 5000, "/auth");
+    url = new URL("your auth url");
 } catch (MalformedURLException e) {
     e.printStackTrace();
 }
@@ -260,10 +292,19 @@ cosXmlService.release();
 
 ## 和公有云对比
 
+### 关键差异
+
+- 私有云必须使用 cos-android-sdk.jar 5.4.14 及其以上版本，qcloud-foundation 1.5.3 及其以上版本。
+- 公有云支持临时密钥，私有云暂时不支持，因此授权类的初始化不一致；
+
+### 私有云增量功能
+
 - 公有云 `domainSuffix` 不可修改，私有云默认和公有云保持一致，为 `myqcloud.com`，但是允许用户自定义；
+- 私有云支持将 bucket 字段放在 path 中，公有云只能放在 host 中；
 - 私有云的 appid、region 可以为空；
-- 公有云支持临时密钥，私有云不支持；
-- 私有云必须使用 cos-android-sdk.jar 5.4.14.1 及其以上版本，qcloud-foundation 1.5.3.1 及其以上版本。
 
 
-> 更多使用接口请参考：[Android SDK 接口文档](https://cloud.tencent.com/document/product/436/11238)
+
+除以上差异外，私有云 SDK 和 公有云 SDK 使用方式完全一致，因此除了初始化授权类部分以及私有云增量部分外，公有云其他文档均可使用。
+
+> 更多使用请参考：[Android 公有云SDK 入门文档](https://cloud.tencent.com/document/product/436/12159)、[Android 公有云SDK 接口文档](https://cloud.tencent.com/document/product/436/11238)
