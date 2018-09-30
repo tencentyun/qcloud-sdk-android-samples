@@ -111,7 +111,7 @@ CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
 
 - 自定义协议进行授权
 
-通过最定义签名服务器和终端 SDK 之间签名串的交互协议，您可以获得最大的灵活性，首先您需要实现 `QCloudSigner` 接口
+通过自定义签名服务器和终端 SDK 之间签名串的交互协议，您可以获得最大的灵活性，首先您需要实现 `QCloudSigner` 接口
 
 ```
 public class MyQCloudSigner implements QCloudSigner {
