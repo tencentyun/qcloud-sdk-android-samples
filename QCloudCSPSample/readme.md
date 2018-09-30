@@ -105,9 +105,9 @@ CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
 
 您需要实例化一个COS 服务的授权类，来给请求添加签名来认证您的身份。
 
-##### 通过设置签名字符串进行授权（推荐）
+##### 通过签名服务器授权（推荐）
 
-私有云存储暂时不支持用临时密钥进行授权，您必须在服务端计算签名后，返回给客户端使用，
+私有云存储暂时不支持用临时密钥进行授权，为了保证密钥信息的安全性，您必须根据相应 HTTP 请求的参数在服务端计算签名后，返回给客户端使用，
 
 首先您需要实现 `QCloudSigner` 接口
 
@@ -161,7 +161,7 @@ QCloudSigner credentialProvider = new MyQCloudSigner();
 将所有签名需要的参数以 JSON 的格式放在 HTTP 请求的 body 中。
 
 ```
-PUT /auth http/1.1
+PUT http://10.19.90.144:5000/auth http/1.1
 Content-Length: 165
 Host: 10.19.90.144
 
