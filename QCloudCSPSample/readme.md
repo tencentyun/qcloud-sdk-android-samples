@@ -107,9 +107,11 @@ CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
 
 ##### 通过签名服务器授权（推荐）
 
-私有云存储暂时不支持用临时密钥进行授权，为了保证密钥信息的安全性，您必须根据相应 HTTP 请求的参数在服务端计算签名后，返回给客户端使用，
+私有云存储暂时不支持用临时密钥进行授权，为了保证密钥信息的安全性，您必须根据相应 HTTP 请求的参数在服务端计算签名后，返回给客户端使用。
 
-首先您需要实现 `QCloudSigner` 接口
+- 自定义协议进行授权
+
+通过最定义签名服务器和终端 SDK 之间签名串的交互协议，您可以获得最大的灵活性，首先您需要实现 `QCloudSigner` 接口
 
 ```
 public class MyQCloudSigner implements QCloudSigner {
@@ -150,15 +152,13 @@ public class MyQCloudSigner implements QCloudSigner {
 ```
 QCloudSigner credentialProvider = new MyQCloudSigner();
 ```
-##### 按照指定协议进行授权
+- 按照默认协议进行授权
 
-为了尽可能的简化用户的开发成本，如果您使用 HTTP 协议，并按如下格式实现终端和服务端授权通信，那么您可以直接使用 [RemoteCOSSigner](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCSPSample/app/src/main/java/com/tencent/qcloud/csp/sample/RemoteCOSSigner.java) 类来进行授权，该类只需要您传递一个实现了签名服务的 `URL` 地址即可。
-
-> `RemoteCOSSigner` 并没有放在 SDK 中，请您直接从 [QCloudCSPSample](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCSPSample) 中拷贝到您的工程下。
+为了尽可能的简化用户的开发成本，如果您使用 HTTP 协议，并按如下格式实现终端和服务端授权通信，那么我们会自动帮您去解析签名服务器返回的签名串，具体协议如下：
 
 ###### 请求示例
 
-将所有签名需要的参数以 JSON 的格式放在 HTTP 请求的 body 中。
+终端 SDK 会将所有签名需要的参数以 JSON 的格式放在 HTTP 请求的 body 中，然后发给您的签名服务器：
 
 ```
 PUT http://10.19.90.144:5000/auth http/1.1
@@ -170,7 +170,7 @@ Host: 10.19.90.144
 
 ###### 响应示例
 
-将签名以 JSON 的格式放在 HTTP 响应的 body 中，注意 JSON 的 key 必须为 "sign"。
+您的签名服务器收到 HTTP 请求后，必须根据请求 body 中的参数来计算签名，然后以 JSON 的格式放在 HTTP 响应的 body 中，注意 JSON 的 key 必须为 "sign"。
 
 ```
 HTTP/1.1 200 OK
@@ -182,7 +182,9 @@ Date: Thu, 20 Sep 2018 13:42:35 GMT
 {"sign":"q-sign-algorithm=sha1&q-ak=AKIDZuxhBMAbeOovjDtI42h3mCJ7dsnQwkSq&q-sign-time=1537494643;1537495243&q-key-time=1537494643;1537495243&q-header-list=&q-url-param-list=&q-signature=5a80f9fd31a4db772969a164bdad15a96efee73c"}
 ```
 
-如果您的签名服务器是以如上协议来给终端发送签名，那么您可以如下初始化授权类：
+如果您的签名服务器是以如上协议来给终端发送签名，您可以直接使用 [RemoteCOSSigner](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCSPSample/app/src/main/java/com/tencent/qcloud/csp/sample/RemoteCOSSigner.java) 类来进行授权，该类只需要您传递一个实现了签名服务的 `URL` 地址即可。
+
+> `RemoteCOSSigner` 并没有放在 SDK 中，请您直接从 [RemoteCOSSigner](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCSPSample/app/src/main/java/com/tencent/qcloud/csp/sample/RemoteCOSSigner.java) 中拷贝到您的工程下。那么您可以如下初始化授权类：
 
 ```
 /**
