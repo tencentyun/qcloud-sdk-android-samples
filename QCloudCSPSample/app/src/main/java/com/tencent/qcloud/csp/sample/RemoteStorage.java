@@ -56,13 +56,7 @@ public class RemoteStorage {
          * 私有云暂时不支持临时密钥进行签名，如果直接在客户端直接使用永久密钥会有安全性问题，因此这里采用
          * 服务端直接下发签名的方式来进行鉴权。
          */
-
-
-
-        /**
-         * 您的服务端签名的 URL 地址
-         */
-        URL url = null;
+        URL url = null; // 您的服务端签名的 URL 地址
         try {
             url = new URL("your_auth_url");
         } catch (MalformedURLException e) {
