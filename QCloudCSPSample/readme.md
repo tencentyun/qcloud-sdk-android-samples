@@ -54,7 +54,7 @@ dependencies {
 
 您可以在这里 [COS XML Android SDK-release](https://github.com/tencentyun/qcloud-sdk-android/releases) 下载所有的 jar 包，建议您使用最新的 release 包。
 
-> cos-android-sdk.jar 必须使用 5.4.14 及其以上版本、qcloud-foundation 必须使用 1.5.3 及其以上版本。
+> 私有云 CSP 中 cos-android-sdk.jar 必须使用 5.4.14 及其以上版本、qcloud-foundation 必须使用 1.5.3 及其以上版本。
 
 ### 配置权限
 
