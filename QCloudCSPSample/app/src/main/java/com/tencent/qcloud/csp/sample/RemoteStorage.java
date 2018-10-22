@@ -64,7 +64,7 @@ public class RemoteStorage {
          */
         URL url = null;
         try {
-            url = new URL("http", "10.65.94.33", 5000, "/auth");
+            // url = new URL("http", "10.65.94.33", 5000, "/auth");
             url = new URL("your_auth_url");
         } catch (MalformedURLException e) {
             e.printStackTrace();
