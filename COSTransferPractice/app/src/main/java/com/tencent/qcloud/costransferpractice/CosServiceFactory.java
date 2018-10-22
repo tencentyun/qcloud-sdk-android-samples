@@ -40,14 +40,14 @@ public class CosServiceFactory {
 
         COSConfigManager cosConfigManager = COSConfigManager.getInstance();
 
-        if (cosConfigManager.isTemporarySignComplete()) {
-
-            return getCosXmlServiceWithTemporaryKey(context, cosConfigManager.getAppid(),
-                    region, cosConfigManager.getSignUrl(), false);
-        } else {
+        if (cosConfigManager.isForeverSignComplete()) {
 
             return getCosXmlServiceWithForeverKey(context, cosConfigManager.getAppid(), region,
                     cosConfigManager.getSecretId(), cosConfigManager.getSecretKey(), false);
+        } else {
+
+            return getCosXmlServiceWithTemporaryKey(context, cosConfigManager.getAppid(),
+                    region, cosConfigManager.getSignUrl(), false);
         }
     }
 
@@ -112,6 +112,9 @@ public class CosServiceFactory {
         return new TransferManager(cosXmlService, transferConfig);
     }
 
+    /**
+     * 获取配置类
+     */
     private static CosXmlServiceConfig getCosXmlServiceConfig(String appid, String region) {
 
         return new CosXmlServiceConfig.Builder()
@@ -120,7 +123,9 @@ public class CosServiceFactory {
                 .builder();
     }
 
-
+    /**
+     * 获取临时密钥授权类
+     */
     private static QCloudCredentialProvider getCredentialProviderWithUrl(String signUrl) {
 
         URL url = null;
