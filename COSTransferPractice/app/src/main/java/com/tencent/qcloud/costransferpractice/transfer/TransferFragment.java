@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 /**
  * Created by rickenwang on 2018/10/18.
@@ -58,6 +60,9 @@ public class TransferFragment extends Fragment implements TransferContract.View,
     private Spinner bucketSpinner;
 
     private LoadingDialogFragment loadingDialog;
+
+    private ImageView chooseFilePreImage;
+    private TextView chooseFileName;
 
     AnimationDrawable animationDrawable;
 
@@ -129,6 +134,9 @@ public class TransferFragment extends Fragment implements TransferContract.View,
         animationDrawable = (AnimationDrawable) piano.getBackground();
 
         loadingDialog = new LoadingDialogFragment();
+
+        chooseFileName = contentView.findViewById(R.id.choose_file_name);
+        chooseFilePreImage = contentView.findViewById(R.id.choose_file_image);
     }
 
     @Override
@@ -314,6 +322,20 @@ public class TransferFragment extends Fragment implements TransferContract.View,
         refreshBucketSpinner(regionPosition, bucketPosition);
     }
 
+    @Override
+    public void refreshChooseFile(String fileName) {
+
+        if (TextUtils.isEmpty(fileName)) {
+
+            chooseFilePreImage.setVisibility(View.GONE);
+            chooseFileName.setText("");
+        } else {
+
+            chooseFilePreImage.setVisibility(View.VISIBLE);
+            chooseFileName.setText(fileName);
+        }
+    }
+
     private void refreshRegionSpinner(int regionPosition) {
 
         if (regionPosition > 0) {
@@ -375,7 +397,9 @@ public class TransferFragment extends Fragment implements TransferContract.View,
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == OPEN_FILE_CODE && resultCode == Activity.RESULT_OK) {
 
-            transferPresenter.refreshUploadCosAndLocalPath(FilePathHelper.getPath(getActivity(), data.getData()));
+            String path = FilePathHelper.getPath(getActivity(), data.getData());
+            refreshChooseFile(path);
+            transferPresenter.refreshUploadCosAndLocalPath(path);
             clearTransferProgressAndState();
         }
     }

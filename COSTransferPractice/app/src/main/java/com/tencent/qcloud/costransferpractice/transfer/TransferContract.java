@@ -62,5 +62,7 @@ public class TransferContract {
         void showRegionAndBucket(Map<String, List<String>> buckets);
 
         void restore(int regionPosition, int bucketPosition);
+
+        void refreshChooseFile(String fileName);
     }
 }
