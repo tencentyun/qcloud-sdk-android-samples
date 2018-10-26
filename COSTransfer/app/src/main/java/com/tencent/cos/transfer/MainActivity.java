@@ -41,7 +41,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initCosService();
+        initCosService("1252386093",
+                "ap-guangzhou", // bucket 的地域
+                "https://rickenwang-1252386093.cos.ap-guangzhou.myqcloud.com/sign.json"); // 临时密钥服务地址
+
         requestPermissions();
     }
 
@@ -51,8 +54,17 @@ public class MainActivity extends AppCompatActivity {
         String cosPath = "10Mfile.txt";
         String localPath = Environment.getExternalStorageDirectory() + "/download_10Mfile.txt";
 
-        TransferConfig transferConfig = new TransferConfig.Builder().build();
-        TransferManager transferManager = new TransferManager(cosXmlService, transferConfig);
+        upload(bucket, cosPath, localPath);
+    }
+
+    /**
+     * 上传
+     *
+     * @params bucket  bucket 名称
+     * @params cosPath 上传到 COS 的路径
+     * @params localPath 本地文件路径
+     */
+    public void upload(String bucket, String cosPath, String localPath) {
 
         // 开始上传，并返回生成的 COSXMLUploadTask
         COSXMLUploadTask cosxmlUploadTask = transferManager.upload(bucket, cosPath,
@@ -94,6 +106,11 @@ public class MainActivity extends AppCompatActivity {
         String cosPath = "10Mfile.txt";
         String localDirPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 
+        download(bucket, cosPath, localDirPath);
+    }
+
+    public void download(String bucket, String cosPath, String localDirPath) {
+
         // 开始下载，并返回生成的 COSXMLDownloadTask
         COSXMLDownloadTask cosxmlDownloadTask = transferManager.download(this, bucket, cosPath,
                 localDirPath);
@@ -128,11 +145,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initCosService() {
-
-        String appid = "1252386093"; // appid
-        String region = "ap-guangzhou"; // bucket 的地域
-        String signUrl = "https://rickenwang-1252386093.cos.ap-guangzhou.myqcloud.com/sign.json?q-sign-algorithm=sha1&q-ak=AKIDsJsX7mSbCJZai7foOJi637ruf6BZru3s&q-sign-time=1540192019;1540193819&q-key-time=1540192019;1540193819&q-header-list=&q-url-param-list=&q-signature=13b74d31297e4b103e8db2f73dc293ade8cf1beb&x-cos-security-token=302c37b957941dc9f4aa3158cee53dca24e975eb10001&response-content-disposition=attachment"; // 临时密钥服务地址
+    private void initCosService(String appid, String region, String signUrl) {
 
         CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
                 .setAppidAndRegion(appid, region)
