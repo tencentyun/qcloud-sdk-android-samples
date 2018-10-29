@@ -1,5 +1,3 @@
-# CSP 使用文档
-
 ## 快速接入
 
 ### 接入准备
@@ -7,9 +5,7 @@
 1. SDK 支持 Android 2.2 及以上版本的手机系统；
 2. 手机必须要有网络（GPRS、3G 或 WIFI 网络等）；
 3. 手机可以没有存储空间，但会使部分功能无法正常工作；
-4. 从 [COS 控制台](https://console.cloud.tencent.com/cos4/secret) 获取 APPID、SecretId、SecretKey。
-
-> 关于文章中出现的 SecretId、SecretKey、Bucket 等名称的含义和获取方式请参考：[COS 术语信息](https://cloud.tencent.com/document/product/436/7751)
+4. 从控制台获取 APPID、SecretId、SecretKey。
 
 ### 集成 SDK
 
@@ -36,7 +32,7 @@ allprojects {
 dependencies {
 	...
     // 增加这行
-    implementation 'com.tencent.qcloud:cosxml:5.4.+'
+    compile 'com.tencent.qcloud:cosxml:5.4.+'
 }
 ```
 
@@ -59,7 +55,6 @@ dependencies {
 ### 配置权限
 
 使用该 SDK 需要网络、存储等相关的一些访问权限，可在 AndroidManifest.xml 中增加如下权限声明（Android 5.0 以上还需要动态获取权限）：
-
 ```html
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -68,7 +63,16 @@ dependencies {
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 ```
 
-> 示例 demo 请参考 [QCloudCSPSample](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/QCloudCSPSample)
+### 更多资源
+
+**源码和示例工程**
+
+COS Android SDK 相关源码请参见 [COS Android SDK Github 地址](https://github.com/tencentyun/qcloud-sdk-android)；
+示例 demo 请参见 [COS Android SDK 示例工程](https://github.com/tencentyun/qcloud-sdk-android-samples/edit/master/QCloudCSPSample)。
+
+**更新日志**
+
+COS Android SDK 更新日志请参见 [COS Android SDK 更新日志](https://github.com/tencentyun/qcloud-sdk-android/blob/master/CHANGELOG.md)。
 
 ## 快速入门
 
@@ -225,7 +229,7 @@ CosXmlService cosXmlService = new CosXmlService(context, serviceConfig, credenti
 
 ### 上传文件
 
-`UploadService` 是一个通用的上传类，它可以上传不超过 50T 大小的文件，并支持暂停、恢复以及取消上传请求，同时对于超过 2M 的文件会有断点续传功能，我们推荐您使用这种方式来上传文件，更多用法请参考 [通过 UploadService 上传](https://cloud.tencent.com/document/product/436/11238#.3Cspan-id-.3D-.22upload_service.22.3E.E9.80.9A.E8.BF.87-uploadservice-.E4.B8.8A.E4.BC.A0.EF.BC.88.E6.8E.A8.E8.8D.90.EF.BC.89.3C.2Fspan.3E)，上传部分示例代码如下：
+`UploadService` 是一个通用的上传类，它可以上传不超过 50T 大小的文件，并支持暂停、恢复以及取消上传请求，同时对于超过 2M 的文件会有断点续传功能，我们推荐您使用这种方式来上传文件，上传部分示例代码如下：
 
 ```java
 UploadService.ResumeData uploadData = new UploadService.ResumeData();
@@ -254,8 +258,6 @@ try {
     e.printStackTrace();
 }
 ```
-> 如果您的文件大部分为不超过 20M 的小文件，可以使用 [简单上传接口](https://cloud.tencent.com/document/product/436/11238#.E7.AE.80.E5.8D.95.E4.B8.8A.E4.BC.A0.E6.96.87.E4.BB.B6) 来上传。
-
 
 ### 下载文件
 
@@ -292,21 +294,3 @@ try {
 cosXmlService.release();
 ```
 
-## 和公有云对比
-
-### 关键差异
-
-- 私有云必须使用 cos-android-sdk.jar 5.4.14 及其以上版本，qcloud-foundation 1.5.3 及其以上版本。
-- 公有云支持临时密钥，私有云暂时不支持，因此授权类的初始化不一致；
-
-### 私有云增量功能
-
-- 公有云 `domainSuffix` 不可修改，私有云默认和公有云保持一致，为 `myqcloud.com`，但是允许用户自定义；
-- 私有云支持将 bucket 字段放在 path 中，公有云只能放在 host 中；
-- 私有云的 appid、region 可以为空；
-
-
-
-除以上差异外，私有云 SDK 和 公有云 SDK 使用方式完全一致，因此除了初始化授权类部分以及私有云增量部分外，公有云其他文档均可使用。
-
-> 更多使用请参考：[Android 公有云SDK 入门文档](https://cloud.tencent.com/document/product/436/12159)、[Android 公有云SDK 接口文档](https://cloud.tencent.com/document/product/436/11238)
