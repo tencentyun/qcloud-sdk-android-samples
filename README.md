@@ -10,7 +10,7 @@
 
 * COSTransfer - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 极简接入 demo；
 * QCloudCosXmlSample - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 接口测试 demo；
-* COSTranferPractice - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 体验 demo；
+* COSTranferPractice - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 体验 demo，您可以参考 [快速体验](https://cloud.tencent.com/document/product/436/18194) 来体验 COS 传输实践 demo；
 * QCloudCSPSample - 私有云体验 demo。
 
 #### 不再维护的仓库【请参考持续维护的仓库】：
