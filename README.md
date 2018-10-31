@@ -9,8 +9,9 @@
 * COSTransfer - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 极简接入 demo；
 * QCloudCosXmlSample - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 接口测试 demo；
 * COSTranferPractice - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 体验 demo；
-* QCloudCosQuickStart - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 快速体验，包含了 cossign 临时密钥服务和 Android 简单示例两个工程【不再维护，请参考 COSTranferPractice 工程】。
 * QCloudCSPSample - 私有云体验 demo。
+
+* QCloudCosQuickStart - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 快速体验，包含了 cossign 临时密钥服务和 Android 简单示例两个工程【不再维护，请参考 COSTranferPractice 工程】。
 * QCloudFaceInSample - [腾讯云 FaceIn 人脸核身](https://cloud.tencent.com/product/facein) 接口 demo【不再维护】。
 
 
