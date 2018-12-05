@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="loading_dialog_width">130dp</dimen>
+    <dimen name="loading_dialog_height">60dp</dimen>
+
+</resources>

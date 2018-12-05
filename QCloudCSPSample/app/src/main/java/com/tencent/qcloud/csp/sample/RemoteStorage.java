@@ -48,7 +48,7 @@ public class RemoteStorage {
                 .isHttps(isHttps)
                 .setAppidAndRegion(appid, region) // appid 和 region 均可以为空
                 .setDebuggable(true)
-                .setBucketInPath(true)
+                .setBucketInPath(false) // 将 Bucket 放在 URL 的 Path 中
                 .setDomainSuffix(domainSuffix)  // 私有云需要设置主域名
                 .builder();
 
@@ -56,13 +56,9 @@ public class RemoteStorage {
          * 私有云暂时不支持临时密钥进行签名，如果直接在客户端直接使用永久密钥会有安全性问题，因此这里采用
          * 服务端直接下发签名的方式来进行鉴权。
          */
-
-        /**
-         * 您的服务端签名的 URL 地址
-         */
-        URL url = null;
+        URL url = null; // 您的服务端签名的 URL 地址
         try {
-            url = new URL("http", "10.65.94.33", 5000, "/auth");
+            url = new URL("your_auth_url");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -78,6 +74,7 @@ public class RemoteStorage {
     public GetServiceResult getService() throws CosXmlServiceException, CosXmlClientException {
 
         GetServiceRequest getServiceRequest = new GetServiceRequest();
+        getServiceRequest.setRequestHeaders("x-cos-meta-bucket", "BucketName", false);
 
         return cosXmlService.getService(getServiceRequest);
     }
