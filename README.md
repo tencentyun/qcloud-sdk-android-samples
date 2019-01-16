@@ -6,9 +6,19 @@
 
 当前仓库内提供的示例有:
 
-* QCloudCosXmlSample - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436)
-* QCloudCosQuickStart - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 快速体验，包含了 cossign 临时密钥服务和 Android 简单示例两个工程。
-* QCloudFaceInSample - [腾讯云 FaceIn 人脸核身](https://cloud.tencent.com/product/facein)
+#### 持续维护的仓库：
+
+* COSTransfer - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 极简接入 demo；
+* QCloudCosXmlSample - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 接口测试 demo；
+* COSTranferPractice - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 体验 demo，您可以参考 [快速体验](https://cloud.tencent.com/document/product/436/18194) 来体验 COS 传输实践 demo；
+* QCloudCSPSample - 私有云体验 demo。
+
+> 如果您需要在私有云的环境下运行 COSTransfer、QCloudCosXmlSample 和 COSTransferPractice ，请先修改 CosXmlService 类的初始化方式（具体初始化方式请参考 [CSP 快速入门](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCSPSample/CSP%E6%96%87%E6%A1%A3/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.md#%E5%88%9D%E5%A7%8B%E5%8C%96) 的初始化部分），即可进行兼容；
+
+#### 不再维护的仓库【请参考持续维护的仓库】：
+
+* QCloudCosQuickStart - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 快速体验，包含了 cossign 临时密钥服务和 Android 简单示例两个工程【请参考 COSTranferPractice 工程】。
+* QCloudFaceInSample - [腾讯云 FaceIn 人脸核身](https://cloud.tencent.com/product/facein) 接口 demo。
 
 
 ## 在 Android Studio 运行示例
