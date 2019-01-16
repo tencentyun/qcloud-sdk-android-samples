@@ -28,6 +28,7 @@ import com.tencent.qcloud.costransferpractice.common.FilePathHelper;
 import com.tencent.qcloud.costransferpractice.common.LoadingDialogFragment;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -276,12 +277,25 @@ public class TransferFragment extends Fragment implements TransferContract.View,
         downloadState.setText("无");
     }
 
+    private Map<String, List<String>> cleanBuckets(Map<String, List<String>> buckets) {
+
+        Map<String, List<String>> clean = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : buckets.entrySet()) {
+
+            /** 测试园区的 bucket 不做显示 */
+            if (entry.getKey() != null && !entry.getKey().equals("null")) {
+                clean.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return clean;
+    }
+
     @Override
     public void showRegionAndBucket(final Map<String, List<String>> buckets) {
 
-        regionAndBuckets = buckets;
+        regionAndBuckets = cleanBuckets(buckets);
 
-        final List<String> regions = new LinkedList<>(buckets.keySet());
+        final List<String> regions = new LinkedList<>(regionAndBuckets.keySet());
 
         regionSpinner.setAdapter(new ArrayAdapter<>(getContext(), R.layout.spinner_item, R.id.item,
                 regions));

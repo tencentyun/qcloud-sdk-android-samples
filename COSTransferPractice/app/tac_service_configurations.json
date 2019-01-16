@@ -1,0 +1,30 @@
+{
+    "version": "1.0.0",
+    "warning": "请不要修改这个文件中的内容",
+    "project": {
+        "projectId": 107215
+    },
+    "application": {
+        "appId": 106527,
+        "packageId": "com.tencent.qcloud.costransferpractice"
+    },
+    "services": {
+        "analytics": {
+            "appKey": "Aqcloud106527"
+        },
+        "messaging": {
+            "appId": "2100325204",
+            "appKey": "A7JH28F9KR1E"
+        },
+        "crash": {
+            "appId": "31441c5227"
+        },
+        "payment": {
+            "offerId": "TC106527"
+        },
+        "storage": {
+            "bucket": "tac-costransferpractice-st-1253653367",
+            "region": "ap-shanghai"
+        }
+    }
+}
