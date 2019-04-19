@@ -6,12 +6,119 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/UPLOAD"
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/PARAMETER"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="70dp"
-        android:text="@string/upload"
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
-        android:layout_height="70dp" />
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/SRC_PATH"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:text="@string/src_path"/>
+            <Button
+                android:layout_alignTop="@id/SRC_PATH"
+                android:layout_alignBottom="@id/SRC_PATH"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/FILE_PATH_SELECT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/path"/>
+            <TextView
+                android:layout_alignTop="@id/SRC_PATH"
+                android:layout_alignBottom="@id/SRC_PATH"
+                android:layout_toEndOf="@id/SRC_PATH"
+                android:layout_toStartOf="@id/FILE_PATH_SELECT"
+                android:layout_marginEnd="1dp"
+                android:layout_marginStart="2dp"
+                android:id="@+id/FILE_PATH_DESC"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:text="@string/path_tips"
+                android:textColor="@color/colorPrimary"/>
+
+
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/SRC_PATH"
+                android:id="@+id/COS_PATH"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:text="@string/cos_path"/>
+            <Button
+                android:layout_alignTop="@id/COS_PATH"
+                android:layout_alignBottom="@id/COS_PATH"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/COS_PATH_EDIT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_cos_path"/>
+            <TextView
+                android:layout_alignTop="@id/COS_PATH"
+                android:layout_alignBottom="@id/COS_PATH"
+                android:layout_toEndOf="@id/COS_PATH"
+                android:layout_toStartOf="@id/COS_PATH_EDIT"
+                android:layout_marginEnd="1dp"
+                android:layout_marginStart="2dp"
+                android:id="@+id/COS_PATH_DESC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/path_tips"
+                android:textColor="@color/colorPrimary"/>
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/UPLOAD"
+            android:text="@string/upload"
+            android:textColor="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/LOG"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintTop_toBottomOf="@id/PARAMETER"
+        android:layout_marginTop="200dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/PROGRESS"
+                android:textColor="@color/colorAccent"
+                android:textSize="20sp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/TRY_AGAIN"
+                android:textColor="@color/colorAccent"
+                android:textSize="20sp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/RESULT"
+                android:textColor="@color/colorAccent"
+                android:textSize="20sp"/>
+        </LinearLayout>
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>
