@@ -95,7 +95,9 @@ public class ServiceDemoActivity extends AppCompatActivity implements View.OnCli
                 GetServiceSample getServiceSample = new GetServiceSample(qServiceCfg);
                 ResultHelper result = getServiceSample.start();
                 Bundle bundle = new Bundle();
-                bundle.putString("RESULT",result.showMessage());
+                String content = result.showMessage();
+                if(content.length() > 1024 * 2) content = content.subString(0, 1024 * 2);
+                bundle.putString("RESULT", content);
                 Message msg = mainHandler.obtainMessage();
                 msg.what = 0;
                 msg.setData(bundle);
