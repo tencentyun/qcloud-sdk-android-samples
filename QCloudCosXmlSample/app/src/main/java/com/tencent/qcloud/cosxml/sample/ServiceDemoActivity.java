@@ -104,7 +104,6 @@ public class ServiceDemoActivity extends AppCompatActivity implements View.OnCli
     }
 
     protected void startAsync(){
-        progressDialog.show();
         GetServiceSample getServiceSample = new GetServiceSample(qServiceCfg);
         getServiceSample.startAsync(this);
     }
