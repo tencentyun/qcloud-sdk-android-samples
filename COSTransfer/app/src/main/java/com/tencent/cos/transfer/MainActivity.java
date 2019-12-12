@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onUploadClick(View view) {
 
-        String bucket = "examplebucket-125000000"; // 上传的 bucket 名称，region 为之前设置的 ap-guangzhou
+        String bucket = "examplebucket-1250000000"; // 上传的 bucket 名称，region 为之前设置的 ap-guangzhou
         String cosPath = "object.txt"; // 上传到 COS 的对象地址
         String localPath = Environment.getExternalStorageDirectory() + "/object.txt"; // 本地文件地址
 
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onDownloadClick(View view) {
 
-        String bucket = "examplebucket-125000000"; // 下载的 bucket 名称，region 为之前设置的 ap-guangzhou
+        String bucket = "examplebucket-1250000000"; // 下载的 bucket 名称，region 为之前设置的 ap-guangzhou
         String cosPath = "object.txt"; // 下载的 cos 上对象的路径
         String localDirPath = Environment.getExternalStorageDirectory().getAbsolutePath(); // 下载地址
 
