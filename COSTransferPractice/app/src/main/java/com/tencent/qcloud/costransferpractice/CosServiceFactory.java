@@ -120,6 +120,7 @@ public class CosServiceFactory {
         return new CosXmlServiceConfig.Builder()
                 .setAppidAndRegion(appid, region)
                 .setDebuggable(true)
+                .isHttps(true)
                 .builder();
     }
 
