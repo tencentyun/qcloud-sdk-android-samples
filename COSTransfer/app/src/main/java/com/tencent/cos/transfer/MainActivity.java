@@ -17,6 +17,7 @@ import com.tencent.cos.xml.listener.CosXmlProgressListener;
 import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
+import com.tencent.cos.xml.model.object.PutObjectRequest;
 import com.tencent.cos.xml.transfer.COSXMLDownloadTask;
 import com.tencent.cos.xml.transfer.COSXMLUploadTask;
 import com.tencent.cos.xml.transfer.TransferConfig;
@@ -41,18 +42,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initCosService("1252386093",
-                "ap-guangzhou", // bucket 的地域
-                "https://rickenwang-1252386093.cos.ap-guangzhou.myqcloud.com/sign.json"); // 临时密钥服务地址
-
+        initCosService();
         requestPermissions();
     }
 
     public void onUploadClick(View view) {
 
-        String bucket = "rickenwang-1252386093";
-        String cosPath = "10Mfile.txt";
-        String localPath = Environment.getExternalStorageDirectory() + "/download_10Mfile.txt";
+        String bucket = "examplebucket-125000000"; // 上传的 bucket 名称，region 为之前设置的 ap-guangzhou
+        String cosPath = "object.txt"; // 上传到 COS 的对象地址
+        String localPath = Environment.getExternalStorageDirectory() + "/object.txt"; // 本地文件地址
 
         upload(bucket, cosPath, localPath);
     }
@@ -100,11 +98,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void uploadSSECOS(String bucket, String cosPath, String localPath) {
+
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, cosPath, localPath);
+        putObjectRequest.setCOSServerSideEncryption();
+        COSXMLUploadTask cosxmlUploadTask = transferManager.upload(putObjectRequest, null);
+    }
+
+    public void uploadSSEC(String bucket, String cosPath, String localPath, String customKey) {
+
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, cosPath, localPath);
+        try {
+            putObjectRequest.setCOSServerSideEncryptionWithCustomerKey(customKey);
+            COSXMLUploadTask cosxmlUploadTask = transferManager.upload(putObjectRequest, null);
+        } catch (CosXmlClientException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public void onDownloadClick(View view) {
 
-        String bucket = "rickenwang-1252386093";
-        String cosPath = "10Mfile.txt";
-        String localDirPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String bucket = "examplebucket-125000000"; // 下载的 bucket 名称，region 为之前设置的 ap-guangzhou
+        String cosPath = "object.txt"; // 下载的 cos 上对象的路径
+        String localDirPath = Environment.getExternalStorageDirectory().getAbsolutePath(); // 下载地址
 
         download(bucket, cosPath, localDirPath);
     }
@@ -145,31 +162,29 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initCosService(String appid, String region, String signUrl) {
+    private void initCosService() {
 
+        String region = "ap-shanghai"; // 设置 Bucket 的 region，后续上传下载的 bucket 的 region 都默认为 ap-shanghai
         CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
-                .setAppidAndRegion(appid, region)
+                .setRegion(region)
                 .setDebuggable(true)
+                .isHttps(true)
                 .builder();
 
-        URL url = null;
-
+        /**
+         * 以下需要您自己搭建一个临时密钥服务来生成客户端所需的签名，搭建文档请参考：
+         *
+         * https://cloud.tencent.com/document/product/436/9068
+         */
+        QCloudCredentialProvider credentialProvider = null;
         try {
-            url = new URL(signUrl);
+            credentialProvider = new SessionCredentialProvider(new HttpRequest.Builder<String>()
+                    .url(new URL("your_auth_server_url")) // 您自己的签名服务器地址
+                    .method("GET") // 注意这里的 HTTP method 为 GET，请根据您自己密钥服务的发布方式进行修改
+                    .build());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
-        /**
-         * 初始化 {@link QCloudCredentialProvider} 对象，来给 SDK 提供临时密钥。
-         */
-        QCloudCredentialProvider credentialProvider = new SessionCredentialProvider(new HttpRequest.Builder<String>()
-                .url(url)
-                /**
-                 * 注意这里的 HTTP method 为 GET，请根据您自己密钥服务的发布方式进行修改
-                 */
-                .method("GET")
-                .build());
 
         cosXmlService = new CosXmlService(this, cosXmlServiceConfig, credentialProvider);
 
