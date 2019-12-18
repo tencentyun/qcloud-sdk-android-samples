@@ -411,7 +411,7 @@ public class TransferFragment extends Fragment implements TransferContract.View,
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == OPEN_FILE_CODE && resultCode == Activity.RESULT_OK) {
 
-            String path = FilePathHelper.getPath(getActivity(), data.getData());
+            String path = FilePathHelper.getAbsPathFromUri(getActivity(), data.getData());
             refreshChooseFile(path);
             transferPresenter.refreshUploadCosAndLocalPath(path);
             clearTransferProgressAndState();

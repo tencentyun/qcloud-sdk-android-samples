@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.tencent.cos.xml.CosXmlService;
 import com.tencent.cos.xml.CosXmlServiceConfig;
@@ -151,6 +152,7 @@ public class TransferPresenter implements TransferContract.Presenter {
                 public void onSuccess(CosXmlRequest request, CosXmlResult result) {
                     cosxmlUploadTask = null;
                     currentDownloadCosPath = currentUploadPath;
+                    Toast.makeText(context, "upload success", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
