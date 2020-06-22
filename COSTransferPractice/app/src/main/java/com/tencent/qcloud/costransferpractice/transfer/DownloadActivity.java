@@ -2,7 +2,6 @@ package com.tencent.qcloud.costransferpractice.transfer;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -110,11 +109,7 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
             finish();
         }
 
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            downloadParentDir = Environment.getExternalStorageDirectory();
-        } else {
-            downloadParentDir = this.getFilesDir();
-        }
+        downloadParentDir = getExternalFilesDir("");
 
         cosXmlService = CosServiceFactory.getCosXmlService(this, bucketRegion, BuildConfig.COS_SECRET_ID, BuildConfig.COS_SECRET_KEY, true);
         TransferConfig transferConfig = new TransferConfig.Builder().build();

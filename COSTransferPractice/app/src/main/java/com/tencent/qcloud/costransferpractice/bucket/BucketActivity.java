@@ -91,8 +91,10 @@ public class BucketActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.add) {
-            if (TextUtils.isEmpty(BuildConfig.COS_SECRET_ID) || TextUtils.isEmpty(BuildConfig.COS_SECRET_KEY)) {
-                toastMessage("请在环境变量中配置您的secretId和secretKey");
+            if (TextUtils.isEmpty(BuildConfig.COS_SECRET_ID) ||
+                    TextUtils.isEmpty(BuildConfig.COS_SECRET_KEY) ||
+                    TextUtils.isEmpty(BuildConfig.COS_APP_ID)) {
+                toastMessage("请在环境变量中配置您的secretId、secretKey、appid");
             } else {
                 startActivityForResult(new Intent(this, BucketAddActivity.class), REQUEST_ADD);
             }
