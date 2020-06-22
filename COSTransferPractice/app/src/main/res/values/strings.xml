@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">COS 传输实践</string>
     <string name="app_name_chinese">COSTransferPractice</string>
+
+    <string name="bucket_add">新建桶</string>
+    <string name="bucket_add_title">新建存储桶</string>
+    <string name="region">选择区域</string>
+    <string name="object_title">文件列表</string>
+    <string name="upload">上传</string>
+    <string name="upload_title">上传文件</string>
+    <string name="choose_photo">选择文件</string>
+    <string name="download_title">下载文件</string>
 </resources>

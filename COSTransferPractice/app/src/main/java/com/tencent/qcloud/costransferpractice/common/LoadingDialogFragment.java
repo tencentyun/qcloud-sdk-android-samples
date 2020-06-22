@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,10 @@ import com.tencent.qcloud.costransferpractice.R;
 
 
 /**
- * Copyright 2010-2018 Tencent Cloud. All Rights Reserved.
+ * Created by jordanqin on 2020/6/18.
+ * 加载弹窗
+ * <p>
+ * Copyright (c) 2010-2020 Tencent Cloud. All rights reserved.
  */
 public class LoadingDialogFragment extends DialogFragment {
 
