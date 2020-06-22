@@ -46,12 +46,9 @@ public class BucketAddActivity extends BaseActivity implements View.OnClickListe
         findViewById(R.id.btn_add).setOnClickListener(this);
         findViewById(R.id.rl_region).setOnClickListener(this);
 
-        if (TextUtils.isEmpty(BuildConfig.COS_SECRET_ID) || TextUtils.isEmpty(BuildConfig.COS_SECRET_KEY)) {
-            finish();
-        }
-
-        if (TextUtils.isEmpty(BuildConfig.COS_APP_ID)) {
-            toastMessage("请在环境变量中配置您的appid");
+        if (TextUtils.isEmpty(BuildConfig.COS_SECRET_ID) ||
+                TextUtils.isEmpty(BuildConfig.COS_SECRET_KEY) ||
+                TextUtils.isEmpty(BuildConfig.COS_APP_ID)) {
             finish();
         }
     }

@@ -3,7 +3,8 @@ package com.tencent.qcloud.costransferpractice.transfer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -183,12 +184,15 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
                 tv_name.setText("");
             } else {
                 //直接用选择的文件URI去展示图片
-                //如果所选文件不是图片文件，则展示失败
+                //如果所选文件不是图片文件，则展示文件图标
                 try{
-                    Uri uri = Uri.fromFile(new File(path));
-                    iv_image.setImageURI(uri);
+                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    if(bitmap!=null){
+                        iv_image.setImageBitmap(bitmap);
+                    } else {
+                        iv_image.setImageResource(R.drawable.file);
+                    }
                 } catch (Exception e){
-                    toastMessage(e.getMessage());
                     e.printStackTrace();
                 }
                 tv_name.setText(path);
@@ -238,7 +242,13 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
 
         if (cosxmlTask == null) {
             File file = new File(currentUploadPath);
-            cosxmlTask = transferManager.upload(bucketName, folderName + File.separator + file.getName(),
+            String cosPath;
+            if(TextUtils.isEmpty(folderName)){
+                cosPath = file.getName();
+            } else {
+                cosPath = folderName + File.separator + file.getName();
+            }
+            cosxmlTask = transferManager.upload(bucketName, cosPath,
                     currentUploadPath, null);
 
             cosxmlTask.setTransferStateListener(new TransferStateListener() {
@@ -262,7 +272,13 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
                     cosxmlTask = null;
                     toastMessage("上传成功");
                     setResult(RESULT_OK);
-                    finish();
+                    uiAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            btn_left.setVisibility(View.GONE);
+                            btn_right.setVisibility(View.GONE);
+                        }
+                    });
                 }
 
                 @Override

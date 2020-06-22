@@ -68,6 +68,11 @@ public class CosServiceFactory {
      * @param secretKey 永久密钥 secretKey
      */
     private static QCloudCredentialProvider getCredentialProviderWithIdAndKey(String secretId, String secretKey) {
+        /**
+         * 注意！注意！注意！
+         * 由于该方式会存在泄漏密钥的风险，我们强烈不推荐您使用这种方式，建议您仅在安全的环境下临时测试时使用.
+         * 建议采用"通过临时秘钥进行授权"，请参考：https://cloud.tencent.com/document/product/436/12159#.E5.88.9D.E5.A7.8B.E5.8C.96.E6.9C.8D.E5.8A.A1
+         */
         return new ShortTimeCredentialProvider(secretId, secretKey, 300);
     }
 }
