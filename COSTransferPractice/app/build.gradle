@@ -14,8 +14,25 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            it.buildConfigField 'String', 'COS_APP_ID', quotWrapper(System.getenv("COS_APP_ID"))
+            it.buildConfigField 'String', 'COS_SECRET_ID', quotWrapper(System.getenv("COS_SECRET_ID"))
+            it.buildConfigField 'String', 'COS_SECRET_KEY', quotWrapper(System.getenv("COS_SECRET_KEY"))
+        }
+
+        debug {
+            it.buildConfigField 'String', 'COS_APP_ID', quotWrapper(System.getenv("COS_APP_ID"))
+            it.buildConfigField 'String', 'COS_SECRET_ID', quotWrapper(System.getenv("COS_SECRET_ID"))
+            it.buildConfigField 'String', 'COS_SECRET_KEY', quotWrapper(System.getenv("COS_SECRET_KEY"))
         }
     }
+}
+
+static String quotWrapper(key) {
+    if (key == null) {
+        return "\"\""
+    }
+    return "\"".concat(key).concat("\"")
 }
 
 dependencies {
