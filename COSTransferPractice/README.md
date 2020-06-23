@@ -23,16 +23,30 @@
 - 环境变量更改后Android Studio可能需要重启 相关配置才会更新
 
 ## 功能
-- 存储桶列表与添加存储桶
-![](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/COSTransferPractice/screenshot/bucket.png)
-![](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/COSTransferPractice/screenshot/bucket_add.png)
+#### 1.存储桶列表
+启动示例APP后将展示用户已创建的所有存储桶，如下图所示：
 
-- 对象列表
-![](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/COSTransferPractice/screenshot/object.png)
+![](./screenshot/bucket.png)
 
-- 上传下载对象
-![](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/COSTransferPractice/screenshot/upload.png)
-![](https://github.com/tencentyun/qcloud-sdk-android-samples/tree/master/COSTransferPractice/screenshot/download.png)
+#### 2.添加存储桶
+点击右上角【新建桶】，在配置页面输入桶名称并选择存储桶的所属[地域](https://cloud.tencent.com/document/product/436/6224)，如下图所示：
+
+![](./screenshot/bucket_add.png)
+
+#### 3.对象列表
+选择某个存储桶，将看到该存储桶内所有文件以及文件夹，如下图所示：
+
+![](./screenshot/object.png)
+
+#### 4.上传文件
+在文件列表页面点击右上角的【上传】，然后选择文件进行上传，如下图所示：
+
+![](./screenshot/upload.png)
+
+#### 5.下载文件
+点击对象列表中文件下方的【下载】按钮，进行文件下载，如下图所示：
+
+![](./screenshot/download.png)
 
 ## 相关文档
 
