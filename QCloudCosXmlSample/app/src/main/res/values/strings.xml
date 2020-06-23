@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">QCloudCosXmlSample</string>
-
-    <string name="acl_warning">每个账户有1000条ACL的限制，demo使用的测试帐号可能因为到达上限而无法写入。\n\n</string>
-</resources>
