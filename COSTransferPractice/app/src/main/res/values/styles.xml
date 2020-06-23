@@ -8,4 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="UIListStyle">
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:divider">#00000000</item>
+        <item name="android:dividerHeight">0dp</item>
+        <item name="android:listSelector">#00000000</item>
+    </style>
+
+    <style name="UIListDividerStyle" parent="UIListStyle">
+        <item name="android:divider">#888888</item>
+        <item name="android:dividerHeight">1px</item>
+    </style>
+
 </resources>
