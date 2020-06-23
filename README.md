@@ -9,50 +9,6 @@
 * COSTranferPractice - [腾讯云 COS XML](https://cloud.tencent.com/document/product/436) 体验 demo，您可以参考 [快速体验](https://cloud.tencent.com/document/product/436/18194) 来体验 COS 传输实践 demo；
 * QCloudCSPSample - 私有云体验 demo。
 
-> 如果您需要在私有云的环境下运行 COSTransfer、QCloudCosXmlSample 和 COSTransferPractice ，请先修改 CosXmlService 类的初始化方式（具体初始化方式请参考 [CSP 快速入门](https://github.com/tencentyun/qcloud-sdk-android-samples/blob/master/QCloudCSPSample/CSP%E6%96%87%E6%A1%A3/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.md#%E5%88%9D%E5%A7%8B%E5%8C%96) 的初始化部分），即可进行兼容；
-
-
-## 在 Android Studio 运行示例
-
-示例是标准的 Android Studio 工程，您可以直接导入 IDE 中，点击运行即可。
-
-
-## 在 Eclipse 运行示例
-
-#### 1.确保 eclipse 已经安装 gradle 插件
-
-如果没有安装，可以参考 [教程](http://www.vogella.com/tutorials/EclipseGradle/article.html)。
-
-#### 2. 像普通工程一样导入eclipse
-
-#### 3. 在 `Gradle Task` 视图中双击 `installDebug`
-
-编译成功之后会自动安装到连接的设备或者模拟器中，如下所示：
-
-![](http://ww1.sinaimg.cn/large/62f68aebgy1fp5mjdau62j20t80bpt98.jpg)
-
-## 命令行运行示例
-
-#### 1. 命令行进入示例工程所在目录，例如 QCloudCosXmlSample，
-
-```
-cd QCloudCosXmlSample
-```
-
-#### 2. 执行 gradle 任务 `installDebug`
-
-在 Windows 下请运行:
-
-```
-gradlew installDebug
-```
-
-在 Linux 或者 Mac 下请运行：
-
-```
-./gradlew installDebug
-```
-
 
 ## 腾讯云 Android SDK
 
