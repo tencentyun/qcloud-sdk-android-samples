@@ -35,7 +35,7 @@ public class RemoteStorage {
     private String region;
 
 
-    public RemoteStorage(Context context, String appid, String region, String domainSuffix) {
+    public RemoteStorage(Context context, String appid, String region, String hostFormat) {
 
         isHttps = false;
         this.appid = appid;
@@ -49,7 +49,7 @@ public class RemoteStorage {
                 .setAppidAndRegion(appid, region) // appid 和 region 均可以为空
                 .setDebuggable(true)
                 .setBucketInPath(false) // 将 Bucket 放在 URL 的 Path 中
-                .setDomainSuffix(domainSuffix)  // 私有云需要设置主域名
+                .setHostFormat(hostFormat)  // 私有云需要设置主域名
                 .builder();
 
         /**

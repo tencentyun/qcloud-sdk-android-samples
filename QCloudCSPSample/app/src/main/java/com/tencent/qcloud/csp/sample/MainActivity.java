@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String appid = "1255000008";
     private String region = "wh";
-    private String domainSuffix = "yun.ccb.com";
+    private String hostFormat = "${bucket}.yun.ccb.com";
 
     EditText bucketName;
 
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = this;
-        remoteStorage = new RemoteStorage(this, appid, region, domainSuffix);
+        remoteStorage = new RemoteStorage(this, appid, region, hostFormat);
         bucketName = findViewById(R.id.bucket_name);
         taskFactory = TaskFactory.getInstance();
         requestPermissions();
