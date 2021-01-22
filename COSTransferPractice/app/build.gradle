@@ -51,7 +51,7 @@ dependencies {
 //        exclude group:"com.tencent.qcloud", module:"mtaUtils"
 //    }
 
-    implementation 'com.tencent.qcloud:cosxml:5.4.30'
+    implementation 'com.tencent.qcloud:cosxml:5.6.0'
 
 }
 
