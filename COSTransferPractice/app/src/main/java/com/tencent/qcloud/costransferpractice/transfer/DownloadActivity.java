@@ -229,8 +229,12 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
                         });
                     }
 
-                    exception.printStackTrace();
-                    serviceException.printStackTrace();
+                    if (exception != null) {
+                        exception.printStackTrace();
+                    }
+                    if (serviceException != null) {
+                        serviceException.printStackTrace();
+                    }
                 }
             });
             btn_left.setText("取消");
