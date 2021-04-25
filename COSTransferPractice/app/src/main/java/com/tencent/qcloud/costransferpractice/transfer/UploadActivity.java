@@ -294,8 +294,12 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
                             }
                         });
                     }
-                    exception.printStackTrace();
-                    serviceException.printStackTrace();
+                    if (exception != null) {
+                        exception.printStackTrace();
+                    }
+                    if (serviceException != null) {
+                        serviceException.printStackTrace();
+                    }
                 }
             });
             btn_left.setText("取消");

@@ -63,7 +63,7 @@ dependencies {
 //        // exclude group:"com.tencent.qcloud", module:"logUtils"
 //    }
 
-    implementation 'com.tencent.qcloud:cosxml:5.6.1'
+    implementation 'com.tencent.qcloud:cosxml:5.6.4'
 
 }
 
