@@ -103,8 +103,12 @@ public class BucketAddActivity extends BaseActivity implements View.OnClickListe
             public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException clientException, CosXmlServiceException serviceException) {
                 setLoading(false);
                 toastMessage("新建存储桶失败");
-                clientException.printStackTrace();
-                serviceException.printStackTrace();
+                if(clientException!=null) {
+                    clientException.printStackTrace();
+                }
+                if(serviceException!=null) {
+                    serviceException.printStackTrace();
+                }
             }
         });
     }

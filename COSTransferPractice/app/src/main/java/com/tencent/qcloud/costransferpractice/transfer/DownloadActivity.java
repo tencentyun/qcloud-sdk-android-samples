@@ -1,5 +1,9 @@
 package com.tencent.qcloud.costransferpractice.transfer;
 
+import static com.tencent.qcloud.costransferpractice.object.ObjectActivity.ACTIVITY_EXTRA_BUCKET_NAME;
+import static com.tencent.qcloud.costransferpractice.object.ObjectActivity.ACTIVITY_EXTRA_DOWNLOAD_KEY;
+import static com.tencent.qcloud.costransferpractice.object.ObjectActivity.ACTIVITY_EXTRA_REGION;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -27,10 +31,6 @@ import com.tencent.qcloud.costransferpractice.common.Utils;
 import com.tencent.qcloud.costransferpractice.common.base.BaseActivity;
 
 import java.io.File;
-
-import static com.tencent.qcloud.costransferpractice.object.ObjectActivity.ACTIVITY_EXTRA_BUCKET_NAME;
-import static com.tencent.qcloud.costransferpractice.object.ObjectActivity.ACTIVITY_EXTRA_DOWNLOAD_KEY;
-import static com.tencent.qcloud.costransferpractice.object.ObjectActivity.ACTIVITY_EXTRA_REGION;
 
 /**
  * Created by jordanqin on 2020/6/18.
@@ -229,8 +229,12 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
                         });
                     }
 
-                    exception.printStackTrace();
-                    serviceException.printStackTrace();
+                    if(exception!=null) {
+                        exception.printStackTrace();
+                    }
+                    if(serviceException!=null) {
+                        serviceException.printStackTrace();
+                    }
                 }
             });
             btn_left.setText("取消");

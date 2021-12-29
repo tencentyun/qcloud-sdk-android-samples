@@ -135,8 +135,12 @@ public class BucketActivity extends BaseActivity {
             public void onFail(CosXmlRequest request, CosXmlClientException exception, CosXmlServiceException serviceException) {
                 setLoading(false);
                 toastMessage("获取存储桶列表失败");
-                exception.printStackTrace();
-                serviceException.printStackTrace();
+                if(exception!=null) {
+                    exception.printStackTrace();
+                }
+                if(serviceException!=null) {
+                    serviceException.printStackTrace();
+                }
             }
         });
     }
