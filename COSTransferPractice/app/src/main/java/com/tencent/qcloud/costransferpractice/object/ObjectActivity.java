@@ -205,8 +205,12 @@ public class ObjectActivity extends BaseActivity implements AbsListView.OnScroll
                     footerView.setText("获取对象列表失败");
                 }
 
-                clientException.printStackTrace();
-                serviceException.printStackTrace();
+                if(clientException!=null) {
+                    clientException.printStackTrace();
+                }
+                if(serviceException!=null) {
+                    serviceException.printStackTrace();
+                }
             }
         });
     }
@@ -272,8 +276,12 @@ public class ObjectActivity extends BaseActivity implements AbsListView.OnScroll
             public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException clientException, CosXmlServiceException serviceException) {
                 setLoading(false);
                 toastMessage("删除对象失败");
-                clientException.printStackTrace();
-                serviceException.printStackTrace();
+                if(clientException!=null) {
+                    clientException.printStackTrace();
+                }
+                if(serviceException!=null) {
+                    serviceException.printStackTrace();
+                }
             }
         });
     }
