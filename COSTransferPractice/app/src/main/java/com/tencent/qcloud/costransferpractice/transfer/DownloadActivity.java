@@ -229,10 +229,10 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
                         });
                     }
 
-                    if(exception!=null) {
+                    if (exception != null) {
                         exception.printStackTrace();
                     }
-                    if(serviceException!=null) {
+                    if (serviceException != null) {
                         serviceException.printStackTrace();
                     }
                 }

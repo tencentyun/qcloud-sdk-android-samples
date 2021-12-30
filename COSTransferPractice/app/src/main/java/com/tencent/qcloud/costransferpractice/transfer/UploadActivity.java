@@ -294,10 +294,10 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
                             }
                         });
                     }
-                    if(exception!=null) {
+                    if (exception != null) {
                         exception.printStackTrace();
                     }
-                    if(serviceException!=null) {
+                    if (serviceException != null) {
                         serviceException.printStackTrace();
                     }
                 }
