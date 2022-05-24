@@ -27,6 +27,8 @@ import com.tencent.qcloud.costransferpractice.CosServiceFactory;
 import com.tencent.qcloud.costransferpractice.R;
 import com.tencent.qcloud.costransferpractice.common.base.BaseActivity;
 import com.tencent.qcloud.costransferpractice.transfer.DownloadActivity;
+import com.tencent.qcloud.costransferpractice.transfer.NewDownloadActivity;
+import com.tencent.qcloud.costransferpractice.transfer.NewUploadActivity;
 import com.tencent.qcloud.costransferpractice.transfer.UploadActivity;
 
 /**
@@ -108,7 +110,9 @@ public class ObjectActivity extends BaseActivity implements AbsListView.OnScroll
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.upload) {
-            Intent intent = new Intent(this, UploadActivity.class);
+            Intent intent = BuildConfig.IS_NEW_TRANSFER ?
+                    new Intent(this, NewUploadActivity.class) :
+                    new Intent(this, UploadActivity.class);
             intent.putExtra(ACTIVITY_EXTRA_REGION, bucketRegion);
             intent.putExtra(ACTIVITY_EXTRA_BUCKET_NAME, bucketName);
             intent.putExtra(ACTIVITY_EXTRA_FOLDER_NAME, folderName);
@@ -246,7 +250,9 @@ public class ObjectActivity extends BaseActivity implements AbsListView.OnScroll
 
     @Override
     public void onDownload(final ObjectEntity object) {
-        Intent intent = new Intent(this, DownloadActivity.class);
+        Intent intent = BuildConfig.IS_NEW_TRANSFER ?
+                new Intent(this, NewDownloadActivity.class) :
+                new Intent(this, DownloadActivity.class);
         intent.putExtra(ObjectActivity.ACTIVITY_EXTRA_BUCKET_NAME, bucketName);
         intent.putExtra(ObjectActivity.ACTIVITY_EXTRA_REGION, bucketRegion);
         intent.putExtra(ObjectActivity.ACTIVITY_EXTRA_DOWNLOAD_KEY, object.getContents().key);

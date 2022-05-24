@@ -8,6 +8,8 @@
     <string name="object_title">文件列表</string>
     <string name="upload">上传</string>
     <string name="upload_title">上传文件</string>
+    <string name="upload_title_new">新上传文件</string>
     <string name="choose_photo">选择文件</string>
     <string name="download_title">下载文件</string>
+    <string name="download_title_new">新下载文件</string>
 </resources>
