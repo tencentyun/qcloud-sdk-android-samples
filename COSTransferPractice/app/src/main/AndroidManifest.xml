@@ -31,9 +31,15 @@
         <activity android:name=".object.ObjectActivity"
             android:label="@string/object_title"/>
         <activity android:name=".transfer.UploadActivity"
-            android:label="@string/upload_title"/>
+            android:label="@string/upload_title">
+        </activity>
+        <activity android:name=".transfer.NewUploadActivity"
+            android:label="@string/upload_title_new">
+        </activity>
         <activity android:name=".transfer.DownloadActivity"
             android:label="@string/download_title"/>
+        <activity android:name=".transfer.NewDownloadActivity"
+            android:label="@string/download_title_new"/>
     </application>
 
 </manifest>

@@ -28,9 +28,11 @@ import com.tencent.cos.xml.listener.CosXmlProgressListener;
 import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
+import com.tencent.cos.xml.model.object.PutObjectRequest;
+import com.tencent.cos.xml.transfer.COSUploadTask;
 import com.tencent.cos.xml.transfer.COSXMLUploadTask;
 import com.tencent.cos.xml.transfer.TransferConfig;
-import com.tencent.cos.xml.transfer.TransferManager;
+import com.tencent.cos.xml.transfer.TransferService;
 import com.tencent.cos.xml.transfer.TransferState;
 import com.tencent.cos.xml.transfer.TransferStateListener;
 import com.tencent.qcloud.costransferpractice.BuildConfig;
@@ -44,11 +46,11 @@ import java.io.File;
 
 /**
  * Created by jordanqin on 2020/6/18.
- * 文件上传页面
+ * 新文件上传页面
  * <p>
  * Copyright (c) 2010-2020 Tencent Cloud. All rights reserved.
  */
-public class UploadActivity extends BaseActivity implements View.OnClickListener {
+public class NewUploadActivity extends BaseActivity implements View.OnClickListener {
     private final int OPEN_FILE_CODE = 10001;
 
     //图片文件本地显示
@@ -80,11 +82,11 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
     private CosXmlService cosXmlService;
 
     /**
-     * {@link TransferManager} 进一步封装了 {@link CosXmlService} 的上传和下载接口，当您需要
+     * {@link TransferService} 进一步封装了 {@link CosXmlService} 的上传和下载接口，当您需要
      * 上传文件到 COS 或者从 COS 下载文件时，请优先使用这个类。
      */
-    private TransferManager transferManager;
-    private COSXMLUploadTask cosxmlTask;
+    private TransferService transferService;
+    private COSUploadTask cosxmlTask;
     /**
      * 上传时的本地和 COS 路径
      */
@@ -116,7 +118,7 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
 
         cosXmlService = CosServiceFactory.getCosXmlService(this, bucketRegion, BuildConfig.COS_SECRET_ID, BuildConfig.COS_SECRET_KEY, true);
         TransferConfig transferConfig = new TransferConfig.Builder().build();
-        transferManager = new TransferManager(cosXmlService, transferConfig);
+        transferService = new TransferService(cosXmlService, transferConfig);
     }
 
     @Override
@@ -248,8 +250,8 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
             } else {
                 cosPath = folderName + file.getName();
             }
-            cosxmlTask = transferManager.upload(bucketName, cosPath,
-                    currentUploadPath, null);
+            cosxmlTask = transferService.upload(new PutObjectRequest(bucketName,
+                    cosPath, currentUploadPath));
 
             cosxmlTask.setTransferStateListener(new TransferStateListener() {
                 @Override
@@ -267,8 +269,6 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
             cosxmlTask.setCosXmlResultListener(new CosXmlResultListener() {
                 @Override
                 public void onSuccess(CosXmlRequest request, CosXmlResult result) {
-                    COSXMLUploadTask.COSXMLUploadTaskResult cOSXMLUploadTaskResult = (COSXMLUploadTask.COSXMLUploadTaskResult) result;
-
                     cosxmlTask = null;
                     toastMessage("上传成功");
                     setResult(RESULT_OK);

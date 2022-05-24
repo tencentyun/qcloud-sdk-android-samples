@@ -217,7 +217,7 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
                 public void onFail(CosXmlRequest request, CosXmlClientException exception, CosXmlServiceException serviceException) {
                     if (cosxmlTask.getTaskState() != TransferState.PAUSED) {
                         cosxmlTask = null;
-                        toastMessage("上传失败");
+                        toastMessage("下载失败");
                         uiAction(new Runnable() {
                             @Override
                             public void run() {
