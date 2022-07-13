@@ -12,7 +12,7 @@
 
 1. clone项目，用IDE打开
 
-2. 在环境变量中配置您的COS_APP_ID、COS_SECRET_ID、COS_SECRET_KEY
+2. 在环境变量中配置您的Q_COS_APP_ID、Q_COS_SECRET_ID、Q_COS_SECRET_KEY
 
 3. 运行项目，体验COS传输实践demo
 
