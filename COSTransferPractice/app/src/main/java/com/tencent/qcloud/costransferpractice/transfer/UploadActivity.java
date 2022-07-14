@@ -6,11 +6,16 @@ import static com.tencent.qcloud.costransferpractice.object.ObjectActivity.ACTIV
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +33,8 @@ import com.tencent.cos.xml.listener.CosXmlProgressListener;
 import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
+import com.tencent.cos.xml.model.object.PostObjectRequest;
+import com.tencent.cos.xml.model.object.PostObjectResult;
 import com.tencent.cos.xml.transfer.COSXMLUploadTask;
 import com.tencent.cos.xml.transfer.TransferConfig;
 import com.tencent.cos.xml.transfer.TransferManager;
@@ -41,6 +48,8 @@ import com.tencent.qcloud.costransferpractice.common.Utils;
 import com.tencent.qcloud.costransferpractice.common.base.BaseActivity;
 
 import java.io.File;
+import java.net.URLEncoder;
+import java.util.HashSet;
 
 /**
  * Created by jordanqin on 2020/6/18.
@@ -109,6 +118,7 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
 
         btn_right.setOnClickListener(this);
         btn_left.setOnClickListener(this);
+        findViewById(R.id.btn_post).setOnClickListener(this);
 
         if (TextUtils.isEmpty(BuildConfig.COS_SECRET_ID) || TextUtils.isEmpty(BuildConfig.COS_SECRET_KEY)) {
             finish();
@@ -171,6 +181,8 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
                     toastMessage("操作失败");
                 }
             }
+        } else if(v.getId() == R.id.btn_post){
+            uploadPost();
         }
     }
 
@@ -232,6 +244,71 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
                 tv_progress.setText(Utils.readableStorageSize(progress) + "/" + Utils.readableStorageSize(total));
             }
         });
+    }
+
+    private void uploadPost() {
+        if (TextUtils.isEmpty(currentUploadPath)) {
+            toastMessage("请先选择文件");
+            return;
+        }
+
+        File file = new File(currentUploadPath);
+        String cosPath;
+        if(TextUtils.isEmpty(folderName)){
+            cosPath = file.getName();
+        } else {
+            cosPath = folderName + file.getName();
+        }
+        final PostObjectRequest request = new PostObjectRequest(bucketName, cosPath, currentUploadPath);
+        String type = getMimeType(this, file);
+        if(type != null){
+            request.setContentType(type);
+        }
+        HashSet<String> headerKeys = new HashSet<>();
+        headerKeys.add("Host");
+        request.setSignParamsAndHeaders(null, headerKeys);
+        try{
+            request.setContentDisposition("filename:"+ URLEncoder.encode(file.getName(), "UTF-8"));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        setLoading(true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final PostObjectResult result = cosXmlService.postObject(request);
+                    uiAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            setLoading(false);
+                            toastMessage("上传成功:"+result.location);
+                        }
+                    });
+                } catch (CosXmlClientException | CosXmlServiceException e) {
+                    e.printStackTrace();
+                    uiAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            setLoading(false);
+                            toastMessage("上传失败:"+e.getMessage());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
+    public String getMimeType(Context context, File file){
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", file);
+        } else {
+            uri = Uri.fromFile(file);
+        }
+
+        ContentResolver resolver = context.getContentResolver();
+        return resolver.getType(uri);
     }
 
     private void upload() {

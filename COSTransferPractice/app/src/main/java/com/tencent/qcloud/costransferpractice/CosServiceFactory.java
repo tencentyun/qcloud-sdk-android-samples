@@ -1,23 +1,16 @@
 package com.tencent.qcloud.costransferpractice;
 
-import static com.tencent.qcloud.core.http.HttpConstants.Header.AUTHORIZATION;
-
 import android.content.Context;
 
 import com.tencent.cos.xml.CosXmlService;
 import com.tencent.cos.xml.CosXmlServiceConfig;
 import com.tencent.cos.xml.transfer.TransferManager;
-import com.tencent.qcloud.core.auth.AuthConstants;
 import com.tencent.qcloud.core.auth.QCloudCredentialProvider;
-import com.tencent.qcloud.core.auth.QCloudLifecycleCredentials;
-import com.tencent.qcloud.core.auth.QCloudSelfSigner;
 import com.tencent.qcloud.core.auth.ShortTimeCredentialProvider;
 import com.tencent.qcloud.core.auth.Utils;
-import com.tencent.qcloud.core.common.QCloudClientException;
-import com.tencent.qcloud.core.http.QCloudHttpRequest;
+import com.tencent.qcloud.core.task.RetryStrategy;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -76,49 +69,7 @@ public class CosServiceFactory {
         return new CosXmlService(context, cosXmlServiceConfig, qCloudCredentialProvider);
     }
 
-    /**
-     * 获取自定义签名CosXmlService实例
-     */
-    private static CosXmlService getCosXmlServiceByCustomSignature(
-            Context context,
-            CosXmlServiceConfig cosXmlServiceConfig,
-            final QCloudCredentialProvider qCloudCredentialProvider
-    ){
-        return new CosXmlService(context, cosXmlServiceConfig, new QCloudSelfSigner(){
-                @Override
-                public void sign(QCloudHttpRequest qCloudHttpRequest) throws QCloudClientException {
-                    StringBuilder authorization = new StringBuilder();
 
-                    QCloudLifecycleCredentials lifecycleCredentials = (QCloudLifecycleCredentials) qCloudCredentialProvider.getCredentials();
-
-                    String keyTime = qCloudHttpRequest.getKeyTime();
-                    if (keyTime == null) {
-                        keyTime = lifecycleCredentials.getKeyTime();
-                    }
-//                    COSXmlSignSourceProvider sourceProvider = (COSXmlSignSourceProvider) qCloudHttpRequest.getSignProvider();
-                    MyCOSXmlSignSourceProvider sourceProvider = new MyCOSXmlSignSourceProvider();
-                    sourceProvider.setSignTime(keyTime);
-                    String signature = signature(sourceProvider.source(qCloudHttpRequest), lifecycleCredentials.getSignKey());
-
-                    authorization.append(AuthConstants.Q_SIGN_ALGORITHM).append("=").append(AuthConstants.SHA1).append("&")
-                            .append(AuthConstants.Q_AK).append("=")
-                            .append(lifecycleCredentials.getSecretId()).append("&")
-                            .append(AuthConstants.Q_SIGN_TIME).append("=")
-                            .append(keyTime).append("&")
-                            .append(AuthConstants.Q_KEY_TIME).append("=")
-                            .append(lifecycleCredentials.getKeyTime()).append("&")
-                            .append(AuthConstants.Q_HEADER_LIST).append("=")
-                            .append(sourceProvider.getRealHeaderList().toLowerCase(Locale.ROOT)).append("&")
-                            .append(AuthConstants.Q_URL_PARAM_LIST).append("=")
-                            .append(sourceProvider.getRealParameterList().toLowerCase(Locale.ROOT)).append("&")
-                            .append(AuthConstants.Q_SIGNATURE).append("=").append(signature);
-                    String auth = authorization.toString();
-
-                    qCloudHttpRequest.removeHeader(AUTHORIZATION);
-                    qCloudHttpRequest.addHeader(AUTHORIZATION, auth);
-                }
-            });
-    }
 
     /**
      * 获取配置类
@@ -127,6 +78,9 @@ public class CosServiceFactory {
         return new CosXmlServiceConfig.Builder()
                 .setRegion(region)
                 .setDebuggable(true)
+                .setConnectionTimeout(20000)
+                .setSocketTimeout(20000)
+                .setRetryStrategy(new RetryStrategy(1000, 2000, 3))
 //                .setHostFormat("www.jordanqin.cn")
                 .isHttps(true)
                 .builder();

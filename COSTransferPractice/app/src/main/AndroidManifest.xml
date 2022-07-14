@@ -33,13 +33,18 @@
         <activity android:name=".transfer.UploadActivity"
             android:label="@string/upload_title">
         </activity>
-        <activity android:name=".transfer.NewUploadActivity"
-            android:label="@string/upload_title_new">
-        </activity>
         <activity android:name=".transfer.DownloadActivity"
             android:label="@string/download_title"/>
-        <activity android:name=".transfer.NewDownloadActivity"
-            android:label="@string/download_title_new"/>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
 
 </manifest>
