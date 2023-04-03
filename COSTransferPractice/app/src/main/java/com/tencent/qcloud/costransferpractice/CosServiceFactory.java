@@ -129,6 +129,7 @@ public class CosServiceFactory {
                 .setDebuggable(true)
 //                .setHostFormat("www.jordanqin.cn")
                 .isHttps(true)
+//                .enableQuic(true)
                 .builder();
     }
 
