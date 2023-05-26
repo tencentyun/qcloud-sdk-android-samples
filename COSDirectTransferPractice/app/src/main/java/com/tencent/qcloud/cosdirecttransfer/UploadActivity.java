@@ -189,6 +189,7 @@ public class UploadActivity extends BaseActivity {
         HttpURLConnection getConnection = null;
         try {
             //直传签名业务服务端url（正式环境 请替换成正式的直传签名业务url）
+            //直传签名业务服务端代码示例可以参考：https://github.com/tencentyun/cos-demo/blob/main/server/direct-sign/nodejs/app.js
             URL url = new URL("http://127.0.0.1:3000/sts-direct-sign?ext=" + ext);
             getConnection = (HttpURLConnection) url.openConnection();
             getConnection.setRequestMethod("GET");
