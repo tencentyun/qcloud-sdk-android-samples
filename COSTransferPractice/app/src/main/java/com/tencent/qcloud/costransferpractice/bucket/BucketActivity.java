@@ -71,7 +71,7 @@ public class BucketActivity extends BaseActivity {
         if (TextUtils.isEmpty(BuildConfig.COS_SECRET_ID) || TextUtils.isEmpty(BuildConfig.COS_SECRET_KEY)) {
             toastMessage("请在环境变量中配置您的secretId和secretKey");
         } else {
-            cosXmlService = CosServiceFactory.getCosXmlService(this, BuildConfig.COS_SECRET_ID, BuildConfig.COS_SECRET_KEY, false);
+            cosXmlService = CosServiceFactory.getCosXmlServiceByGetService(this, BuildConfig.COS_SECRET_ID, BuildConfig.COS_SECRET_KEY, false);
             getBuckets();
         }
     }
