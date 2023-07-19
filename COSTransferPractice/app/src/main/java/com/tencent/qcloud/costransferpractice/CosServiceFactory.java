@@ -34,12 +34,16 @@ import java.util.Map;
  * Copyright (c) 2010-2020 Tencent Cloud. All rights reserved.
  */
 public class CosServiceFactory {
+    /**
+     * 在这里开启quic
+     */
+    private static final boolean enableQuic = false;
     private static final String defaultRegion = "ap-shanghai";
 
     private static Map<String, CosXmlService> cosXmlServiceMap = new HashMap<>();
 
     public static CosXmlService getCosXmlService(Context context, String region, final String secretId,
-                                                 final String secretKey, boolean refresh) {
+                                                 final String secretKey, boolean enableQuic, boolean refresh) {
         if (refresh) {
             cosXmlServiceMap.remove(region);
         }
@@ -47,7 +51,7 @@ public class CosServiceFactory {
         CosXmlService cosXmlService = cosXmlServiceMap.get(region);
 
         if (cosXmlService == null) {
-            CosXmlServiceConfig cosXmlServiceConfig = getCosXmlServiceConfig(region);
+            CosXmlServiceConfig cosXmlServiceConfig = getCosXmlServiceConfig(region, enableQuic);
             final QCloudCredentialProvider qCloudCredentialProvider = getCredentialProviderWithIdAndKey(secretId, secretKey);
 
             /* 获取默认签名CosXmlService实例 */
@@ -61,8 +65,16 @@ public class CosServiceFactory {
         return cosXmlService;
     }
 
-    public static CosXmlService getCosXmlService(Context context, String secretId, String secretKey, boolean refresh) {
-        return getCosXmlService(context, defaultRegion, secretId, secretKey, refresh);
+    public static CosXmlService getCosXmlService(Context context, String region, final String secretId,
+                                                 final String secretKey, boolean refresh) {
+        return getCosXmlService(context, region, secretId, secretKey, enableQuic, refresh);
+    }
+
+    /**
+     * 获取桶列表的GetService不能走quic 因为quic是针对某个桶开启的
+     */
+    public static CosXmlService getCosXmlServiceByGetService(Context context, String secretId, String secretKey, boolean refresh) {
+        return getCosXmlService(context, defaultRegion, secretId, secretKey, false, refresh);
     }
 
     /**
@@ -123,13 +135,13 @@ public class CosServiceFactory {
     /**
      * 获取配置类
      */
-    private static CosXmlServiceConfig getCosXmlServiceConfig(String region) {
+    private static CosXmlServiceConfig getCosXmlServiceConfig(String region, boolean enableQuic) {
         return new CosXmlServiceConfig.Builder()
                 .setRegion(region)
                 .setDebuggable(true)
 //                .setHostFormat("www.jordanqin.cn")
                 .isHttps(true)
-//                .enableQuic(true)
+                .enableQuic(enableQuic)
                 .builder();
     }
 
