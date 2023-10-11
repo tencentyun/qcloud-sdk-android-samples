@@ -7,6 +7,7 @@ import static com.tencent.qcloud.costransferpractice.object.ObjectActivity.ACTIV
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -180,12 +181,14 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
 
     private void download() {
         if (cosxmlTask == null) {
+            Log.d("QCloudHttp", "download start");
             cosxmlTask = transferManager.download(this, bucketName, download_key,
                     downloadParentDir.toString(), "cos_download_" + filename);
 
             cosxmlTask.setTransferStateListener(new TransferStateListener() {
                 @Override
                 public void onStateChanged(final TransferState state) {
+                    Log.d("QCloudHttp", "download state is " + state);
                     refreshState(state);
                 }
             });
@@ -193,6 +196,7 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
             cosxmlTask.setCosXmlProgressListener(new CosXmlProgressListener() {
                 @Override
                 public void onProgress(final long complete, final long target) {
+                    Log.d("QCloudHttp", "download Progress" + ": " + complete + "/" + target);
                     refreshProgress(complete, target);
                 }
             });
