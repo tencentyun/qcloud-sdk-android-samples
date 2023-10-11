@@ -121,6 +121,18 @@ public class BucketActivity extends BaseActivity {
                     public void run() {
                         setLoading(false);
                         List<ListAllMyBuckets.Bucket> buckets = ((GetServiceResult) result).listAllMyBuckets.buckets;
+//                        // 通过bucket名称过滤出对应buckets列表
+//                        List<ListAllMyBuckets.Bucket> filteredBuckets = buckets.stream()
+//                                .filter(bucket -> bucket.name.equals("mobile-ut-1253960454"))
+//                                .collect(java.util.stream.Collectors.toList());
+//
+//                        if(adapter==null){
+//                            adapter = new BucketsAdapter(filteredBuckets, BucketActivity.this);
+//                            listview.setAdapter(adapter);
+//                        } else {
+//                            adapter.setDataList(filteredBuckets);
+//                        }
+
                         if(adapter==null){
                             adapter = new BucketsAdapter(buckets, BucketActivity.this);
                             listview.setAdapter(adapter);
