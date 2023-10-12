@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -248,18 +249,21 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
             } else {
                 cosPath = folderName + file.getName();
             }
+            Log.d("QCloudHttp", "upload start");
             cosxmlTask = transferManager.upload(bucketName, cosPath,
                     currentUploadPath, null);
 
             cosxmlTask.setTransferStateListener(new TransferStateListener() {
                 @Override
                 public void onStateChanged(final TransferState state) {
+                    Log.d("QCloudHttp", "upload state is " + state);
                     refreshUploadState(state);
                 }
             });
             cosxmlTask.setCosXmlProgressListener(new CosXmlProgressListener() {
                 @Override
                 public void onProgress(final long complete, final long target) {
+                    Log.d("QCloudHttp", "upload Progress" + ": " + complete + "/" + target);
                     refreshUploadProgress(complete, target);
                 }
             });
@@ -267,6 +271,8 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
             cosxmlTask.setCosXmlResultListener(new CosXmlResultListener() {
                 @Override
                 public void onSuccess(CosXmlRequest request, CosXmlResult result) {
+                    Log.d("QCloudHttp", "upload Success");
+
                     COSXMLUploadTask.COSXMLUploadTaskResult cOSXMLUploadTaskResult = (COSXMLUploadTask.COSXMLUploadTaskResult) result;
 
                     cosxmlTask = null;
@@ -283,6 +289,8 @@ public class UploadActivity extends BaseActivity implements View.OnClickListener
 
                 @Override
                 public void onFail(CosXmlRequest request, CosXmlClientException exception, CosXmlServiceException serviceException) {
+                    Log.d("QCloudHttp", "upload Fail");
+
                     if (cosxmlTask.getTaskState() != TransferState.PAUSED) {
                         cosxmlTask = null;
                         uiAction(new Runnable() {

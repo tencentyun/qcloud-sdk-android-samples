@@ -142,6 +142,8 @@ public class CosServiceFactory {
 //                .setHostFormat("www.jordanqin.cn")
                 .isHttps(true)
                 .enableQuic(enableQuic)
+                .setConnectionTimeout(10*1000)
+                .setSocketTimeout(30*1000)
                 .builder();
     }
 
