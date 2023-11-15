@@ -38,6 +38,8 @@
         </activity>
         <activity android:name=".transfer.DownloadActivity"
             android:label="@string/download_title"/>
+        <activity android:name=".transfer.DownloadBatchActivity"
+            android:label="@string/download_batch_title"/>
         <activity android:name=".transfer.NewDownloadActivity"
             android:label="@string/download_title_new"/>
     </application>
