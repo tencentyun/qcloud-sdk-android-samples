@@ -1,11 +1,17 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.tencent.qcloud.costransferpractice"
         minSdkVersion 24
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -76,6 +82,7 @@ dependencies {
 //    implementation 'com.tencent.qcloud:cosxml:5.6.3'
 
 //    implementation 'com.qcloud.cos:quic:1.5.41'
+//    api(name: 'quic-release', ext: 'aar')
 //    implementation("com.qcloud.cos:cos-ktx:5.7.2")
 }
 
