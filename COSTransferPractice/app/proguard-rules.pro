@@ -22,18 +22,5 @@
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn com.google.common.util.concurrent.ListenableFuture
--dontwarn com.tencent.beacon.event.open.BeaconConfig$Builder
--dontwarn com.tencent.beacon.event.open.BeaconConfig
--dontwarn com.tencent.beacon.event.open.BeaconEvent$Builder
--dontwarn com.tencent.beacon.event.open.BeaconEvent
--dontwarn com.tencent.beacon.event.open.BeaconReport
--dontwarn com.tencent.beacon.event.open.EventResult
--dontwarn com.tencent.beacon.event.open.EventType
--dontwarn com.tencent.qimei.sdk.IQimeiSDK
--dontwarn com.tencent.qimei.sdk.QimeiSDK
--dontwarn com.tencent.qimei.strategy.terminal.ITerminalStrategy
--dontwarn com.tencentcloudapi.cls.android.producer.AsyncProducerClient
--dontwarn com.tencentcloudapi.cls.android.producer.AsyncProducerConfig
--dontwarn com.tencentcloudapi.cls.android.producer.Callback
--dontwarn com.tencentcloudapi.cls.android.producer.common.LogItem
--dontwarn com.tencentcloudapi.cls.android.producer.errors.ProducerException
+-dontwarn com.google.gson.Gson
+-dontwarn com.tencent.smtt.sdk.ValueCallback

@@ -56,16 +56,6 @@ public class RegionActivity extends BaseActivity {
         data.add(new RegionEntity("ap-beijing-fsi", "北京金融"));
         data.add(new RegionEntity("ap-shanghai-fsi", "上海金融"));
         data.add(new RegionEntity("ap-shenzhen-fsi", "深圳金融"));
-        data.add(new RegionEntity("ap-singapore", "新加坡"));
-        data.add(new RegionEntity("ap-mumbai", "印度孟买"));
-        data.add(new RegionEntity("ap-seoul", "韩国首尔"));
-        data.add(new RegionEntity("ap-bangkok", "泰国曼谷"));
-        data.add(new RegionEntity("ap-tokyo", "日本东京"));
-        data.add(new RegionEntity("eu-moscow", "俄罗斯莫斯科"));
-        data.add(new RegionEntity("eu-frankfurt", "德国法兰克福"));
-        data.add(new RegionEntity("na-toronto", "加拿大多伦多"));
-        data.add(new RegionEntity("na-ashburn", "美东弗吉尼亚"));
-        data.add(new RegionEntity("na-siliconvalley", "美西硅谷"));
 
         return data;
     }
