@@ -149,7 +149,7 @@ public class FilePathHelper {
                 }
             }
 
-        } else if ("content".equalsIgnoreCase(uri.getScheme())) {  // 如果是 ContentProvider Uri
+        } else if ("content".equalsIgnoreCase(uri.getScheme()) && !"com.android.contacts".equalsIgnoreCase(uri.getAuthority())) {  // 如果是 ContentProvider Uri
             filePath = getDataFromUri(context, uri, null, null);
 
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {
