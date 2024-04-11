@@ -91,11 +91,10 @@ public class ObjectActivity extends BaseActivity implements AbsListView.OnScroll
         listview.setFooterDividersEnabled(false);
         listview.addFooterView(footerView);
 
-        if (TextUtils.isEmpty(BuildConfig.COS_SECRET_ID) || TextUtils.isEmpty(BuildConfig.COS_SECRET_KEY) ||
-                TextUtils.isEmpty(bucketRegion)) {
+        if (TextUtils.isEmpty(bucketRegion)) {
             finish();
         } else {
-            cosXmlService = CosServiceFactory.getCosXmlService(this, bucketRegion, BuildConfig.COS_SECRET_ID, BuildConfig.COS_SECRET_KEY, true);
+            cosXmlService = CosServiceFactory.getCosXmlService(this, bucketRegion, true);
             getObject();
         }
     }

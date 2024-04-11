@@ -42,8 +42,7 @@ public class CosServiceFactory {
 
     private static Map<String, CosXmlService> cosXmlServiceMap = new HashMap<>();
 
-    public static CosXmlService getCosXmlService(Context context, String region, final String secretId,
-                                                 final String secretKey, boolean enableQuic, boolean refresh) {
+    public static CosXmlService getCosXmlService(Context context, String region, boolean enableQuic, boolean refresh) {
         if (refresh) {
             cosXmlServiceMap.remove(region);
         }
@@ -52,7 +51,9 @@ public class CosServiceFactory {
 
         if (cosXmlService == null) {
             CosXmlServiceConfig cosXmlServiceConfig = getCosXmlServiceConfig(region, enableQuic);
-            final QCloudCredentialProvider qCloudCredentialProvider = getCredentialProviderWithIdAndKey(secretId, secretKey);
+            final QCloudCredentialProvider qCloudCredentialProvider = new MySessionCredentialProvider();
+            // 永久秘钥仅用于测试
+//            final QCloudCredentialProvider qCloudCredentialProvider = getCredentialProviderWithIdAndKey(secretId, secretKey);
 
             /* 获取默认签名CosXmlService实例 */
             cosXmlService = getCosXmlService(context, cosXmlServiceConfig, qCloudCredentialProvider);
@@ -65,16 +66,15 @@ public class CosServiceFactory {
         return cosXmlService;
     }
 
-    public static CosXmlService getCosXmlService(Context context, String region, final String secretId,
-                                                 final String secretKey, boolean refresh) {
-        return getCosXmlService(context, region, secretId, secretKey, enableQuic, refresh);
+    public static CosXmlService getCosXmlService(Context context, String region, boolean refresh) {
+        return getCosXmlService(context, region, enableQuic, refresh);
     }
 
     /**
      * 获取桶列表的GetService不能走quic 因为quic是针对某个桶开启的
      */
-    public static CosXmlService getCosXmlServiceByGetService(Context context, String secretId, String secretKey, boolean refresh) {
-        return getCosXmlService(context, defaultRegion, secretId, secretKey, false, refresh);
+    public static CosXmlService getCosXmlServiceByGetService(Context context, boolean refresh) {
+        return getCosXmlService(context, defaultRegion, false, refresh);
     }
 
     /**
@@ -84,7 +84,7 @@ public class CosServiceFactory {
             Context context,
             CosXmlServiceConfig cosXmlServiceConfig,
             QCloudCredentialProvider qCloudCredentialProvider
-    ){
+    ) {
         return new CosXmlService(context, cosXmlServiceConfig, qCloudCredentialProvider);
     }
 
@@ -95,41 +95,41 @@ public class CosServiceFactory {
             Context context,
             CosXmlServiceConfig cosXmlServiceConfig,
             final QCloudCredentialProvider qCloudCredentialProvider
-    ){
-        return new CosXmlService(context, cosXmlServiceConfig, new QCloudSelfSigner(){
-                @Override
-                public void sign(QCloudHttpRequest qCloudHttpRequest) throws QCloudClientException {
-                    StringBuilder authorization = new StringBuilder();
+    ) {
+        return new CosXmlService(context, cosXmlServiceConfig, new QCloudSelfSigner() {
+            @Override
+            public void sign(QCloudHttpRequest qCloudHttpRequest) throws QCloudClientException {
+                StringBuilder authorization = new StringBuilder();
 
-                    QCloudLifecycleCredentials lifecycleCredentials = (QCloudLifecycleCredentials) qCloudCredentialProvider.getCredentials();
+                QCloudLifecycleCredentials lifecycleCredentials = (QCloudLifecycleCredentials) qCloudCredentialProvider.getCredentials();
 
-                    String keyTime = qCloudHttpRequest.getKeyTime();
-                    if (keyTime == null) {
-                        keyTime = lifecycleCredentials.getKeyTime();
-                    }
-//                    COSXmlSignSourceProvider sourceProvider = (COSXmlSignSourceProvider) qCloudHttpRequest.getSignProvider();
-                    MyCOSXmlSignSourceProvider sourceProvider = new MyCOSXmlSignSourceProvider();
-                    sourceProvider.setSignTime(keyTime);
-                    String signature = signature(sourceProvider.source(qCloudHttpRequest), lifecycleCredentials.getSignKey());
-
-                    authorization.append(AuthConstants.Q_SIGN_ALGORITHM).append("=").append(AuthConstants.SHA1).append("&")
-                            .append(AuthConstants.Q_AK).append("=")
-                            .append(lifecycleCredentials.getSecretId()).append("&")
-                            .append(AuthConstants.Q_SIGN_TIME).append("=")
-                            .append(keyTime).append("&")
-                            .append(AuthConstants.Q_KEY_TIME).append("=")
-                            .append(lifecycleCredentials.getKeyTime()).append("&")
-                            .append(AuthConstants.Q_HEADER_LIST).append("=")
-                            .append(sourceProvider.getRealHeaderList().toLowerCase(Locale.ROOT)).append("&")
-                            .append(AuthConstants.Q_URL_PARAM_LIST).append("=")
-                            .append(sourceProvider.getRealParameterList().toLowerCase(Locale.ROOT)).append("&")
-                            .append(AuthConstants.Q_SIGNATURE).append("=").append(signature);
-                    String auth = authorization.toString();
-
-                    qCloudHttpRequest.removeHeader(AUTHORIZATION);
-                    qCloudHttpRequest.addHeader(AUTHORIZATION, auth);
+                String keyTime = qCloudHttpRequest.getKeyTime();
+                if (keyTime == null) {
+                    keyTime = lifecycleCredentials.getKeyTime();
                 }
-            });
+//                    COSXmlSignSourceProvider sourceProvider = (COSXmlSignSourceProvider) qCloudHttpRequest.getSignProvider();
+                MyCOSXmlSignSourceProvider sourceProvider = new MyCOSXmlSignSourceProvider();
+                sourceProvider.setSignTime(keyTime);
+                String signature = signature(sourceProvider.source(qCloudHttpRequest), lifecycleCredentials.getSignKey());
+
+                authorization.append(AuthConstants.Q_SIGN_ALGORITHM).append("=").append(AuthConstants.SHA1).append("&")
+                        .append(AuthConstants.Q_AK).append("=")
+                        .append(lifecycleCredentials.getSecretId()).append("&")
+                        .append(AuthConstants.Q_SIGN_TIME).append("=")
+                        .append(keyTime).append("&")
+                        .append(AuthConstants.Q_KEY_TIME).append("=")
+                        .append(lifecycleCredentials.getKeyTime()).append("&")
+                        .append(AuthConstants.Q_HEADER_LIST).append("=")
+                        .append(sourceProvider.getRealHeaderList().toLowerCase(Locale.ROOT)).append("&")
+                        .append(AuthConstants.Q_URL_PARAM_LIST).append("=")
+                        .append(sourceProvider.getRealParameterList().toLowerCase(Locale.ROOT)).append("&")
+                        .append(AuthConstants.Q_SIGNATURE).append("=").append(signature);
+                String auth = authorization.toString();
+
+                qCloudHttpRequest.removeHeader(AUTHORIZATION);
+                qCloudHttpRequest.addHeader(AUTHORIZATION, auth);
+            }
+        });
     }
 
     /**
@@ -142,15 +142,16 @@ public class CosServiceFactory {
 //                .setHostFormat("www.jordanqin.cn")
                 .isHttps(true)
                 .enableQuic(enableQuic)
-                .setConnectionTimeout(10*1000)
-                .setSocketTimeout(30*1000)
+                .setConnectionTimeout(10 * 1000)
+                .setSocketTimeout(30 * 1000)
                 .builder();
     }
 
     /**
      * 获取QCloudCredentialProvider对象，来给 SDK 提供临时密钥
-     * @parma secretId 永久密钥 secretId
+     *
      * @param secretKey 永久密钥 secretKey
+     * @parma secretId 永久密钥 secretId
      */
     private static QCloudCredentialProvider getCredentialProviderWithIdAndKey(String secretId, String secretKey) {
         /**

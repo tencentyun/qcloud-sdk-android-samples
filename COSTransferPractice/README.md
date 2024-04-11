@@ -12,14 +12,16 @@
 
 1. clone项目，用IDE打开
 
-2. 在环境变量中配置您的Q_COS_APP_ID、Q_COS_SECRET_ID、Q_COS_SECRET_KEY
+2. 按照 StsNodejsDemo 的 README.md 配置并启动本地临时秘钥服务
 
-3. 运行项目，体验COS传输实践demo
+3. 修改app项目MySessionCredentialProvider中的临时秘钥url为2步骤中本机的临时秘钥服务url
+
+3. 运行app项目，体验COS传输实践demo
 
 ## 注意
-- SecretId、SecretKey明文不要暴露到不安全环境下
-- 本项目采用的ShortTimeCredentialProvider仅仅是为了演示，正式环境中不要采用此方式。
-建议采用[通过临时秘钥进行授权](https://cloud.tencent.com/document/product/436/12159#.E5.88.9D.E5.A7.8B.E5.8C.96.E6.9C.8D.E5.8A.A1)。
+- 本项目也可以采用ShortTimeCredentialProvider运行，不过仅仅是为了演示，正式环境中不要采用此方式。
+应该采用默认的[通过临时秘钥进行授权](https://cloud.tencent.com/document/product/436/12159#.E5.88.9D.E5.A7.8B.E5.8C.96.E6.9C.8D.E5.8A.A1)。
+- ShortTimeCredentialProvider方式，通过在环境变量中配置您的Q_COS_APP_ID、Q_COS_SECRET_ID、Q_COS_SECRET_KEY，注意SecretId、SecretKey明文不要暴露到不安全环境下
 - 环境变量更改后Android Studio可能需要重启 相关配置才会更新
 
 ## 功能

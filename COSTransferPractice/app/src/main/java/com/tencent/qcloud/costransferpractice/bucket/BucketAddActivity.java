@@ -46,9 +46,7 @@ public class BucketAddActivity extends BaseActivity implements View.OnClickListe
         findViewById(R.id.btn_add).setOnClickListener(this);
         findViewById(R.id.rl_region).setOnClickListener(this);
 
-        if (TextUtils.isEmpty(BuildConfig.COS_SECRET_ID) ||
-                TextUtils.isEmpty(BuildConfig.COS_SECRET_KEY) ||
-                TextUtils.isEmpty(BuildConfig.COS_APP_ID)) {
+        if (TextUtils.isEmpty(BuildConfig.COS_APP_ID)) {
             finish();
         }
     }
@@ -86,7 +84,7 @@ public class BucketAddActivity extends BaseActivity implements View.OnClickListe
             return;
         }
 
-        CosXmlService cosXmlService = CosServiceFactory.getCosXmlService(this, region, BuildConfig.COS_SECRET_ID, BuildConfig.COS_SECRET_KEY, true);
+        CosXmlService cosXmlService = CosServiceFactory.getCosXmlService(this, region, true);
         setLoading(true);
         String bucket = et_name.getText() + "-" + BuildConfig.COS_APP_ID;
         PutBucketRequest putBucketRequest = new PutBucketRequest(bucket);

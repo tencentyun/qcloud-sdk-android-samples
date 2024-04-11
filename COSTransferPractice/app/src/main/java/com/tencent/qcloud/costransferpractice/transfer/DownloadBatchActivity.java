@@ -70,8 +70,6 @@ public class DownloadBatchActivity extends BaseActivity {
                         CosServiceFactory.getCosXmlService(
                                 DownloadBatchActivity.this,
                                 bucketRegion,
-                                BuildConfig.COS_SECRET_ID,
-                                BuildConfig.COS_SECRET_KEY,
                                 true
                         ),
                         transferConfig
