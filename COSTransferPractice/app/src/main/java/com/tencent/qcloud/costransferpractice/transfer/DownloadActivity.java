@@ -106,13 +106,9 @@ public class DownloadActivity extends BaseActivity implements View.OnClickListen
         filename = file.getName();
         tv_name.setText("文件名：" + filename);
 
-        if (TextUtils.isEmpty(BuildConfig.COS_SECRET_ID) || TextUtils.isEmpty(BuildConfig.COS_SECRET_KEY)) {
-            finish();
-        }
-
         downloadParentDir = getExternalFilesDir("");
 
-        cosXmlService = CosServiceFactory.getCosXmlService(this, bucketRegion, BuildConfig.COS_SECRET_ID, BuildConfig.COS_SECRET_KEY, true);
+        cosXmlService = CosServiceFactory.getCosXmlService(this, bucketRegion, true);
         TransferConfig transferConfig = new TransferConfig.Builder().build();
         transferManager = new TransferManager(cosXmlService, transferConfig);
     }

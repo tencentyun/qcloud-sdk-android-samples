@@ -24,3 +24,18 @@
 -dontwarn com.google.common.util.concurrent.ListenableFuture
 -dontwarn com.google.gson.Gson
 -dontwarn com.tencent.smtt.sdk.ValueCallback
+
+# Please add these rules to your existing keep rules in order to suppress warnings.
+# This is generated automatically by the Android Gradle plugin.
+-dontwarn com.tencent.qimei.codez.FalconSdk
+-dontwarn com.tencent.qimei.codez.IFalconSdk
+-dontwarn com.tencent.qimei.codez.shell.UserInfoType
+-dontwarn com.tencent.smtt.export.external.extension.interfaces.IX5WebViewExtension
+-dontwarn com.tencent.smtt.sdk.WebSettings
+-dontwarn com.tencent.smtt.sdk.WebView
+-dontwarn com.tencent.smtt.sdk.WebViewClient
+-dontwarn com.tencentcloudapi.cls.android.producer.AsyncProducerClient
+-dontwarn com.tencentcloudapi.cls.android.producer.AsyncProducerConfig
+-dontwarn com.tencentcloudapi.cls.android.producer.Callback
+-dontwarn com.tencentcloudapi.cls.android.producer.common.LogItem
+-dontwarn com.tencentcloudapi.cls.android.producer.errors.ProducerException

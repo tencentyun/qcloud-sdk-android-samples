@@ -112,11 +112,7 @@ public class NewUploadActivity extends BaseActivity implements View.OnClickListe
         btn_right.setOnClickListener(this);
         btn_left.setOnClickListener(this);
 
-        if (TextUtils.isEmpty(BuildConfig.COS_SECRET_ID) || TextUtils.isEmpty(BuildConfig.COS_SECRET_KEY)) {
-            finish();
-        }
-
-        cosXmlService = CosServiceFactory.getCosXmlService(this, bucketRegion, BuildConfig.COS_SECRET_ID, BuildConfig.COS_SECRET_KEY, true);
+        cosXmlService = CosServiceFactory.getCosXmlService(this, bucketRegion, true);
         TransferConfig transferConfig = new TransferConfig.Builder().build();
         transferService = new TransferService(cosXmlService, transferConfig);
     }
