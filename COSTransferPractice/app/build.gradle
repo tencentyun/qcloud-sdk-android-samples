@@ -16,7 +16,6 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "boolean", "IS_NEW_TRANSFER", 'false'
         it.buildConfigField 'String', 'COS_APP_ID', quotWrapper(System.getenv("Q_COS_APP_ID"))
         it.buildConfigField 'String', 'COS_SECRET_ID', quotWrapper(System.getenv("Q_COS_SECRET_ID"))
         it.buildConfigField 'String', 'COS_SECRET_KEY', quotWrapper(System.getenv("Q_COS_SECRET_KEY"))
