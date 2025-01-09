@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.qcloud.cos</groupId>
+  <artifactId>cos-android-nobeacon</artifactId>
+  <version>5.9.36.1</version>
+  <packaging>aar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>com.qcloud.cos</groupId>
+      <artifactId>qcloud-cos-android-base</artifactId>
+      <version>5.9.34.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.qcloud.cos</groupId>
+      <artifactId>qcloud-foundation</artifactId>
+      <version>1.5.71.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.qcloud.cos</groupId>
+      <artifactId>qcloud-track</artifactId>
+      <version>1.0.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.11.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>androidx.multidex</groupId>
+      <artifactId>multidex</artifactId>
+      <version>2.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

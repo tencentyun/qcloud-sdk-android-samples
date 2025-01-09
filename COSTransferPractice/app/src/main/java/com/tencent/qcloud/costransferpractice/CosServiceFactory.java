@@ -15,6 +15,7 @@ import com.tencent.qcloud.core.auth.ShortTimeCredentialProvider;
 import com.tencent.qcloud.core.auth.Utils;
 import com.tencent.qcloud.core.common.QCloudClientException;
 import com.tencent.qcloud.core.http.QCloudHttpRequest;
+import com.tencent.qcloud.costransferpractice.customize_network.CustomizeNetworkClient;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -51,9 +52,9 @@ public class CosServiceFactory {
 
         if (cosXmlService == null) {
             CosXmlServiceConfig cosXmlServiceConfig = getCosXmlServiceConfig(region, enableQuic);
-            final QCloudCredentialProvider qCloudCredentialProvider = new MySessionCredentialProvider();
+//            final QCloudCredentialProvider qCloudCredentialProvider = new MySessionCredentialProvider();
             // 永久秘钥仅用于测试
-//            final QCloudCredentialProvider qCloudCredentialProvider = getCredentialProviderWithIdAndKey(secretId, secretKey);
+            final QCloudCredentialProvider qCloudCredentialProvider = getCredentialProviderWithIdAndKey("", "");
 
             /* 获取默认签名CosXmlService实例 */
             cosXmlService = getCosXmlService(context, cosXmlServiceConfig, qCloudCredentialProvider);
@@ -144,6 +145,7 @@ public class CosServiceFactory {
                 .enableQuic(enableQuic)
                 .setConnectionTimeout(10 * 1000)
                 .setSocketTimeout(30 * 1000)
+                .setCustomizeNetworkClient(new CustomizeNetworkClient())
                 .builder();
     }
 

@@ -20,6 +20,7 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { url "file://${rootDir.getAbsolutePath()}/repo" }
 //        mavenLocal()
         mavenCentral()
         google()
