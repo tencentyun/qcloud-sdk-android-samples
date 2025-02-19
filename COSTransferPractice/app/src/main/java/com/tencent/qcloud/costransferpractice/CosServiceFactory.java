@@ -20,6 +20,7 @@ import com.tencent.qcloud.core.auth.ShortTimeCredentialProvider;
 import com.tencent.qcloud.core.auth.Utils;
 import com.tencent.qcloud.core.common.QCloudClientException;
 import com.tencent.qcloud.core.http.QCloudHttpRequest;
+import com.tencent.qcloud.costransferpractice.customize_network.CustomizeNetworkClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -129,6 +130,8 @@ public class CosServiceFactory {
         builder.setAccelerate(enableGlobalAccelerate);
         // 配置是否开启QUIC
         builder.enableQuic(enableQuic);
+
+        // .setCustomizeNetworkClient(new CustomizeNetworkClient())
         return builder.builder();
     }
 
