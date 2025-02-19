@@ -7,11 +7,11 @@ repositories {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     defaultConfig {
         applicationId "com.tencent.qcloud.costransferpractice"
         minSdkVersion 24
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -83,6 +83,10 @@ dependencies {
 //    implementation 'com.qcloud.cos:quic:1.5.41'
 //    api(name: 'quic-release', ext: 'aar')
 //    implementation("com.qcloud.cos:cos-ktx:5.7.2")
+
+    //tencent http dns
+    implementation "io.github.dnspod:httpdns-sdk:4.3.0"
+    implementation "androidx.room:room-rxjava2:2.5.1"
 }
 
 // apply plugin: 'com.tencent.tac.services'
