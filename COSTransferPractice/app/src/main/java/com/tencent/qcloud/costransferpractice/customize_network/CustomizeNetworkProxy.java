@@ -20,7 +20,7 @@ import okio.BufferedSource;
 import okio.Okio;
 
 /**
- * 此处实现一个网络请求，例如okhttp的Call
+ * 此处实现一个网络请求
  * <p>
  * Created by jordanqin on 2024/12/30 19:37.
  * Copyright 2010-2020 Tencent Cloud. All Rights Reserved.

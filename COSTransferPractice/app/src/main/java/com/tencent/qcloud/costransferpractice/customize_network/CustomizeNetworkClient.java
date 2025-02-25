@@ -20,7 +20,7 @@ import okio.BufferedSink;
 import okio.Okio;
 
 /**
- * 此处实现自定义网络Client，例如OkHttpClient实例
+ * 此处实现自定义网络Client
  * <p>
  * Created by jordanqin on 2024/12/30 19:36.
  * Copyright 2010-2020 Tencent Cloud. All Rights Reserved.
