@@ -50,8 +50,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     namespace 'com.tencent.qcloud.costransferpractice'
 }
@@ -85,8 +85,8 @@ dependencies {
 //    implementation("com.qcloud.cos:cos-ktx:5.7.2")
 
     //tencent http dns
-    implementation "io.github.dnspod:httpdns-sdk:4.3.0"
-    implementation "androidx.room:room-rxjava2:2.5.1"
+//    implementation "io.github.dnspod:httpdns-sdk:4.3.0"
+//    implementation "androidx.room:room-rxjava2:2.5.1"
 }
 
 // apply plugin: 'com.tencent.tac.services'
